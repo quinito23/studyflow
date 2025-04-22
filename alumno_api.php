@@ -1,0 +1,124 @@
+<?php
+
+include_once 'DBConnection.php';
+include_once 'alumno.php';
+
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+//obtenemos la conexión con la base de datos
+
+$database = new DBConnection();
+$db = $database->getConnection();
+
+//creamos una instancia de la clase profesor
+$alumno = new Alumno($db);
+
+//almacenamos el metodo HTTP de la peticion en una variable
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+//ruta de la API
+
+switch($method){
+    case 'GET':
+        // leer un alumno o todos, dependera de si se pasa id o no
+        if(isset($_GET['id'])){
+            $alumno->id_usuario = $_GET['id'];
+            $alumno->leer();
+            $alumno_data = array(
+                "id_usuario" => $alumno->id_usuario,
+                "correo" => $alumno->correo,
+                "contrasenia" => $alumno->contrasenia,
+                "nombre" => $alumno->nombre,
+                "apellidos" => $alumno->apellidos,
+                "DNI" => $alumno->DNI,
+                "telefono" => $alumno->telefono,
+                "fecha_nacimiento" => $alumno->fecha_nacimiento,
+                "rol" => $alumno->rol
+            );
+            echo json_encode($alumno_data);
+        }else{
+            $result = $alumno->leer_todos();
+            echo json_encode($result);
+        }
+        break;
+
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+
+        if(isset($data->correo) && isset($data->contrasenia)  && isset($data->nombre) && isset($data->apellidos)){
+            $alumno->correo = $data->correo;
+            $alumno->contrasenia = $data->contrasenia;
+            $alumno->nombre = $data->nombre;
+            $alumno->apellidos = $data->apellidos;
+            $alumno->DNI = $data->DNI;
+            $alumno->telefono = $data->telefono;
+            $alumno->fecha_nacimiento = $data->fecha_nacimiento;
+            $alumno->rol = $data->rol;
+
+            $id_alumno = $alumno->crear();
+
+            if($id_alumno){
+                echo json_encode(array("message" => "Alumno creado exitosamente", "id_usuario" => $id_alumno));
+            }else{
+                echo json_encode(array("message" => "No se pudo crear el alumno"));
+            }
+        }else{
+            echo json_encode(array("message" => "faltan datos requeridos"));
+        }
+        break;
+
+    case 'PUT':
+        //actualizar profesor
+
+        $data = json_decode(file_get_contents("php://input"));
+
+        if(isset($data->id_usuario) && isset($data->correo) && isset($data->contrasenia) && isset($data->nombre) &&  isset($data->apellidos)){
+
+            $alumno->id_usuario = $data->id_usuario;
+            $alumno->correo = $data->correo;
+            $alumno->contrasenia = $data->contrasenia;
+            $alumno->nombre = $data->nombre;
+            $alumno->apellidos = $data->apellidos;
+            $alumno->DNI = $data->DNI;
+            $alumno->telefono = $data->telefono;
+            $alumno->fecha_nacimiento = $data->fecha_nacimiento;
+            $alumno->rol = $data->rol;
+
+            if($alumno->actualizar()){
+                echo json_encode(array("message" => "Alumno actualizado exitosamente"));
+            }else{
+                echo json_encode(array("message" => "No se pudo actualizar al Alumno"));
+            }
+        }else{
+            echo json_encode(array("message" => "Faltan datos requeridos"));
+        }
+        break;
+
+    case 'DELETE':
+        //eliminar un profesor
+        $data = json_decode(file_get_contents("php://input"));
+
+        if(isset($data->id_usuario)){
+            $alumno->id_usuario = $data->id_usuario;
+
+            if($alumno->eliminar()){
+                echo json_encode(array("message" => "Alumno eliminado exitosamente"));
+            }else{
+                echo json_encode(array("message" => "No se pudo eliminar el Alumno"));
+            }
+        }else{
+            echo json_encode(array("message" => "Faltan datos requeridos"));
+        }
+        break;
+    
+    default:
+        echo json_encode(array("message" => "Metodo no permitido"));
+        break;
+    
+}
+
+?>
