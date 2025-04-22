@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <title>Profesores - StudyFlow</title>
     <style>
         body {
@@ -20,35 +19,31 @@
 
         /* Header */
         .header {
-            margin-left: 250px;
             background-color: #0d1f38;
             padding: 1rem 2rem;
             color: white;
             border-bottom: 1px solid #ffffff33;
             display: flex;
+            flex-wrap: wrap; /* Permitimos que los elementos se apilen si no hay espacio */
             justify-content: space-between;
             align-items: center;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem); /* Tamaño dinámico */
         }
 
-        .hamburger {
-            display: none; /* Oculto por defecto en pantallas grandes */
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
+        .navbar-toggler {
+            font-size: clamp(1rem, 3vw, 1.5rem); /* Tamaño dinámico */
+            margin-right: 1rem;
         }
 
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2vw, 0.9rem); /* Tamaño dinámico */
         }
 
         .breadcrumb-item a {
@@ -68,46 +63,50 @@
             color: #007bff;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
+        /* Offcanvas */
+        .offcanvas {
             background-color: #0d1f38;
             color: white;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            padding-top: 5rem;
-            border-right: 1px solid #ffffff33;
-            transition: transform 0.3s ease; /* Transición suave para mostrar/ocultar */
+            width: 20vw !important; /* Ancho relativo al viewport */
         }
 
-        .sidebar .nav-link {
+        .offcanvas-header {
+            border-bottom: 1px solid #ffffff33;
+        }
+
+        .navc
+
+        .offcanvas-title {
+            color: white;
+            font-size: clamp(1rem, 3vw, 1.25rem);
+        }
+
+        .offcanvas-body .nav-link {
             color: #f8f9fa;
             padding: 0.75rem 1.5rem;
             display: block;
             text-decoration: none;
+            font-size: clamp(0.9rem, 2vw, 1rem); /* Tamaño dinámico */
         }
 
-        .sidebar .nav-link:hover {
+        .offcanvas-body .nav-link:hover {
             background-color: #1e3a5f;
             color: #ffffff;
         }
 
-        .sidebar .nav-link.active {
+        .offcanvas-body .nav-link.active {
             background-color: #007bff;
             color: white;
         }
 
         /* Contenido principal */
         .main-content {
-            margin-left: 250px;
             padding: 2rem;
             flex: 1;
-            transition: margin-left 0.3s ease; /* Transición suave para el contenido */
         }
 
         h2 {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem); /* Tamaño dinámico */
             color: #ffffff;
             margin-bottom: 1.5rem;
         }
@@ -115,23 +114,27 @@
         .form-label {
             font-weight: 500;
             color: white;
+            font-size: clamp(0.9rem, 2vw, 1rem);
         }
 
         .form-control, .form-select {
             background-color: white;
             color: #333;
             border-radius: 5px;
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
 
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
 
         .table {
             margin-top: 2rem;
             background-color: #e9ecef;
             color: #333;
+            font-size: clamp(0.7rem, 1.5vw, 1rem);
         }
 
         .table thead {
@@ -154,6 +157,7 @@
             border-radius: 5px;
             margin-top: 1rem;
             display: none;
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
 
         .form-title {
@@ -166,6 +170,7 @@
             border-color: #17a2b8;
             color: white;
             margin-right: 5px;
+            font-size: clamp(0.7rem, 1.5vw, 0.875rem);
         }
 
         .btn-info:hover {
@@ -178,6 +183,7 @@
             border-color: #ffc107;
             color: #333;
             margin-right: 5px;
+            font-size: clamp(0.7rem, 1.5vw, 0.875rem);
         }
 
         .btn-warning:hover {
@@ -189,6 +195,7 @@
             background-color: #dc3545;
             border-color: #dc3545;
             color: white;
+            font-size: clamp(0.7rem, 1.5vw, 0.875rem);
         }
 
         .btn-danger:hover {
@@ -215,6 +222,7 @@
             color: white;
             text-align: center;
             flex-grow: 1;
+            font-size: clamp(1rem, 3vw, 1.25rem);
         }
 
         .modal-header .btn-close {
@@ -228,13 +236,14 @@
 
         .modal-body p {
             margin: 0.5rem 0;
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
 
         .modal-body p strong {
             color: white;
             font-weight: 500;
             display: inline-block;
-            width: 180px;
+            width: clamp(120px, 30vw, 180px);
         }
 
         .modal-body p span {
@@ -248,48 +257,7 @@
             text-align: center;
             padding: 1rem;
             border-top: 1px solid #ffffff33;
-        }
-
-        /* Media Queries para Responsividad */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-250px); /* Ocultamos la barra lateral por defecto */
-            }
-
-            .sidebar.active {
-                transform: translateX(0); /* Mostramos la barra lateral cuando está activa */
-            }
-
-            .header, .main-content {
-                margin-left: 0; /* Eliminamos el margen en pantallas pequeñas */
-            }
-
-            .header.active, .main-content.active {
-                margin-left: 250px; /* Ajustamos el margen cuando la barra lateral está visible */
-            }
-
-            .hamburger {
-                display: block; /* Mostramos el botón de hamburguesa en pantallas pequeñas */
-            }
-
-            .header h1 {
-                font-size: 1.8rem; /* Reducimos el tamaño del título en pantallas pequeñas */
-            }
-
-            .breadcrumb {
-                font-size: 0.8rem; /* Reducimos el tamaño del breadcrumb */
-            }
-
-            /* Ajustamos el formulario para que los campos ocupen todo el ancho */
-            .row.g-3 > div {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-
-            /* Aseguramos que la tabla sea desplazable horizontalmente */
-            .table-responsive {
-                overflow-x: auto;
-            }
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
     </style>
 </head>
@@ -297,8 +265,10 @@
     <!-- Header -->
     <header class="header">
         <div class="d-flex align-items-center">
-            <button class="hamburger" onclick="toggleSidebar()">☰</button>
-            <h1 class="ms-2">StudyFlow</h1>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1>StudyFlow</h1>
         </div>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -308,20 +278,48 @@
         </nav>
     </header>
 
-    <!-- Barra lateral -->
-    <nav class="sidebar">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" href="profesor.html">Profesores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="alumno.html">Alumnos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="tutor.html">Tutores</a>
-            </li>
-        </ul>
-    </nav>
+    <!-- Offcanvas Sidebar -->
+    <nav class="navbar bg-body-tertiary fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Offcanvas navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex mt-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
 
     <!-- Contenido principal -->
     <main class="main-content">
@@ -450,17 +448,6 @@
     </footer>
 
     <script>
-        // Función para mostrar/ocultar la barra lateral
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const header = document.querySelector('.header');
-            const mainContent = document.querySelector('.main-content');
-
-            sidebar.classList.toggle('active');
-            header.classList.toggle('active');
-            mainContent.classList.toggle('active');
-        }
-
         // Creamos la función para enviar la solicitud AJAX a la API con los datos del formulario
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
@@ -638,5 +625,6 @@
         document.getElementById("profesor-form").addEventListener("submit", crearProfesor);
         window.onload = cargarProfesores;
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
