@@ -4,123 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <title>Profesores</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <title>Profesores - StudyFlow</title>
     <style>
-        body{
+        body {
             font-family: 'Roboto', sans-serif;
             background-color: #112a4a;
             color: #f8f9fa;
             font-size: 16px;
-            margin: 0px;
+            margin: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .header{
+        /* Header */
+        .header {
+            margin-left: 250px;
             background-color: #0d1f38;
             padding: 1rem 2rem;
             color: white;
             border-bottom: 1px solid #ffffff33;
-            margin-left: 250px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .header h1{
+        .header h1 {
             margin: 0;
-            font-size: 3.5rem;
-            text-align: center;
-            
+            font-size: 2.5rem;
         }
 
-        .breadcrumb{
+        .hamburger {
+            display: none; /* Oculto por defecto en pantallas grandes */
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
+            font-size: 0.9rem;
         }
 
-        /*Para cambiar el color del elemento que separa los elementos del breadcrumb ">"*/
-        .breadcrumb-item + .breadcrumb-item::before{
-            color: #007bff;
-        }
-
-        .breadcrumb-item a{
-            color: #f8f9fa;
+        .breadcrumb-item a {
+            color: #ffffff;
             text-decoration: none;
         }
 
-        .breadcrumb-item.active{
-            color: #d3d6db;
+        .breadcrumb-item a:hover {
+            color: #007bff;
         }
 
-        /* Sidebar*/
-        .sidebar{
+        .breadcrumb-item.active {
+            color: #adb5bd;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: #007bff;
+        }
+
+        /* Sidebar */
+        .sidebar {
             width: 250px;
             background-color: #0d1f38;
             color: white;
             position: fixed;
             top: 0;
             bottom: 0;
-            padding-top: 5rem; /*Este es el espacio para el header*/
+            padding-top: 5rem;
             border-right: 1px solid #ffffff33;
+            transition: transform 0.3s ease; /* Transición suave para mostrar/ocultar */
         }
 
-        .sidebar .nav-link{
+        .sidebar .nav-link {
             color: #f8f9fa;
             padding: 0.75rem 1.5rem;
             display: block;
             text-decoration: none;
         }
 
-        .sidebar .nav-link.active{
+        .sidebar .nav-link:hover {
+            background-color: #1e3a5f;
+            color: #ffffff;
+        }
+
+        .sidebar .nav-link.active {
             background-color: #007bff;
             color: white;
         }
 
-        /*Contenido principal*/
-        .main-content{
-            margin-left: 250px; /*Espacio para el sidebar*/
+        /* Contenido principal */
+        .main-content {
+            margin-left: 250px;
             padding: 2rem;
             flex: 1;
+            transition: margin-left 0.3s ease; /* Transición suave para el contenido */
         }
 
-        h2{
+        h2 {
             font-size: 2rem;
             color: #ffffff;
             margin-bottom: 1.5rem;
         }
 
-        .form-label{
+        .form-label {
             font-weight: 500;
             color: white;
         }
 
-        .form-control, .form-select{
+        .form-control, .form-select {
             background-color: white;
             color: #333;
             border-radius: 5px;
         }
 
-        .btn-primary{
+        .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
         }
 
-        .table thead{
-            background-color: #0056b3;
-            color: white;
-        }
-
-        .table{
+        .table {
             margin-top: 2rem;
             background-color: #e9ecef;
             color: #333;
         }
 
-        .table tbody tr{
+        .table thead {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .table tbody tr {
             background-color: #d3d6db;
         }
 
-        .table th, .table td{
+        .table th, .table td {
             text-align: center;
         }
 
@@ -133,17 +156,54 @@
             display: none;
         }
 
-        .form-title{
+        .form-title {
             align-items: center;
         }
 
-        .modal-content{
+        /* Estilos para los botones de acción */
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #138496;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
+        /* Estilos para el modal */
+        .modal-content {
             background-color: #112a4a;
             color: #f8f9fa;
             border-radius: 5px;
         }
 
-        .modal-header{
+        .modal-header {
             border-color: #ffffff33;
             display: flex;
             justify-content: center;
@@ -151,45 +211,95 @@
             position: relative;
         }
 
-        .modal-header, .modal-footer{
-            border-color: #ffffff33;
-            text-align: center;
-        }
-
-        .modal-title{
+        .modal-header .modal-title {
             color: white;
             text-align: center;
+            flex-grow: 1;
         }
 
-        .modal-body p{
+        .modal-header .btn-close {
+            position: absolute;
+            right: 1rem;
+        }
+
+        .modal-footer {
+            border-color: #ffffff33;
+        }
+
+        .modal-body p {
             margin: 0.5rem 0;
         }
 
-        .modal-body p strong{
+        .modal-body p strong {
             color: white;
             font-weight: 500;
             display: inline-block;
             width: 180px;
         }
 
-        .modal-body p span{
+        .modal-body p span {
             color: #d3d6db;
         }
 
-        /*Footer*/
-        .footer{
+        /* Footer */
+        .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
             text-align: center;
             padding: 1rem;
             border-top: 1px solid #ffffff33;
         }
+
+        /* Media Queries para Responsividad */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px); /* Ocultamos la barra lateral por defecto */
+            }
+
+            .sidebar.active {
+                transform: translateX(0); /* Mostramos la barra lateral cuando está activa */
+            }
+
+            .header, .main-content {
+                margin-left: 0; /* Eliminamos el margen en pantallas pequeñas */
+            }
+
+            .header.active, .main-content.active {
+                margin-left: 250px; /* Ajustamos el margen cuando la barra lateral está visible */
+            }
+
+            .hamburger {
+                display: block; /* Mostramos el botón de hamburguesa en pantallas pequeñas */
+            }
+
+            .header h1 {
+                font-size: 1.8rem; /* Reducimos el tamaño del título en pantallas pequeñas */
+            }
+
+            .breadcrumb {
+                font-size: 0.8rem; /* Reducimos el tamaño del breadcrumb */
+            }
+
+            /* Ajustamos el formulario para que los campos ocupen todo el ancho */
+            .row.g-3 > div {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            /* Aseguramos que la tabla sea desplazable horizontalmente */
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 <body>
-    <!--Header-->
+    <!-- Header -->
     <header class="header">
-        <h1>StudyFlow</h1>
+        <div class="d-flex align-items-center">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <h1 class="ms-2">StudyFlow</h1>
+        </div>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
@@ -198,7 +308,7 @@
         </nav>
     </header>
 
-    <!--Barra lateral-->
+    <!-- Barra lateral -->
     <nav class="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item">
@@ -213,54 +323,52 @@
         </ul>
     </nav>
 
-    <!--Contenido principal-->
-
+    <!-- Contenido principal -->
     <main class="main-content">
         <h2 class="text-center" id="form-title">Nuevo Profesor</h2>
-        <!--Formulario para crear o editar un profesor-->
+        <!-- Formulario para crear o editar un profesor -->
         <form id="profesor-form" class="row g-3">
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="correo" class="form-label">Correo</label>
                 <input type="email" class="form-control" id="correo" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="contrasenia" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="contrasenia" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" id="nombre" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="apellidos" class="form-label">Apellidos</label>
                 <input type="text" class="form-control" id="apellidos" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="DNI" class="form-label">DNI</label>
                 <input type="text" class="form-control" id="DNI" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="telefono" class="form-label">Telefono</label>
                 <input type="text" class="form-control" id="telefono" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
                 <input type="date" class="form-control" id="fecha_nacimiento">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="rol" class="form-label">Rol</label>
                 <select id="rol" class="form-select">
                     <option value="administrador">Administrador</option>
                     <option value="profesor" selected>Profesor</option>
                     <option value="alumno">Alumno</option>
                 </select>
-    
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="sueldo" class="form-label">Sueldo</label>
                 <input type="number" class="form-control" id="sueldo">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="jornada" class="form-label">Jornada</label>
                 <select id="jornada" class="form-select">
                     <option value="tiempo_completo">Completa</option>
@@ -268,11 +376,11 @@
                     <option value="por_horas">Por horas</option>
                 </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="fecha_inicio_contrato" class="form-label">Fecha Inicio de Contrato</label>
                 <input type="date" class="form-control" id="fecha_inicio_contrato">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <label for="fecha_fin_contrato" class="form-label">Fecha Fin de Contrato</label>
                 <input type="date" class="form-control" id="fecha_fin_contrato">
             </div>
@@ -280,53 +388,53 @@
             <div class="mt-3">
                 <button class="btn btn-primary" type="submit">Crear</button>
             </div>
-            
         </form>
         <br>
-    
+
         <h2 class="text-center">Profesores</h2>
-    
-        <!--Creamos la tabla para mostrar a los profesores-->
-    
-        <table class="table" id="tabla-profesores">
-            <thead>
-                <tr class="table-primary">
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Apellidos</th>
-                    <th scope="col">DNI</th>
-                    <th scope="col">Telefono</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="profesores-lista">
-                <!--Aquí serán listados los profesores-->
-            </tbody>
-        </table>
-    
+
+        <!-- Creamos la tabla para mostrar a los profesores -->
+        <div class="table-responsive">
+            <table class="table" id="tabla-profesores">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellidos</th>
+                        <th scope="col">DNI</th>
+                        <th scope="col">Telefono</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="profesores-lista">
+                    <!-- Aquí serán listados los profesores -->
+                </tbody>
+            </table>
+        </div>
+
         <div id="error-message" class="error-message"></div>
-    
-        <!--Creamos un modal emergente de bootstraps para mostrar la información de un usuario al pulsar el botón de info-->
-    
+
+        <!-- Creamos un modal emergente de Bootstrap para mostrar la información de un usuario al pulsar el botón de info -->
         <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="infoModalLabel">información del profesor</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="close"></button>
+                        <h5 class="modal-title" id="infoModalLabel">Información del Profesor</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p><strong>Nombre:</strong><span id="modal-nombre"></span></p>
-                        <p><strong>Apellidos:</strong><span id="modal-apellidos"></span></p>
-                        <p><strong>Correo:</strong><span id="modal-correo"></span></p>
-                        <p><strong>Contraseña:</strong><span id="modal-contrasenia"></span></p>
-                        <p><strong>DNI:</strong><span id="modal-DNI"></span></p>
-                        <p><strong>Teléfono:</strong><span id="modal-telefono"></span></p>
-                        <p><strong>Fecha de Nacimiento:</strong><span id="modal-fecha_nacimiento"></span></p>
-                        <p><strong>Rol:</strong><span id="modal-rol"></span></p>
-                        <p><strong>Sueldo:</strong><span id="modal-sueldo"></span></p>
-                        <p><strong>Jornada:</strong><span id="modal-jornada"></span></p>
-                        <p><strong>Fecha Inicio Contrato:</strong><span id="modal-fecha_inicio_contrato"></span></p>
-                        <p><strong>Fecha Fin Contrato:</strong><span id="modal-fecha_fin_contrato"></span></p>
+                        <p><strong>ID:</strong> <span id="modal-id_usuario"></span></p>
+                        <p><strong>Nombre:</strong> <span id="modal-nombre"></span></p>
+                        <p><strong>Apellidos:</strong> <span id="modal-apellidos"></span></p>
+                        <p><strong>Correo:</strong> <span id="modal-correo"></span></p>
+                        <p><strong>Contraseña:</strong> <span id="modal-contrasenia"></span></p>
+                        <p><strong>DNI:</strong> <span id="modal-DNI"></span></p>
+                        <p><strong>Teléfono:</strong> <span id="modal-telefono"></span></p>
+                        <p><strong>Fecha de Nacimiento:</strong> <span id="modal-fecha_nacimiento"></span></p>
+                        <p><strong>Rol:</strong> <span id="modal-rol"></span></p>
+                        <p><strong>Sueldo:</strong> <span id="modal-sueldo"></span></p>
+                        <p><strong>Jornada:</strong> <span id="modal-jornada"></span></p>
+                        <p><strong>Fecha Inicio Contrato:</strong> <span id="modal-fecha_inicio_contrato"></span></p>
+                        <p><strong>Fecha Fin Contrato:</strong> <span id="modal-fecha_fin_contrato"></span></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -336,27 +444,38 @@
         </div>
     </main>
 
-    <!--Footer-->
+    <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
+        <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
     <script>
-        //creamos la funcion para enviar la solicitud ajax a la API con los datos del formulario
-        function hacerSolicitud(url, metodo, datos, callback){
+        // Función para mostrar/ocultar la barra lateral
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const header = document.querySelector('.header');
+            const mainContent = document.querySelector('.main-content');
+
+            sidebar.classList.toggle('active');
+            header.classList.toggle('active');
+            mainContent.classList.toggle('active');
+        }
+
+        // Creamos la función para enviar la solicitud AJAX a la API con los datos del formulario
+        function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
             xhr.setRequestHeader('Content-type', 'application/json');
             xhr.onreadystatechange = function () {
-                if(xhr.readyState == 4){
+                if (xhr.readyState == 4) {
                     callback(xhr.status, xhr.responseText);
                 }
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
-        //creamos la funcion para crear un nuevo profesor
-        function crearProfesor(event){
+        // Creamos la función para crear un nuevo profesor
+        function crearProfesor(event) {
             event.preventDefault();
 
             const id_usuario = document.getElementById("id_usuario").value;
@@ -366,47 +485,48 @@
             const apellidos = document.getElementById("apellidos").value;
             const DNI = document.getElementById("DNI").value;
             const telefono = document.getElementById("telefono").value;
-            const fecha_nacimiento= document.getElementById("fecha_nacimiento").value || null;
+            const fecha_nacimiento = document.getElementById("fecha_nacimiento").value || null;
             const rol = document.getElementById("rol").value;
             const sueldo = document.getElementById("sueldo").value || null;
             const jornada = document.getElementById("jornada").value;
-            const fecha_inicio_contrato= document.getElementById("fecha_inicio_contrato").value || null;
+            const fecha_inicio_contrato = document.getElementById("fecha_inicio_contrato").value || null;
             const fecha_fin_contrato = document.getElementById("fecha_fin_contrato").value || null;
 
-            const profesor = {correo, contrasenia, nombre, apellidos, DNI, telefono, fecha_nacimiento, rol, sueldo, jornada, fecha_inicio_contrato, fecha_fin_contrato, id_usuario};
+            const profesor = { correo, contrasenia, nombre, apellidos, DNI, telefono, fecha_nacimiento, rol, sueldo, jornada, fecha_inicio_contrato, fecha_fin_contrato, id_usuario };
 
-            if(id_usuario){
-                // si existe el id del usuario , significa que estamos actualizando el profesor , por lo que hacemos una solicitud PUT
-                hacerSolicitud('profesor_api.php', 'PUT', profesor, function(status,response) {
+            if (id_usuario) {
+                // Si existe el id del usuario, significa que estamos actualizando el profesor, por lo que hacemos una solicitud PUT
+                hacerSolicitud('profesor_api.php', 'PUT', profesor, function (status, response) {
                     if (status === 200) {
                         document.getElementById("profesor-form").reset();
                         cargarProfesores();
-                        // resetear el titulo y el boton
+                        // Resetear el título y el botón
                         document.getElementById("id_usuario").value = null;
-                        document.getElementById("form-title").innerText = "Nuevo profesor";
-                        document.querySelector("button[type='submit']").textContent = "Crear profesor";
-                    }else{
+                        document.getElementById("form-title").innerText = "Nuevo Profesor";
+                        document.querySelector("button[type='submit']").textContent = "Crear";
+                    } else {
                         document.getElementById("error-message").innerText = 'Error al actualizar el profesor';
+                        document.getElementById("error-message").style.display = 'block';
                     }
                 });
-            }else{
-                hacerSolicitud('profesor_api.php', 'POST', profesor, function(status, response){
-                    if (status == 200){
-                        // limpiamos el formualrio y recargamos la lista de profesores
+            } else {
+                hacerSolicitud('profesor_api.php', 'POST', profesor, function (status, response) {
+                    if (status == 200) {
+                        // Limpiamos el formulario y recargamos la lista de profesores
                         document.getElementById("profesor-form").reset();
                         cargarProfesores();
-                    }else{
+                    } else {
                         document.getElementById("error-message").innerText = 'Error al crear el profesor';
+                        document.getElementById("error-message").style.display = 'block';
                     }
                 });
             }
         }
 
-        // funcion para cargar todos los profesores de la bd
-
-        function cargarProfesores(){
-            hacerSolicitud('profesor_api.php', 'GET', null, function(status, response){
-                if(status === 200){
+        // Función para cargar todos los profesores de la BD
+        function cargarProfesores() {
+            hacerSolicitud('profesor_api.php', 'GET', null, function (status, response) {
+                if (status === 200) {
                     const profesores = JSON.parse(response);
                     const listaProfesores = document.getElementById("profesores-lista");
                     listaProfesores.innerHTML = '';
@@ -418,26 +538,27 @@
                             <td>${profesor.DNI}</td>
                             <td>${profesor.telefono}</td>
                             <td>
-                                <button onclick = "mostrarInfo(${profesor.id_usuario})">Info</button>
-                                <button onclick = "editarProfesor(${profesor.id_usuario})">Editar</button>
-                                <button onclick = "eliminarProfesor(${profesor.id_usuario})">Eliminar</button>
+                                <button class="btn btn-info btn-sm" onclick="mostrarInfo(${profesor.id_usuario})">Info</button>
+                                <button class="btn btn-warning btn-sm" onclick="editarProfesor(${profesor.id_usuario})">Editar</button>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarProfesor(${profesor.id_usuario})">Eliminar</button>
                             </td>
                         `;
                         listaProfesores.appendChild(row);
-                    })
-                }else{
-                    document.getElementById("error-message").innerText = 'Error al cargar autoress';
+                    });
+                } else {
+                    document.getElementById("error-message").innerText = 'Error al cargar profesores';
+                    document.getElementById("error-message").style.display = 'block';
                 }
             });
         }
 
-        //funcion para cargar la información del profesor en el modal para mostrarla
-
-        function mostrarInfo(id_usuario){
-            hacerSolicitud(`profesor_api.php?id=${id_usuario}`, 'GET', null, function(status,response){
-                if(status === 200){
+        // Función para cargar la información del profesor en el modal para mostrarla
+        function mostrarInfo(id_usuario) {
+            hacerSolicitud(`profesor_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
+                if (status === 200) {
                     const profesor = JSON.parse(response);
-                    if(profesor){
+                    if (profesor) {
+                        document.getElementById("modal-id_usuario").textContent = profesor.id_usuario || 'N/A';
                         document.getElementById("modal-nombre").textContent = profesor.nombre || 'N/A';
                         document.getElementById("modal-apellidos").textContent = profesor.apellidos || 'N/A';
                         document.getElementById("modal-correo").textContent = profesor.correo || 'N/A';
@@ -451,44 +572,44 @@
                         document.getElementById("modal-fecha_inicio_contrato").textContent = profesor.fecha_inicio_contrato || 'N/A';
                         document.getElementById("modal-fecha_fin_contrato").textContent = profesor.fecha_fin_contrato || 'N/A';
 
-                        //mostramos el modal usando Bootstraps
-                        const modal = new bootstrap.Modal(document.getElementById("infoModal"));
-                        modal.show();
-
+                        // Mostramos el modal usando Bootstrap
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                            const modal = new bootstrap.Modal(document.getElementById('infoModal'));
+                            modal.show();
+                        } else {
+                            console.error('Bootstrap no está cargado. Asegúrate de que el script de Bootstrap se haya cargado correctamente.');
+                            document.getElementById("error-message").innerText = 'Error: No se puede abrir el modal. Bootstrap no está cargado.';
+                            document.getElementById("error-message").style.display = 'block';
+                        }
                     }
-                }else{
-                    document.getElementById("error-message").innerHTML = 'Error al cargar los datos del profesor';
+                } else {
+                    document.getElementById("error-message").innerText = 'Error al cargar los datos del profesor';
                     document.getElementById("error-message").style.display = 'block';
                 }
             });
         }
 
-        //funcion para eliminar un profesor
-
-        function eliminarProfesor(id_usuario){
-            if(confirm('¿Estás seguro de que quieres eliminar este profesor?')){
-                //creamos un objeto json con el id del profesor
-                const data = {"id_usuario": id_usuario};
-
-                //hacemos la solicitud para eliminar al profesor
-                hacerSolicitud('profesor_api.php', 'DELETE', data, function(status, response){
-                    if(status === 200){
+        // Función para eliminar un profesor
+        function eliminarProfesor(id_usuario) {
+            if (confirm('¿Estás seguro de que quieres eliminar este profesor?')) {
+                const data = { "id_usuario": id_usuario };
+                hacerSolicitud('profesor_api.php', 'DELETE', data, function (status, response) {
+                    if (status === 200) {
                         cargarProfesores();
-                    }else{
+                    } else {
                         document.getElementById("error-message").innerText = 'Error al eliminar el profesor';
+                        document.getElementById("error-message").style.display = 'block';
                     }
                 });
             }
         }
 
-        //funcion para editar un profesor
-
-        function editarProfesor(id_usuario){
-            // primero tenemos que obtener los datos del profesor a editar para cargar sus datos en el formulario
-            hacerSolicitud(`profesor_api.php?id=${id_usuario}`, 'GET', null, function(status, response){
-                if(status === 200){
+        // Función para editar un profesor
+        function editarProfesor(id_usuario) {
+            hacerSolicitud(`profesor_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
+                if (status === 200) {
                     const profesor = JSON.parse(response);
-                    if(profesor){
+                    if (profesor) {
                         document.getElementById("correo").value = profesor.correo;
                         document.getElementById("contrasenia").value = profesor.contrasenia;
                         document.getElementById("nombre").value = profesor.nombre;
@@ -503,20 +624,19 @@
                         document.getElementById("fecha_fin_contrato").value = profesor.fecha_fin_contrato || '';
                         document.getElementById("id_usuario").value = profesor.id_usuario;
 
-                        document.querySelector("button[type='submit']").textContent = "Actualizar"
+                        document.getElementById("form-title").innerText = "Editar Profesor";
+                        document.querySelector("button[type='submit']").textContent = "Actualizar";
                     }
-                }else{
+                } else {
                     document.getElementById("error-message").innerText = 'Error al cargar los datos del profesor';
+                    document.getElementById("error-message").style.display = 'block';
                 }
             });
         }
 
-        //inicializar
-
+        // Inicializar
         document.getElementById("profesor-form").addEventListener("submit", crearProfesor);
         window.onload = cargarProfesores;
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
