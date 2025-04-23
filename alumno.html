@@ -110,7 +110,7 @@
 
 
         h2{
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             color: #ffffff;
             margin-bottom: 1.5rem;
         }
@@ -238,28 +238,29 @@
                 <li class="breadcrumb-item active" aria-current="page">Alumnos</li>
             </ol>
         </nav>
+    </header>
 
         <!--Barra lateral dedsplegable con offcanvas de bootsraps-->
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="profesor.html">Profesores</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="alumno.html">Alumnos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="tutor.html">Tutores</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-    </header>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="profesor.html">Profesores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="alumno.html">Alumnos</a>
+                </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="tutor.html">Tutores</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
 
     <!--Contenido principal-->
 
@@ -358,12 +359,12 @@
                 </div>
             </div>
         </div>
-
-        <!--FOOTER-->
-        <footer class="footer">
-            <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
-        </footer>
     </main>
+
+    <!--FOOTER-->
+    <footer class="footer">
+        <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
+    </footer>
     
 
     <script>
