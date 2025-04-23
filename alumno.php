@@ -5,6 +5,10 @@ include_once 'usuario.php';
     class Alumno extends Usuario{
         private $conn;
         private $table_name = "alumno";
+
+        //creamos la propiedad tutores para almacenar los tutores asignados al alumno
+        // No corresponde a una columna en la tabla alumno sino que es simplemente un contenedor de los tutores para hacer su manejo más sencillo
+        public $tutores;
         
         public function __construct($db){
             $this->conn = $db;
@@ -15,7 +19,7 @@ include_once 'usuario.php';
 
         // metodo para crear un nuevo profesor
 
-        public function crear(){
+        public function crear($tutores){
 
             //insertamos primero los datos en la tabla usuario
             $query = "INSERT INTO usuario (nombre, apellidos, telefono, correo, contrasenia, fecha_nacimiento, rol, DNI) VALUE (:nombre, :apellidos, :telefono, :correo, :contrasenia, :fecha_nacimiento, :rol, :DNI)";
@@ -42,7 +46,14 @@ include_once 'usuario.php';
             $stmt->bindParam(':DNI', $this->DNI);
 
             if($stmt->execute()){
-                // aqui deberiamos hacer algo para poder elegir el aula y eso.
+                $id_usuario = $this->conn->lastInsertId();
+                foreach ($tutores as $id_tutor){
+                    $query = "INSERT INTO alumno_tutor (id_usuario,id_tutor) VALUES (:id_usuario, :id_tutor)";
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':id_usuario', $id_usuario);
+                    $stmt->bindParam(':id_tutor', $is_tutor);
+                    $stmt->execute();
+                }
                 return true;
             }
             return false;
@@ -101,14 +112,30 @@ include_once 'usuario.php';
                 $this->contrasenia = $row['contrasenia'];
                 $this->fecha_nacimiento = $row['fecha_nacimiento'];
                 $this->rol = $row['rol'];
+                $this->tutores = $this->obtenerTutores($this->id_usuario);
                 return true;
             }
             return false;
         }
 
+        //metodo para obtener los tutores asignados al alumno
+        private function obtenerTutores($id_usuario){
+            $query = "SELECT t.id_tutor, t.nombre, t.apellidos, t,telefono FROM tutor_legal t INNER JOIN alumno_tutor at ON t.id_autor = at.id_autor WHERE at.id_usuario = :id_usuario";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id_usuario', $id_usuario);
+            $stmt->execute();
+
+            $tutores = array();
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                // por cada tutor lo agregamos como un array al final del array tutores
+                $tutores[] = array("id_tutor" => $row['id_tutor'], "nombre" => $row['nombre'], "apellidos" => $row['apellidos'], "telefono" => $row['telefono']);
+            }
+            return $tutores;
+        }
+
         //funcion para actualizar un alumno
 
-        public function actualizar(){
+        public function actualizar($tutores){
 
             //primero actualizamos los datos de la tabla usuario
             $query = "UPDATE usuario SET nombre = :nombre, apellidos = :apellidos, DNI = :DNI, telefono = :telefono, correo = :correo, contrasenia = :contrasenia, fecha_nacimiento = :fecha_nacimiento, rol = :rol WHERE id_usuario = :id_usuario";
@@ -140,7 +167,21 @@ include_once 'usuario.php';
             
 
             if($stmt->execute()){
-                //aqui pondriamos otra consulta para actualizar datos referentes a otras tablas , pero de momento no
+                //primero eliminamos las relaciones existentes que hay entre alumno y tutor
+                $query = "DELETE FROM alumno_tutor WHERE id_usuario = :id_usuario";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':id_usuario', $this->id_usuario);
+                $stmt->execute();
+
+                // y en segundo lugar introducimos las nuevas relaciones
+                foreach($tutores as $id_tutor){
+                    $query = "INSERT INTO alumno_tutor (id_usuario, id_autor) VALUES (:id_usuario, :id_tutor)";
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':id_usuario', $this->id_usuario);
+                    $stmt->bindParam(':id_tutor', $this->id_tutor);
+                    $stmt->execute();
+                }
+
                 return true;
             }
             return false;

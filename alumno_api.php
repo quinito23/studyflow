@@ -38,6 +38,7 @@ switch($method){
                 "telefono" => $alumno->telefono,
                 "fecha_nacimiento" => $alumno->fecha_nacimiento,
                 "rol" => $alumno->rol
+                "tutores" => $alumno->tutores
             );
             echo json_encode($alumno_data);
         }else{
@@ -58,8 +59,11 @@ switch($method){
             $alumno->telefono = $data->telefono;
             $alumno->fecha_nacimiento = $data->fecha_nacimiento;
             $alumno->rol = $data->rol;
+            //almacenamos el array de tutores con los id de los tutores selccionados en el front
+            $tutores = $data->tutores;
+            // este array se lo pasaremos al metodo crear para que este maneje la asociación de alumnos con tutores
 
-            $id_alumno = $alumno->crear();
+            $id_alumno = $alumno->crear($tutores);
 
             if($id_alumno){
                 echo json_encode(array("message" => "Alumno creado exitosamente", "id_usuario" => $id_alumno));
@@ -87,8 +91,9 @@ switch($method){
             $alumno->telefono = $data->telefono;
             $alumno->fecha_nacimiento = $data->fecha_nacimiento;
             $alumno->rol = $data->rol;
+            $tutores = $data->tutores;
 
-            if($alumno->actualizar()){
+            if($alumno->actualizar($tutores)){
                 echo json_encode(array("message" => "Alumno actualizado exitosamente"));
             }else{
                 echo json_encode(array("message" => "No se pudo actualizar al Alumno"));

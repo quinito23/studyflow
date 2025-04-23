@@ -305,6 +305,12 @@
                     <option value="alumno" selected>Alumno</option>
                 </select>
             </div>
+            <div class="col-md-6">
+                <label for="tutor" class="form-label">Tutor Legal:</label>
+                <select id="tutor" class="form-select" multiple>
+                    <!--Aquí serán listados los tutores legales a elegir-->
+                </select>
+            </div>
             <input type="hidden" id="id_usuario">
             <div class="mt-3">
                 <button class="btn btn-primary" type="submit">Crear</button>
@@ -353,6 +359,7 @@
                         <p><strong>Teléfono:</strong><span id="modal-telefono"></span></p>
                         <p><strong>Fecha de Nacimiento:</strong><span id="modal-fecha_nacimiento"></span></p>
                         <p><strong>Rol:</strong><span id="modal-rol"></span></p>
+                        <p><strong>Tutor Legal:</strong><span id="modal-tutor"></span></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -396,7 +403,14 @@
             const fecha_nacimiento= document.getElementById("fecha_nacimiento").value || null;
             const rol = document.getElementById("rol").value;
 
-            const alumno = {correo, contrasenia, nombre, apellidos, DNI, telefono, fecha_nacimiento, rol, id_usuario};
+            //usamos un bucle for of para meter laos tutores seleccionados para el alumno en un array 
+            const selectedOptions = document.getElementById("tutor").selectedOptions;
+            const tutores = Array();
+            for(let option of selectedOptions){
+                tutores.push(option.value); // almacenamos el id del tutor , que es lo que le asignamos al atributo valor
+            }
+
+            const alumno = {correo, contrasenia, nombre, apellidos, DNI, telefono, fecha_nacimiento, rol, tutores, id_usuario};
 
             if(id_usuario){
                 //si existe el id del usuario , significa que estamos actualizando el profesor , por lo que hacemos una solicitud PUT
@@ -471,6 +485,8 @@
                         document.getElementById("modal-fecha_nacimiento").textContent = alumno.fecha_nacimiento || 'N/A';
                         document.getElementById("modal-rol").textContent = alumno.rol || 'N/A';
 
+                        
+
                         //mostramos el modal usando Bootstraps
                         const modal = new bootstrap.Modal(document.getElementById("infoModal"));
                         modal.show();
@@ -526,6 +542,26 @@
                 }
             });
         }
+
+        //funcion para cargar los tutores legales y ponerlos como opciones en el select
+        function cargarTutores(){
+            hacerSolicitud('tutor_api.php', 'GET', null, function(status, response){
+                if(status === 200){
+                    const tutores = JSON.parse(response);
+                    const selectTutores = document.getElementById("tutor");
+                    selectTutores.innerHTML = '';
+                    tutores.forEach(tutor=>{
+                        const option = document.createElement('option');
+                        option.value = tutor.id_tutor;
+                        option.textContent = `${tutor.nombre} ${tutor.apellidos}`;
+                        selectTutores.appendChild(option)
+                    });
+                }else{
+                    documen.getElementById("error-message").innerText = 'Error al cargar los tutores';
+                }
+            });
+        }
+
 
         //inicializar 
 
