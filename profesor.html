@@ -28,14 +28,25 @@
             align-items: center;
         }
 
+        .header .d-flex{
+            gap: 1rem;
+            align-items: center;
+        }
+
         .header h1{
             margin: 0;
             font-size: clamp(1.5rem, 5vw, 2.5rem); /*Hacemos que el tamaño sea dinamico*/
+            margin-left: clamp(1rem, 3vw, 2rem);
         }
 
         .navbar-toggler{
-            font-size: clamp(1rem, 3vw, 1.5); /*Hacemos que el tamaño sea dinamico*/
+            font-size: clamp(1rem, 3vw, 1.5rem); /*Hacemos que el tamaño sea dinamico*/
             margin-right: 1rem;
+            z-index: 1000;
+        }
+
+        .navbar-toggler-icon{
+            color: white;
         }
 
         .breadcrumb{
@@ -214,11 +225,12 @@
 <body>
     <!--Header-->
     <header class="header">
-        <div class="d-flex align-items-center">
+        <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
+        <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <h1>StudyFlow</h1>
+            <h1 class="mx-auto">StudyFlow</h1>
         </div>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
