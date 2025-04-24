@@ -37,7 +37,7 @@ switch($method){
                 "DNI" => $alumno->DNI,
                 "telefono" => $alumno->telefono,
                 "fecha_nacimiento" => $alumno->fecha_nacimiento,
-                "rol" => $alumno->rol
+                "rol" => $alumno->rol,
                 "tutores" => $alumno->tutores
             );
             echo json_encode($alumno_data);

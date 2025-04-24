@@ -51,10 +51,10 @@ include_once 'usuario.php';
                     $query = "INSERT INTO alumno_tutor (id_usuario,id_tutor) VALUES (:id_usuario, :id_tutor)";
                     $stmt = $this->conn->prepare($query);
                     $stmt->bindParam(':id_usuario', $id_usuario);
-                    $stmt->bindParam(':id_tutor', $is_tutor);
+                    $stmt->bindParam(':id_tutor', $id_tutor);
                     $stmt->execute();
                 }
-                return true;
+                return $id_usuario;
             }
             return false;
 
@@ -72,6 +72,10 @@ include_once 'usuario.php';
             $alumnos = array();
 
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                //obtenemos el id del usuario para luego obtener los tutores asignados
+                $id_usuario = $row['id_usuario'];
+                //obtenemos los tutores asignados
+                $tutores = $this->obtenerTutores($id_usuario);
                 $alumno = array(
                     "id_usuario" => $row['id_usuario'],
                     "nombre" => $row['nombre'],
@@ -79,7 +83,8 @@ include_once 'usuario.php';
                     "DNI" => $row['DNI'],
                     "telefono" => $row['telefono'],
                     "correo" => $row['correo'],
-                    "contrasenia" => $row['contrasenia']
+                    "contrasenia" => $row['contrasenia'],
+                    "tutores" => $tutores
                 );
                 array_push($alumnos, $alumno);
             }
@@ -120,7 +125,7 @@ include_once 'usuario.php';
 
         //metodo para obtener los tutores asignados al alumno
         private function obtenerTutores($id_usuario){
-            $query = "SELECT t.id_tutor, t.nombre, t.apellidos, t,telefono FROM tutor_legal t INNER JOIN alumno_tutor at ON t.id_autor = at.id_autor WHERE at.id_usuario = :id_usuario";
+            $query = "SELECT t.id_tutor, t.nombre, t.apellidos, t.telefono FROM tutor_legal t INNER JOIN alumno_tutor at ON t.id_tutor = at.id_tutor WHERE at.id_usuario = :id_usuario";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id_usuario', $id_usuario);
             $stmt->execute();
@@ -175,10 +180,10 @@ include_once 'usuario.php';
 
                 // y en segundo lugar introducimos las nuevas relaciones
                 foreach($tutores as $id_tutor){
-                    $query = "INSERT INTO alumno_tutor (id_usuario, id_autor) VALUES (:id_usuario, :id_tutor)";
+                    $query = "INSERT INTO alumno_tutor (id_usuario, id_tutor) VALUES (:id_usuario, :id_tutor)";
                     $stmt = $this->conn->prepare($query);
                     $stmt->bindParam(':id_usuario', $this->id_usuario);
-                    $stmt->bindParam(':id_tutor', $this->id_tutor);
+                    $stmt->bindParam(':id_tutor', $id_tutor);
                     $stmt->execute();
                 }
 
