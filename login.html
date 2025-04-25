@@ -12,6 +12,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
 
         .login-card{
@@ -38,40 +39,121 @@
             padding: 0.75rem;
             font-size: 1.1rem;
         }
+
+        .nav-tabs {
+            justify-content: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #0d6efd;
+        }
+
+        .nav-tabs .nav-link{
+            color: #f8f9fa;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs .nav-link.active{
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            background-color: transparent;
+        }
+
+        .tab-content{
+            width: 100%;
+            max-width: 400px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">
-            <img src="https://imgur.com/a/89qEh8Q.png">
+
+    <!--Haré uso de la clase tabs de boostraps para alternar entre el formulario de inicio de sesión y el de "registro" para mandar la solicitud-->
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane" aria-selected="true">Iniciar Sesión</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="registro-tab" data-bs-toggle="tab" data-bs-target="#registro-tab-pane" type="button" role="tab" aria-controls="registro-tab-pane" aria-selected="false">Registro</button>
+        </li>
+    </ul>
+
+    <!--Pestaña del login-->
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel" aria-labelledby="login-tab" tabindex="0">
+            <div class="card login-card">
+                <!--Encabezado de la tarjeta-->
+                <div class="card-header">
+                    <h3>Iniciar Sesión</h3>
+                </div>
+                <!--Crear el cuerpo de la tarjeta-->
+                <div class="card-body">
+                    <div id="error-message" class="alert alert-danger d-none"></div>
+                    <!--Creamos el formulario del login-->
+                    <form id="login-form">
+                        <!--Creamos el campo para introducir el correo electronico-->
+                        <div class="mb-3">
+                            <label for="correo-login" class="form-label">Correo electronico</label>
+                            <input type="email" class="form-control" id="correo-login" name="correo" placeholder="Ingrese el correo electronico" required>
+                        </div>
+                        <!--Campo para la contraseña-->
+                        <div class="mb-3">
+                            <label for="contrasenia-login" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="contrasenia-login" name="contrasenia" placeholder="Ingrese la contraseña" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="registro-tab-pane" role="tabpanel" aria-labelledby="registro-tab" tabindex="0">
+            <div class="card login-card">
+                <div class="card-header">
+                    <h3>Registro</h3>
+                </div>
+                <div class="card-body">
+                    <div id="error-message-registro" class="alert alert-danger d-none"></div>
+                    <div id="success-message-registro" class="alert alert-success d-none"></div>
+                    <form id="registro-form">
+                        <div class="mb-3">
+                            <label for="correo-registro" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="correo-registro" name="correo" placeholder="Ingrese el correo electrónico" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contrasenia-registro" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="contrasenia-registro" name="contrasenia" placeholder="Ingrese la contraseña" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nombre-registro" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre-registro" name="nombre" placeholder="Ingrese su nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apellidos-registro" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos-registro" name="apellidos" placeholder="Ingrese sus apellidos" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefono-registro" class="form-label">Telefono</label>
+                            <input type="text" class="form-control" id="telefono-registro" name="telefono" placeholder="Ingrese su teléfono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rol-registro" class="form-label">Rol propuesto</label>
+                            <select class="form-control" id="rol-registro" name="rol_propuesto" required>
+                                <option value="" disabled selected>Seleccione un rol</option>
+                                <option value="alumno">Alumno</option>
+                                <option value="profesor">Profesor</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-                <div class="card login-card">
-                    <!--Encabezado de la tarjeta-->
-                    <div class="card-header">
-                        <h3>Iniciar Sesión</h3>
-                    </div>
-                    <!--Crear el cuerpo de la tarjeta-->
-                    <div class="card-body">
-                        <div id="error-message" class="alert alert-danger d-none"></div>
-                        <!--Creamos el formulario del login-->
-                        <form id="login-form">
-                            <!--Creamos el campo para introducir el correo electronico-->
-                            <div class="mb-3">
-                                <label for="correo" class="form-label">Correo electronico</label>
-                                <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese el correo electronico" required>
-                            </div>
-                            <!--Campo para la contraseña-->
-                            <div class="mb-3">
-                                <label for="contrasenia" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="contrasenia" name="contrasenia" placeholder="Ingrese la contraseña" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                        </form>
-                    </div>
-                </div>
+    <!--pestaña del registro-->
+
+
                 <script>
                     //funcion para enviar una solicitud AJAX a la API
                     function hacerSolicitud(url, metodo, datos, callback){
@@ -90,8 +172,8 @@
                     function iniciarSesion(event){
                         event.preventDefault();
 
-                        const correo = document.getElementById("correo").value;
-                        const contrasenia = document.getElementById("contrasenia").value;
+                        const correo = document.getElementById("correo-login").value;
+                        const contrasenia = document.getElementById("contrasenia-login").value;
 
                         const usuario = {correo: correo, contrasenia: contrasenia};
 
@@ -118,9 +200,55 @@
                         })
                     }
 
+                    //función para manejar el registro
+                    function registrarAnonimo(event){
+                        event.preventDefault();
+                        const correo = document.getElementById("correo-registro").value;
+                        const contrasenia = document.getElementById("contrasenia-registro").value;
+                        const nombre = document.getElementById("nombre-registro").value;
+                        const apellidos = document.getElementById("apellidos-registro").value;
+                        const telefono = document.getElementById("telefono-registro").value;
+                        const rol_propuesto = document.getElementById("rol-registro").value;
+
+                        const anonimo = {correo, contrasenia, nombre, apellidos, telefono};
+
+                        hacerSolicitud('anonimo_api.php', 'POST', anonimo, function(status, response){
+                            console.log("Status (anonimo_api.php):", status);
+                            console.log("Response (anonimo_api.php):", response);
+                            const result = JSON.parse(response);
+                            console.log(result.id_anonimo);
+                            if(status === 200){
+                                //hacemos la solicitud para crear la solicitud en la base de datos
+                                const id_anonimo = parseInt(result.id_anonimo);
+                                const fecha_realización = new Date().toISOString().split('T')[0];
+                                const solicitud = {
+                                    id_anonimo: id_anonimo,
+                                    estado: "pendiente",
+                                    fecha_realización: fecha_realización,
+                                    rol_propuesto: rol_propuesto
+                                };
+
+                                hacerSolicitud('solicitud_api.php', 'POST', solicitud, function(statusSolicitud, responseSolicitud){
+                                    const resultSolicitud = JSON.parse(responseSolicitud);
+                                    if(statusSolicitud === 200){
+                                        document.getElementById("success-message-registro").innerText = resultSolicitud.message || 'Solicitud enviada con exito';
+                                        document.getElementById("registro-form").reset();
+                                    }else{
+                                        document.getElementById("error-message-registro").innerText = result.message || 'Error al enviar la solicitud';
+                                    }
+                                });
+                            }else{
+                                errorMessage.innerText = result.message || 'Error al crear el anonimo';
+                            }
+                        });
+                    }
+
+
                     //inicializar
                     document.getElementById("login-form").addEventListener("submit",iniciarSesion);
+                    document.getElementById("registro-form").addEventListener("submit",registrarAnonimo);
                 </script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
