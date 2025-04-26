@@ -1,6 +1,6 @@
 <?php
 
-class Solicitud{
+class Solicitud {
     private $conn;
     private $table_name = "solicitud";
 
@@ -10,35 +10,37 @@ class Solicitud{
     public $fecha_realizacion;
     public $rol_propuesto;
 
-    public function __construct($db){
+    public function __construct($db) {
         $this->conn = $db;
     }
 
-    public function crear(){
-        // creamos la consulta
+    public function crear() {
+        // Creamos la consulta
         $query = "INSERT INTO " . $this->table_name . " (id_anonimo, estado, fecha_realizacion, rol_propuesto) VALUES (:id_anonimo, :estado, :fecha_realizacion, :rol_propuesto)";
         $stmt = $this->conn->prepare($query);
 
-        //limpiamos los datos
+        // Limpiamos los datos
         $this->id_anonimo = htmlspecialchars(strip_tags($this->id_anonimo));
         $this->estado = htmlspecialchars(strip_tags($this->estado));
         $this->fecha_realizacion = htmlspecialchars(strip_tags($this->fecha_realizacion));
         $this->rol_propuesto = htmlspecialchars(strip_tags($this->rol_propuesto));
 
-        //pasamos los parametros a la consulta
-        $stmt->bindParam(':id_anonimo', $this->id_anonimo);
+        // Pasamos los parámetros a la consulta
+        $stmt->bindParam(':id_anonimo', $this->id_anonimo, PDO::PARAM_INT); // Especificamos que es un entero
         $stmt->bindParam(':estado', $this->estado);
         $stmt->bindParam(':fecha_realizacion', $this->fecha_realizacion);
         $stmt->bindParam(':rol_propuesto', $this->rol_propuesto);
 
-        //ejecutamos la consulta
-        if($stmt->execute()){
+        // Ejecutamos la consulta
+        if ($stmt->execute()) {
             return $this->conn->lastInsertId();
         }
-        return false;
 
+        // Si falla, lanzamos una excepción
+        $errorInfo = $stmt->errorInfo();
+        error_log("Error al crear la solicitud: " . $errorInfo[2]);
+        throw new Exception("Error al crear la solicitud");
     }
 }
-
 
 ?>

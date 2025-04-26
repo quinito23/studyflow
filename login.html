@@ -6,7 +6,7 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
-        body{
+        body {
             background-color: #2D2C55;
             min-height: 100vh;
             display: flex;
@@ -15,14 +15,14 @@
             flex-direction: column;
         }
 
-        .login-card{
+        .login-card {
             max-width: 400px;
             width: 100%;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .login-card .card-header{
+        .login-card .card-header {
             background-color: #0d6efd;
             color: white;
             text-align: center;
@@ -30,11 +30,11 @@
             border-top-left-radius: 15px;
         }
 
-        .login-card .card-body{
+        .login-card .card-body {
             padding: 2rem;
         }
 
-        .btn-primary{
+        .btn-primary {
             width: 100%;
             padding: 0.75rem;
             font-size: 1.1rem;
@@ -46,30 +46,26 @@
             border-bottom: 1px solid #0d6efd;
         }
 
-        .nav-tabs .nav-link{
+        .nav-tabs .nav-link {
             color: #f8f9fa;
             border: none;
             padding: 0.5rem 1rem;
             font-size: 1.1rem;
         }
 
-        .nav-tabs .nav-link.active{
+        .nav-tabs .nav-link.active {
             color: #0d6efd;
             border-bottom: 2px solid #0d6efd;
             background-color: transparent;
         }
 
-        .tab-content{
+        .tab-content {
             width: 100%;
             max-width: 400px;
         }
     </style>
 </head>
 <body>
-
-
-    <!--Haré uso de la clase tabs de boostraps para alternar entre el formulario de inicio de sesión y el de "registro" para mandar la solicitud-->
-
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane" aria-selected="true">Iniciar Sesión</button>
@@ -79,25 +75,18 @@
         </li>
     </ul>
 
-    <!--Pestaña del login-->
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel" aria-labelledby="login-tab" tabindex="0">
             <div class="card login-card">
-                <!--Encabezado de la tarjeta-->
                 <div class="card-header">
                     <h3>Iniciar Sesión</h3>
                 </div>
-                <!--Crear el cuerpo de la tarjeta-->
                 <div class="card-body">
-                    <div id="error-message" class="alert alert-danger d-none"></div>
-                    <!--Creamos el formulario del login-->
                     <form id="login-form">
-                        <!--Creamos el campo para introducir el correo electronico-->
                         <div class="mb-3">
                             <label for="correo-login" class="form-label">Correo electronico</label>
                             <input type="email" class="form-control" id="correo-login" name="correo" placeholder="Ingrese el correo electronico" required>
                         </div>
-                        <!--Campo para la contraseña-->
                         <div class="mb-3">
                             <label for="contrasenia-login" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="contrasenia-login" name="contrasenia" placeholder="Ingrese la contraseña" required>
@@ -113,8 +102,6 @@
                     <h3>Registro</h3>
                 </div>
                 <div class="card-body">
-                    <div id="error-message-registro" class="alert alert-danger d-none"></div>
-                    <div id="success-message-registro" class="alert alert-success d-none"></div>
                     <form id="registro-form">
                         <div class="mb-3">
                             <label for="correo-registro" class="form-label">Correo Electrónico</label>
@@ -151,104 +138,81 @@
         </div>
     </div>
 
-    <!--pestaña del registro-->
+    <script>
+        function hacerSolicitud(url, metodo, datos, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open(metodo, url, true);
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    callback(xhr.status, xhr.responseText);
+                }
+            };
+            xhr.send(datos ? JSON.stringify(datos) : null);
+        }
 
+        function iniciarSesion(event) {
+            event.preventDefault();
 
-                <script>
-                    //funcion para enviar una solicitud AJAX a la API
-                    function hacerSolicitud(url, metodo, datos, callback){
-                        const xhr = new XMLHttpRequest();
-                        xhr.open(metodo, url, true);
-                        xhr.setRequestHeader('Content-Type', 'application/json');
-                        xhr.onreadystatechange = function () {
-                            if(xhr.readyState == 4){
-                                callback(xhr.status, xhr.responseText);
-                            }
-                        };
-                        xhr.send(datos ? JSON.stringify(datos) : null);
+            const correo = document.getElementById("correo-login").value;
+            const contrasenia = document.getElementById("contrasenia-login").value;
+
+            const usuario = { correo: correo, contrasenia: contrasenia };
+
+            hacerSolicitud('login_api.php', 'POST', usuario, function(status, response) {
+                console.log("Status (login_api.php):", status);
+                console.log("Response (login_api.php):", response);
+                try {
+                    const result = JSON.parse(response);
+                    if (result.message === "Login exitoso") {
+                        if (result.rol === "administrador") {
+                            window.location.href = 'dashboard.php';
+                        } else if (result.rol === "alumno") {
+                            window.location.href = 'PanelAlumno.php';
+                        } else if (result.rol === "profesor") {
+                            window.location.href = 'PanelProfesor.php';
+                        }
+                    } else {
+                        console.error("Error en login:", result.message);
                     }
+                } catch (e) {
+                    console.error("Error al parsear la respuesta:", e.message);
+                }
+            });
+        }
 
-                    //funcion para manejar el login
-                    function iniciarSesion(event){
-                        event.preventDefault();
+        function registrarAnonimo(event) {
+            console.log("Función registrarAnonimo ejecutada");
+            event.preventDefault();
+            const correo = document.getElementById("correo-registro").value;
+            const contrasenia = document.getElementById("contrasenia-registro").value;
+            const nombre = document.getElementById("nombre-registro").value;
+            const apellidos = document.getElementById("apellidos-registro").value;
+            const telefono = document.getElementById("telefono-registro").value;
+            const rol_propuesto = document.getElementById("rol-registro").value;
 
-                        const correo = document.getElementById("correo-login").value;
-                        const contrasenia = document.getElementById("contrasenia-login").value;
+            const datosRegistro = { correo, contrasenia, nombre, apellidos, telefono, rol_propuesto };
+            console.log("Datos del registro:", datosRegistro);
 
-                        const usuario = {correo: correo, contrasenia: contrasenia};
-
-                        hacerSolicitud('login_api.php', 'POST', usuario, function(status, response){
-                            if(status == 200){
-                                const result = JSON.parse(response);
-                                if(result.message === "Login exitoso"){
-                                    if(result.rol === "administrador"){
-                                        window.location.href = 'dashboard.php';
-                                    }else if(result.rol === "alumno"){
-                                        window.location.href = 'PanelAlumno.php';
-                                    }else if(result.rol === "profesor"){
-                                        window.location.href = 'PanelProfesor.php';
-                                    }
-                                    
-                                }else{
-                                    document.getElementById("error-message").innerText = result.message;
-                                    document.getElementById("error-message").classList.remove('d-none');
-                                }
-                            }else{
-                                document.getElementById("error-message").innerText = 'Error al iniciar sesión, compruebe sus credenciales';
-                                document.getElementById("error-message").classList.remove('d-none');
-                            }
-                        })
+            hacerSolicitud('registro_api.php', 'POST', datosRegistro, function(status, response) {
+                console.log("Status (registro_api.php):", status);
+                console.log("Response (registro_api.php):", response);
+                try {
+                    const result = JSON.parse(response);
+                    if (result.message === "Registro completado exitosamente") {
+                        document.getElementById("registro-form").reset();
+                    } else {
+                        console.error("Error en registro:", result.message);
                     }
+                } catch (e) {
+                    console.error("Error al parsear la respuesta:", e.message);
+                }
+            });
+        }
 
-                    //función para manejar el registro
-                    function registrarAnonimo(event){
-                        event.preventDefault();
-                        const correo = document.getElementById("correo-registro").value;
-                        const contrasenia = document.getElementById("contrasenia-registro").value;
-                        const nombre = document.getElementById("nombre-registro").value;
-                        const apellidos = document.getElementById("apellidos-registro").value;
-                        const telefono = document.getElementById("telefono-registro").value;
-                        const rol_propuesto = document.getElementById("rol-registro").value;
-
-                        const anonimo = {correo, contrasenia, nombre, apellidos, telefono};
-
-                        hacerSolicitud('anonimo_api.php', 'POST', anonimo, function(status, response){
-                            console.log("Status (anonimo_api.php):", status);
-                            console.log("Response (anonimo_api.php):", response);
-                            const result = JSON.parse(response);
-                            console.log(result.id_anonimo);
-                            if(status === 200){
-                                //hacemos la solicitud para crear la solicitud en la base de datos
-                                const id_anonimo = parseInt(result.id_anonimo);
-                                const fecha_realización = new Date().toISOString().split('T')[0];
-                                const solicitud = {
-                                    id_anonimo: id_anonimo,
-                                    estado: "pendiente",
-                                    fecha_realización: fecha_realización,
-                                    rol_propuesto: rol_propuesto
-                                };
-
-                                hacerSolicitud('solicitud_api.php', 'POST', solicitud, function(statusSolicitud, responseSolicitud){
-                                    const resultSolicitud = JSON.parse(responseSolicitud);
-                                    if(statusSolicitud === 200){
-                                        document.getElementById("success-message-registro").innerText = resultSolicitud.message || 'Solicitud enviada con exito';
-                                        document.getElementById("registro-form").reset();
-                                    }else{
-                                        document.getElementById("error-message-registro").innerText = result.message || 'Error al enviar la solicitud';
-                                    }
-                                });
-                            }else{
-                                errorMessage.innerText = result.message || 'Error al crear el anonimo';
-                            }
-                        });
-                    }
-
-
-                    //inicializar
-                    document.getElementById("login-form").addEventListener("submit",iniciarSesion);
-                    document.getElementById("registro-form").addEventListener("submit",registrarAnonimo);
-                </script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+        document.getElementById("login-form").addEventListener("submit", iniciarSesion);
+        document.getElementById("registro-form").addEventListener("submit", registrarAnonimo);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
