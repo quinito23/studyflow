@@ -18,6 +18,7 @@ class Usuario{
         $this->conn = $db;
     }
 
+
     public function verificarLogin(){
         $query = "SELECT * FROM " . $this->table_name . " WHERE correo = ? LIMIT 0,1";
 
