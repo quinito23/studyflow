@@ -21,45 +21,17 @@ include_once 'usuario.php';
 
         public function crear($tutores){
 
-            //insertamos primero los datos en la tabla usuario
-            $query = "INSERT INTO usuario (nombre, apellidos, telefono, correo, contrasenia, fecha_nacimiento, rol, DNI) VALUE (:nombre, :apellidos, :telefono, :correo, :contrasenia, :fecha_nacimiento, :rol, :DNI)";
-            $stmt = $this->conn->prepare($query);
-
-            //hacemos la limpieza de datos
-            $this->nombre = htmlspecialchars(strip_tags($this->nombre));
-            $this->apellidos = htmlspecialchars(strip_tags($this->apellidos));
-            $this->telefono = htmlspecialchars(strip_tags($this->telefono));
-            $this->correo = htmlspecialchars(strip_tags($this->correo));
-            $this->contrasenia = htmlspecialchars(strip_tags($this->contrasenia));
-            $this->rol = htmlspecialchars(strip_tags($this->rol));
-            $this->DNI = htmlspecialchars(strip_tags($this->DNI));
-            $fecha_nacimiento = $this->fecha_nacimiento ?: null;
-
-            //le pasamos los parametros a la consulta
-            $stmt->bindParam(':nombre', $this->nombre);
-            $stmt->bindParam(':apellidos', $this->apellidos);
-            $stmt->bindParam(':telefono', $this->telefono);
-            $stmt->bindParam(':correo', $this->correo);
-            $stmt->bindParam(':contrasenia' ,$this->contrasenia);
-            $stmt->bindParam(':fecha_nacimiento', $fecha_nacimiento);
-            $stmt->bindParam(':rol', $this->rol);
-            $stmt->bindParam(':DNI', $this->DNI);
-
-            if($stmt->execute()){
-                $id_usuario = $this->conn->lastInsertId();
-                foreach ($tutores as $id_tutor){
-                    $query = "INSERT INTO alumno_tutor (id_usuario,id_tutor) VALUES (:id_usuario, :id_tutor)";
-                    $stmt = $this->conn->prepare($query);
-                    $stmt->bindParam(':id_usuario', $id_usuario);
-                    $stmt->bindParam(':id_tutor', $id_tutor);
-                    $stmt->execute();
+            $id_usuario = $this->conn->lastInsertId();
+            foreach ($tutores as $id_tutor){
+                $query = "INSERT INTO alumno_tutor (id_usuario,id_tutor) VALUES (:id_usuario, :id_tutor)";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':id_usuario', $id_usuario);
+                $stmt->bindParam(':id_tutor', $id_tutor);
+                if($stmt->execute()){
+                    return $id_usuario;
                 }
-                return $id_usuario;
+                return false;
             }
-            return false;
-
-
-
         }
 
         public function leer_todos(){
