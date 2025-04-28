@@ -91,16 +91,16 @@ if (!isset($_SESSION['correo'])) {
 <body>
     <div class="main-content">
         <div class="cards-container">
-            <div class="row">
-                <div class="col-sm-4 mb-3 mb-sm-0">
+            
+                
                     <div class="card">
                         <div class="card-body">
                             <i class="fa-solid fa-graduation-cap" style="color: #141414;"></i>
                             <h5 class="card-title">Alumnos</h5>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-4 mb-3 mb-sm-0">
+                
+                
                     <a href="profesor.html" class="card-link">
                         <div class="card">
                             <div class="card-body">
@@ -109,9 +109,30 @@ if (!isset($_SESSION['correo'])) {
                             </div>
                     </div>
                     </a>
+                
+                
+                    <a href="tutor.html" class="card-link">
+                        <div class="card">
+                            <div class="card-body">
+                                <i class="fa-solid fa-user-tie" style="color: #0f0f0f;"></i>
+                                <h5 class="card-title">Tutores</h5>
+                            </div>
+                    </div>
+                    </a>
+                
+                
+                    <a href="solicitud.html" class="card-link">
+                        <div class="card">
+                            <div class="card-body">
+                                <i class="fa-solid fa-user-tie" style="color: #0f0f0f;"></i>
+                                <h5 class="card-title">Solicitudes</h5>
+                            </div>
+                    </div>
+                    </a>
                     
-                </div>
-            </div>
+                
+
+            
         </div>
     </div>
     

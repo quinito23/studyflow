@@ -374,7 +374,7 @@
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="profesores-lista">
+                <tbody  class="table-group-divider" id="profesores-lista">
                     <!--Aquí serán listados los profesores-->
                 </tbody>
             </table>
@@ -496,9 +496,13 @@
                             <td>${profesor.DNI}</td>
                             <td>${profesor.telefono}</td>
                             <td>
-                                <button onclick = "mostrarInfo(${profesor.id_usuario})">Info</button>
-                                <button onclick = "editarProfesor(${profesor.id_usuario})">Editar</button>
-                                <button onclick = "eliminarProfesor(${profesor.id_usuario})">
+                                <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${profesor.id_usuario})">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick = "editarProfesor(${profesor.id_usuario})">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick = "eliminarProfesor(${profesor.id_usuario})">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </td>

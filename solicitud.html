@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #112a4a;
+            color: #f8f9fa;
+            font-size: 16px;
+            margin: 0px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #alumno-form {
+            border: 2px solid #007bff;
+            /* Borde azul */
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: #0d1f38;
+            /* Fondo más oscuro */
+            margin-bottom: 2rem;
+        }
+
+        /*Header*/
+        .header {
+            background-color: #0d1f38;
+            padding: 1rem 2rem;
+            color: white;
+            border-bottom: 1px solid #ffffff33;
+            display: flex;
+            flex-wrap: wrap;
+            /*Para permitir que los elementos se apilen si no caben*/
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .d-flex {
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            /*Hacemos que el tamaño sea dinamico*/
+            margin-left: clamp(1rem, 3vw, 2rem);
+        }
+
+        .navbar-toggler {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            /*Hacemos que el tamaño sea dinamico*/
+            margin-right: 1rem;
+            z-index: 1000;
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0.5rem 0;
+            margin-bottom: 0;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            /*Hacemos que el tamaño sea dinamico*/
+        }
+
+        /*Para cambiar el color del elemento que separa los elementos del breadcrumb ">"*/
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: #007bff;
+        }
+
+        .breadcrumb-item a {
+            color: #f8f9fa;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item .active {
+            color: #d3d6db;
+        }
+
+        /*sidebar*/
+
+        .offcanvas {
+            background-color: #0d1f38;
+            color: white;
+            width: 20vw !important;
+            min-width: 200px !important;
+            /*ancho minimo para que no se corte cuando usamos un movil*/
+        }
+
+        .offcanvas-header {
+            border-bottom: 1px solid #ffffff33;
+        }
+
+        .offcanvas-title {
+            color: white;
+            font-size: clamp(1rem, 3vw, 1.25rem);
+        }
+
+        .offcanvas-body .nav-link {
+            color: #f8f9fa;
+            padding: 0.75rem, 1rem;
+            display: block;
+            text-decoration: none;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            /*Hacemos que el tamaño sea dinamico*/
+        }
+
+        .offcanvas-body .nav-link.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /*Contenido principal*/
+        .main-content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+        }
+
+        .table thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table {
+            margin-top: 2rem;
+            background-color: #e9ecef;
+            color: #333;
+            font-size: clamp(0.7rem, 1.5vw, 1rem);
+        }
+
+        .table tbody tr {
+            background-color: #d3d6db;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /*Footer*/
+        .footer {
+            background-color: #0d1f38;
+            color: #f8f9fa;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #ffffff33;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+        }
+    </style>
+</head>
+<body>
+
+    <!--Header-->
+    <header class="header">
+        <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
+        <div class="d-flex align-items-center navbar-dark">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
+                aria-label="Toggle Navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="mx-auto">StudyFlow</h1>
+        </div>
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Solicitudes</li>
+            </ol>
+        </nav>
+    </header>
+
+    <!--Barra lateral dedsplegable con offcanvas de bootsraps-->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="profesor.html">Profesores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="alumno.html">Alumnos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tutor.html">Tutores</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!--Contenido principal-->
+    <main class="main-content">
+        <h2 class="text-center">Solicitudes</h2>
+
+        <div id="notification" class="notification"></div>
+        <!--Creamos la tabla que muestra las solicitudes pendientes-->
+        <h3>Solicitudes Pendientes</h3>
+        <div class="table-responsive">
+            <table class="table" id="tabla-solicitudes-pendientes">
+                <thead>
+                    <tr class="table-primary">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellidos</th>
+                        <th scope="col">Correo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha de Realización</th>
+                        <th scope="col">Rol Propuesto</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="solicitudes-pendientes-lista">
+                    <!--Aquí serán listados las solicitudes pendientes-->
+                </tbody>
+            </table>
+        </div>
+
+        <!--Tabla para ver las solicitudes aceptadas-->
+        <h3>Solicitudes Aceptadas</h3>
+        <div class="table-responsive">
+            <table class="table" id="tabla-solicitudes-aceptadas">
+                <thead>
+                    <tr class="table-primary">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apelidos</th>
+                        <th scope="col">Correo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha de Realización</th>
+                        <th scope="col">Rol Propuesto</th>
+                    </tr>
+                </thead>
+                <tbody id="solicitudes-aceptadas-lista">
+                    <!--Aquí serán listadas las solicitudes aceptadas-->
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Solicitudes Rechazadas</h3>
+        <div class="table-responsive">
+            <table class="table" id="tabla-solicitudes-rechazadas">
+                <thead>
+                    <tr class="table-primary">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellidos</th>
+                        <th scope="col">Correo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha de Realización</th>
+                        <th scope="col">Rol Propuesto</th>
+
+                    </tr>
+                </thead>
+                <tbody id="solicitudes-rechazadas-lista">
+                    <!--Aquí serán listadas las solicitudes rechazadas-->
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+    <script>
+
+        // Cambio: Obtengo el elemento de notificación para mostrar mensajes
+        const notification = document.getElementById('notification');
+
+        // Cambio: Añadí una función para mostrar notificaciones de éxito o error
+        function mostrarNotificacion(mensaje, tipo) {
+            notification.textContent = mensaje;
+            notification.className = `notification ${tipo}`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        //Función para hacer soliictudes AJAX
+        function hacerSolicitud(url, metodo, datos, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open(metodo, url, true);
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    callback(xhr.status, xhr.responseText);
+                }
+            };
+            xhr.send(datos ? JSON.stringify(datos) : null);
+        }
+
+        // Funcion para cargar las solicitudes al iniciar la página
+        function cargarSolicitudes(){
+            hacerSolicitud('solicitud_api.php', 'GET', null, function(status, response){
+                try{
+                    const solicitudes = JSON.parse(response);
+                    const listaPendientes = document.getElementById("solicitudes-pendientes-lista");
+                    const listaAceptadas = document.getElementById("solicitudes-aceptadas-lista");
+                    const listaRechazadas = document.getElementById("solicitudes-rechazadas-lista");
+
+                    //limpiamos las tablas
+                    listaPendientes.innerHTML = '';
+                    listaAceptadas.innerHTML = '';
+                    listaRechazadas.innerHTML = '';
+
+                    // Comenzamos creando las filas que vamos a introducir en las tablas
+                    solicitudes.forEach(solicitud => {
+                        const row = `
+                        <tr>
+                            <td>${solicitud.nombre}</td>
+                            <td>${solicitud.apellidos}</td>
+                            <td>${solicitud.correo}</td>
+                            <td>${solicitud.estado}</td>
+                            <td>${solicitud.fecha_realizacion}</td>
+                            <td>${solicitud.rol_propuesto}</td>
+                            ${solicitud.estado === 'pendiente' ? `
+                                <td class="action-buttons">
+                                    <button class="btn btn-success btn-sm" onclick="aceptarSolicitud(${solicitud.id_solicitud}, ${solicitud.id_anonimo}, '${solicitud.rol_propuesto}')">Aceptar</button>
+                                    <button class = "btn btn-danger btn-sm" onclick="rechazarSolicitud(${solicitud.id_solicitud})">Rechazar</button>
+                                </td>    
+                                ` : ''}
+                            </tr>
+                            `;
+
+                            if (solicitud.estado === 'pendiente'){
+                                listaPendientes.innerHTML += row;
+                            } else if (solicitud.estado === 'aceptado'){
+                                listaAceptadas.innerHTML += row;
+                            } else if(solicitud.estado === 'rechazado'){
+                                listaRechazadas.innerHTML += row;
+                            }
+                    });
+                }catch(e){
+                    console.error("Error al parsear la respuesta:", e.message);
+                    // Cambio: Mostrar notificación si falla la carga de solicitudes
+                    mostrarNotificacion("Error al cargar las solicitudes", "error");
+                }
+            });
+        }
+
+        // funcion para aceptar una solicitud
+        function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto){
+            const datos = {id_solicitud : idSolicitud, id_anonimo : idAnonimo, rol_propuesto : rolPropuesto, accion: 'aceptar'};
+            hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
+                try{
+                    const result = JSON.parse(response);
+                    if(result.message === "Solicitud aceptada exitosamente"){
+                        mostrarNotificacion("Solicitud aceptada con éxito", "success");
+                        cargarSolicitudes(); // recargamos las tablas para mostrar los cambios
+                        
+                    }else{
+                        mostrarNotificacion(result.message, "error");
+                    }
+                }catch(e){
+                    console.error("Error al parsear la respuesta:", e.message);
+                    mostrarNotificacion("Error al aceptar la solicitud: " + e.message, "error");
+                }
+            });
+        }
+
+        //funcion para rechazar una solicitud
+        function rechazarSolicitud(idSolicitud){
+            const datos = {id_solicitud : idSolicitud, accion: 'rechazar'};
+            hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
+                try{
+                    const result = JSON.parse(response);
+                    if(result.message === "Solicitud rechazada exitosamente"){
+                        cargarSolicitudes(); // recargamos las tablas para mostrar los cambios
+                    }else{
+                        return false;
+                    }
+                }catch(e){
+                    console.error("Error al parsear la respuesta:", e.message);
+                }
+            });
+        }
+
+        //inicializamos para que al abrir la página se carguen las solicitudes en las tablas
+        window.onload = cargarSolicitudes;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+</body>
+</html>

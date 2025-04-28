@@ -484,15 +484,17 @@
                             <td>${alumno.DNI}</td>
                             <td>${alumno.telefono}</td>
                             <td>
-                                <button onclick = "mostrarInfo(${alumno.id_usuario})">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                                <button onclick = "editarAlumno(${alumno.id_usuario})">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button onclick = "eliminarAlumno(${alumno.id_usuario})">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
+                                <div class="d-grip gap-2 d-md-block">
+                                    <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${alumno.id_usuario})">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-success btn-sm" onclick = "editarAlumno(${alumno.id_usuario})">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick = "eliminarAlumno(${alumno.id_usuario})">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
                             </td>
                         `;
                         listaAlumnos.appendChild(row);

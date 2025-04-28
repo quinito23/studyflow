@@ -428,9 +428,15 @@
                             <td>${tutor.apellidos}</td>
                             <td>${tutor.telefono}</td>
                             <td>
-                                <button onclick = "mostrarInfo(${tutor.id_tutor})">Info</button>
-                                <button onclick = "editarTutor(${tutor.id_tutor})">Editar</button>
-                                <button onclick = "eliminarTutor(${tutor.id_tutor})">Eliminar</button>
+                                <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${tutor.id_tutor})">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick = "editarTutor(${tutor.id_tutor})">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick = "eliminarTutor(${tutor.id_tutor})">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
                             </td>
                         `;
                         listaTutores.appendChild(row);

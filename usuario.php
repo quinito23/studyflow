@@ -20,6 +20,7 @@ class Usuario
         $this->conn = $db;
     }
 
+
     public function crearUsuario()
     {
         //antes de crear el usuario , vamos a verificar que el correo no exista ya en la base de datos
