@@ -8,6 +8,7 @@ class Grupo
     public $id_grupo;
     public $nombre;
     public $capacidad_maxima;
+    public $id_asignatura;
 
     public function __construct($db)
     {
@@ -17,16 +18,18 @@ class Grupo
     //metodo para crear un nuevo grupo
     public function crear()
     {
-        $query = "INSERT INTO " . $this->table_name . " (nombre, capacidad_maxima) VALUES (:nombre, :capacidad_maxima)";
+        $query = "INSERT INTO " . $this->table_name . " (nombre, capacidad_maxima, id_asignatura) VALUES (:nombre, :capacidad_maxima, :id_asignatura)";
         $stmt = $this->conn->prepare($query);
 
         //hacemos la limpieza de datos
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->capacidad_maxima = (int) $this->capacidad_maxima;
+        $this->id_asignatura = (int) $this->id_asignatura;
 
         //pasamos los paarametros a la consulta
         $stmt->bindParam(':nombre', $this->nombre);
         $stmt->bindParam(':capacidad_maxima', $this->capacidad_maxima);
+        $stmt->bindParam(':id_asignatura', $this->id_asignatura);
 
         //ejecutamos la conssulta
         if ($stmt->execute()) {
@@ -39,7 +42,7 @@ class Grupo
     //metodo para leer todos los grupos y mostrarlos en la tabla
     public function leer_todos()
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ad.id_grupo GROUP BY g.id_grupo ORDER BY g.nombre ASC";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ad.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura GROUP BY g.id_grupo ORDER BY g.nombre ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
@@ -49,6 +52,8 @@ class Grupo
                 "id_grupo" => $row['id_grupo'],
                 "nombre" => $row['nombre'],
                 "capacidad_maxima" => $row['capacidad_maxima'],
+                "id_asignatura" => $row['id_asignatura'],
+                "nombre_asignatura" => $row['nombre_asignatura'],
                 "numero_alumnos" => $row['numero_alumnos']
             );
         }
@@ -58,7 +63,7 @@ class Grupo
     //leer un grupo específico
     public function leer()
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo WHERE g.id_grupo = :id_grupo GROUP BY g.id_grupo LIMIT 0,1";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE g.id_grupo = :id_grupo GROUP BY g.id_grupo LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
 
         //limpieza de datos
@@ -74,6 +79,8 @@ class Grupo
             $this->id_grupo = $row['id_grupo'];
             $this->nombre = $row['nombre'];
             $this->capacidad_maxima = $row['capacidad_maxima'];
+            $this->id_asignatura = $row['id_asignatura'];
+            $this->nombre_asignatura = $row['nombre_asignatura'];
             $this->numero_alumnos = $row['numero_alumnos'];
             return true;
         }
@@ -83,17 +90,19 @@ class Grupo
     //metodo para actualizar un grupo
     public function actualizar()
     {
-        $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, capacidad_maxima = :capacidad_maxima WHERE id_grupo = :id_grupo";
+        $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, capacidad_maxima = :capacidad_maxima, id_asignatura = :id_asignatura WHERE id_grupo = :id_grupo";
         $stmt = $this->conn->prepare($query);
 
         //limpieza de parametros
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->capacidad_maxima = (int) $this->capacidad_maxima;
+        $this->id_asignatura = (int) $this->id_asignatura;
         $this->id_grupo = htmlspecialchars(strip_tags($this->id_grupo));
 
         //pasamos los paarametros a la consulta
         $stmt->bindParam(':nombre', $this->nombre);
         $stmt->bindParam(':capacidad_maxima', $this->capacidad_maxima);
+        $stmt->bindParam(':id_asignatura', $this->id_asignatura);
         $stmt->bindParam(':id_grupo', $this->id_grupo);
 
         return $stmt->execute();

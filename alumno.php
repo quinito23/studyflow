@@ -55,7 +55,7 @@ class Alumno extends Usuario
         //insertamos la relacion del alumno con los grupos en la tabla alumno_grupo
         foreach ($grupos as $id_grupo) {
             // creamos una consulta para verificar la capacidad del grupo y si ha llegado a su limite
-            $query = "SELECT COOUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN group g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
+            $query = "SELECT COUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN group g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
             $stmt = $this->conn->prepare($query);
             //le pasamos el parametro a la consulta
             $stmt->bindParam('id_grupo', $id_grupo);
@@ -143,7 +143,7 @@ class Alumno extends Usuario
             $this->fecha_nacimiento = $row['fecha_nacimiento'];
             $this->rol = $row['rol'];
             $this->tutores = $this->obtenerTutores($this->id_usuario);
-            $this->grupos = $this->obtenerTutores($this->id_usuario);
+            $this->grupos = $this->obtenerGrupos($this->id_usuario);
             return true;
         }
         return false;
@@ -168,7 +168,7 @@ class Alumno extends Usuario
     //metodo para obtener los grupos a los que pertenece el alumno
     public function obtenerGrupos($id_usuario)
     {
-        $query = "SELECT g.id_usuario, g.nombre, g.capacidad_maxima, COUNT(ag2.id_usuario) as numero_alumnos FROM grupo g INNER JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN alumno_grupo ag2 ON g.id_grupo = ag2.id_grupo WHERE ag.id_usuario = :id_usuario GROUP BY g.id_grupo";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, COUNT(ag2.id_usuario) as numero_alumnos FROM grupo g INNER JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN alumno_grupo ag2 ON g.id_grupo = ag2.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE ag.id_usuario = :id_usuario GROUP BY g.id_grupo";
         $stmt = $this->conn->prepare($query);
         //le pasamos los datos a la consulta
         $stmt->bindParam(':id_usuario', $id_usuario);
@@ -181,6 +181,8 @@ class Alumno extends Usuario
                 "id_grupo" => $row['id_grupo'],
                 "nombre" => $row['nombre'],
                 "capacidad_maxima" => $row['capacidad_maxima'],
+                "id_asignatura" => $row['id_asignatura'],
+                "nombre_asignatura" => $row['nombre_asignatura'],
                 "numero_alumnos" => $row['numero_alumnos']
             );
         }
@@ -249,9 +251,9 @@ class Alumno extends Usuario
                 $query = "SELECT COUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN grupo g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
                 $stmt = $this->conn->prepare($query);
                 //le pasamos los parametros a la consulta
-                $stmt->bindParam(':id_usuario', $this->id_usuario);
+                $stmt->bindParam(':id_grupo', $id_grupo);
                 //ejecutamos la consulta
-                $stmt->exeute();
+                $stmt->execute();
 
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
