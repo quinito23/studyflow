@@ -10,6 +10,7 @@ class Alumno extends Usuario
     //creamos la propiedad tutores para almacenar los tutores asignados al alumno
     // No corresponde a una columna en la tabla alumno sino que es simplemente un contenedor de los tutores para hacer su manejo más sencillo
     public $tutores;
+    public $grupos;
 
     public function __construct($db)
     {
@@ -21,14 +22,25 @@ class Alumno extends Usuario
 
     // metodo para crear un nuevo profesor
 
-    public function crear($tutores)
+    public function crear($tutores, $grupos = [])
     {
+        //insertar en la tabla alumno
+        $query = "INSERT INTO " . $this->table_name . " (id_usuario) VALUES (:id_usuario)";
+        $stmt = $this->conn->prepare($query);
 
         $id_usuario = $this->id_usuario;
         if (empty($id_usuario)) {
             throw new Exception("Error en Alumno::crear(): id_usuario está vacío");
-
         }
+
+        $stmt->bindParam(":id_usuario", $id_usuario);
+
+        if (!$stmt->execute()) {
+            return false;
+        }
+
+
+
         foreach ($tutores as $id_tutor) {
             $query = "INSERT INTO alumno_tutor (id_usuario,id_tutor) VALUES (:id_usuario, :id_tutor)";
             $stmt = $this->conn->prepare($query);
@@ -39,13 +51,42 @@ class Alumno extends Usuario
             }
 
         }
+
+        //insertamos la relacion del alumno con los grupos en la tabla alumno_grupo
+        foreach ($grupos as $id_grupo) {
+            // creamos una consulta para verificar la capacidad del grupo y si ha llegado a su limite
+            $query = "SELECT COOUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN group g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
+            $stmt = $this->conn->prepare($query);
+            //le pasamos el parametro a la consulta
+            $stmt->bindParam('id_grupo', $id_grupo);
+            //ejecutamos la consulta
+            $stmt->execute();
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($row && $row['numero_alumnos'] >= $row['capacidad_maxima']) {
+                error_log("No se puede asignar el alumno al grupo por que excede su capacidad maxima");
+                continue;
+            }
+
+            // ahora si insertamos el alumno en el grupo
+            $query = "INSERT INTO alumno_grupo (id_usuario, id_grupo) VALUES (:id_usuario, :id_grupo)";
+            $stmt = $this->conn->prepare($query);
+            //pasamos los parametros a la consulta
+            $stmt->bindParam(':id_usuario', $id_usuario);
+            $stmt->bindParam(':id_grupo', $id_grupo);
+            //ejecutamos la consulta
+            $stmt->execute();
+
+        }
         return $id_usuario;
     }
+
 
     public function leer_todos()
     {
         //aqui deberiamos hacer un join con otra tabla prbabkemente , pero de momento cogeremos solo los datos del usuario
-        $query = "SELECT id_usuario, nombre, apellidos, DNI, telefono, correo, contrasenia, fecha_nacimiento, rol FROM usuario WHERE rol = 'alumno' ORDER BY id_usuario DESC";
+        $query = "SELECT u.id_usuario, u.nombre, u.apellidos, u.DNI, u.telefono, u.correo, u.contrasenia, u.fecha_nacimiento, u.rol FROM usuario u INNER JOIN " . $this->table_name . " a ON u.id_usuario = a.id_usuario WHERE u.rol = 'alumno' ORDER BY u.id_usuario DESC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -57,6 +98,7 @@ class Alumno extends Usuario
             $id_usuario = $row['id_usuario'];
             //obtenemos los tutores asignados
             $tutores = $this->obtenerTutores($id_usuario);
+            $grupos = $this->obtenerGrupos($id_usuario);
             $alumno = array(
                 "id_usuario" => $row['id_usuario'],
                 "nombre" => $row['nombre'],
@@ -65,7 +107,8 @@ class Alumno extends Usuario
                 "telefono" => $row['telefono'],
                 "correo" => $row['correo'],
                 "contrasenia" => $row['contrasenia'],
-                "tutores" => $tutores
+                "tutores" => $tutores,
+                "grupos" => $grupos
             );
             array_push($alumnos, $alumno);
         }
@@ -78,7 +121,7 @@ class Alumno extends Usuario
     public function leer()
     {
 
-        $query = "SELECT id_usuario, nombre, apellidos, DNI, telefono, correo, contrasenia, fecha_nacimiento, rol FROM usuario WHERE id_usuario = :id_usuario AND rol = 'alumno' LIMIT 0,1";
+        $query = "SELECT u.id_usuario, u.nombre, u.apellidos, u.DNI, u.telefono, u.correo, u.contrasenia, u.fecha_nacimiento, u.rol FROM usuario u INNER JOIN " . $this->table_name . " a ON u.id_usuario = a.id_usuario WHERE u.id_usuario = :id_usuario AND u.rol = 'alumno' LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
 
         //limpieza de datos
@@ -100,6 +143,7 @@ class Alumno extends Usuario
             $this->fecha_nacimiento = $row['fecha_nacimiento'];
             $this->rol = $row['rol'];
             $this->tutores = $this->obtenerTutores($this->id_usuario);
+            $this->grupos = $this->obtenerTutores($this->id_usuario);
             return true;
         }
         return false;
@@ -121,9 +165,31 @@ class Alumno extends Usuario
         return $tutores;
     }
 
+    //metodo para obtener los grupos a los que pertenece el alumno
+    public function obtenerGrupos($id_usuario)
+    {
+        $query = "SELECT g.id_usuario, g.nombre, g.capacidad_maxima, COUNT(ag2.id_usuario) as numero_alumnos FROM grupo g INNER JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN alumno_grupo ag2 ON g.id_grupo = ag2.id_grupo WHERE ag.id_usuario = :id_usuario GROUP BY g.id_grupo";
+        $stmt = $this->conn->prepare($query);
+        //le pasamos los datos a la consulta
+        $stmt->bindParam(':id_usuario', $id_usuario);
+        //ejecutaomos la consulta
+        $stmt->execute();
+
+        $grupos = array();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $grupos[] = array(
+                "id_grupo" => $row['id_grupo'],
+                "nombre" => $row['nombre'],
+                "capacidad_maxima" => $row['capacidad_maxima'],
+                "numero_alumnos" => $row['numero_alumnos']
+            );
+        }
+        return $grupos;
+    }
+
     //funcion para actualizar un alumno
 
-    public function actualizar($tutores)
+    public function actualizar($tutores, $grupos = [])
     {
 
         //primero actualizamos los datos de la tabla usuario
@@ -171,12 +237,45 @@ class Alumno extends Usuario
                 $stmt->execute();
             }
 
+            //Eliminamos las relaciones exitentes entre grupo y alumno
+            $query = "DELETE FROM alumno_grupo WHERE id_usuario = :id_usuario";
+            $stmt = $this->conn->prepare($query);
+            //le pasamos los parametros
+            $stmt->bindParam('id_usuario', $this->id_usuario);
+            $stmt->execute();
+
+            //hacemos lo mismo para grupos
+            foreach ($grupos as $id_grupo) {
+                $query = "SELECT COUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN grupo g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
+                $stmt = $this->conn->prepare($query);
+                //le pasamos los parametros a la consulta
+                $stmt->bindParam(':id_usuario', $this->id_usuario);
+                //ejecutamos la consulta
+                $stmt->exeute();
+
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($row && $row['numero_alumnos'] >= $row['capacidad_maxima']) {
+                    error_log("No se puede asignar el alumno al grupo por exceder el maximo permitido");
+                    continue;
+                }
+
+                // lo insertamos
+                $query = "INSERT INTO alumno_grupo (id_usuario, id_grupo) VALUES (:id_usuario, :id_grupo) ";
+                $stmt = $this->conn->prepare($query);
+                //pasamos loa parametros a la consulta
+                $stmt->bindParam(':id_usuario', $this->id_usuario);
+                $stmt->bindParam(':id_grupo', $id_grupo);
+                $stmt->execute();
+
+
+
+            }
             return true;
         }
         return false;
-
-
     }
+
     public function eliminar()
     {
         // como en este caso hemos introducido la sentencia ON DELETE CASCADE en el codigo sql , no hace falta hacer una consulta para cada tabla

@@ -1,0 +1,142 @@
+<?php
+
+class Grupo
+{
+    private $conn;
+    private $table_name = "grupo";
+
+    public $id_grupo;
+    public $nombre;
+    public $capacidad_maxima;
+
+    public function __construct($db)
+    {
+        $this->conn = $db;
+    }
+
+    //metodo para crear un nuevo grupo
+    public function crear()
+    {
+        $query = "INSERT INTO " . $this->table_name . " (nombre, capacidad_maxima) VALUES (:nombre, :capacidad_maxima)";
+        $stmt = $this->conn->prepare($query);
+
+        //hacemos la limpieza de datos
+        $this->nombre = htmlspecialchars(strip_tags($this->nombre));
+        $this->capacidad_maxima = (int) $this->capacidad_maxima;
+
+        //pasamos los paarametros a la consulta
+        $stmt->bindParam(':nombre', $this->nombre);
+        $stmt->bindParam(':capacidad_maxima', $this->capacidad_maxima);
+
+        //ejecutamos la conssulta
+        if ($stmt->execute()) {
+            $this->id_grupo = $this->conn->lastInsertId();
+            return true;
+        }
+        return false;
+    }
+
+    //metodo para leer todos los grupos y mostrarlos en la tabla
+    public function leer_todos()
+    {
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ad.id_grupo GROUP BY g.id_grupo ORDER BY g.nombre ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        //gestionamos los grupos
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $grupos[] = array(
+                "id_grupo" => $row['id_grupo'],
+                "nombre" => $row['nombre'],
+                "capacidad_maxima" => $row['capacidad_maxima'],
+                "numero_alumnos" => $row['numero_alumnos']
+            );
+        }
+        return $grupos;
+    }
+
+    //leer un grupo específico
+    public function leer()
+    {
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo WHERE g.id_grupo = :id_grupo GROUP BY g.id_grupo LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+
+        //limpieza de datos
+        $this->id_grupo = htmlspecialchars(strip_tags($this->id_grupo));
+
+        //le pasamos el parametro a la consulta
+        $stmt->bindParam(":id_grupo", $this->id_grupo);
+        //ejecutamos la consulta
+        $stmt->execute();
+
+        $row = $stmt->fecth(PDO::FETCH_ASSOC);
+        if ($row) {
+            $this->id_grupo = $row['id_grupo'];
+            $this->nombre = $row['nombre'];
+            $this->capacidad_maxima = $row['capacidad_maxima'];
+            $this->numero_alumnos = $row['numero_alumnos'];
+            return true;
+        }
+        return false;
+    }
+
+    //metodo para actualizar un grupo
+    public function actualizar()
+    {
+        $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, capacidad_maxima = :capacidad_maxima WHERE id_grupo = :id_grupo";
+        $stmt = $this->conn->prepare($query);
+
+        //limpieza de parametros
+        $this->nombre = htmlspecialchars(strip_tags($this->nombre));
+        $this->capacidad_maxima = (int) $this->capacidad_maxima;
+        $this->id_grupo = htmlspecialchars(strip_tags($this->id_grupo));
+
+        //pasamos los paarametros a la consulta
+        $stmt->bindParam(':nombre', $this->nombre);
+        $stmt->bindParam(':capacidad_maxima', $this->capacidad_maxima);
+        $stmt->bindParam(':id_grupo', $this->id_grupo);
+
+        return $stmt->execute();
+    }
+
+    //metodo para eliminar un grupo
+    public function eliminar()
+    {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id_grupo = :id_grupo";
+        $stmt = $this->conn->prepare($query);
+
+        //limpieza de datos
+        $this->id_grupo = htmlspecialchars(strip_tags($this->id_grupo));
+        // le pasamos los parametros a la consulta
+        $stmt->bindParam(':id_grupo', $this->id_grupo);
+
+        return $stmt->execute();
+    }
+
+    //metodo para obtener los alumnos de un grupo
+    public function obtenerAlumnos()
+    {
+        $query = "SELECT u.id_usuario, u.nombre, u.apellidos, u.correo FROM usuario u INNER JOIN alumno_grupo ag ON u.id_usuario = ag.id_usuario WHERE ag.id_grupo = :id_grupo AND u.rol = 'alumno'";
+        $stmt = $this->conn->prepare($query);
+
+        //limpieza de datos
+        $this->id_grupo = htmlspecialchars(strip_tags($this->id_grupo));
+        //le pasamos los datos a la consulta
+        $stmt->bindParam(':id_grupo', $this->id_grupo);
+        //ejecutamos la consulta
+        $stmt->execute();
+
+        $alumnos = array();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $alumnos[] = array(
+                "id_usuario" => $row['id_usuario'],
+                "nombre" => $row['nombre'],
+                "apellidos" => $row['apellidos'],
+                "correo" => $row['correo']
+            );
+        }
+        return $alumnos;
+    }
+}
+
+?>
