@@ -447,6 +447,32 @@
             });
         }
 
+        function crearAsignatura(event) {
+            event.preventDefault();
+
+            const id_asignatura = document.getElementById("id_asignatura").value;
+            const nombre = document.getElementById("nombre").value;
+            const descripcion = document.getElementById("descripcion").value;
+            const nivel = document.getElementById("nivel").value;
+
+            const asignatura = { id_asignatura, nombre, descripcion, nivel };
+
+            if (id_asignatura) {
+                // si existe el id de la asignatura entonces estamos actualizando
+                hacerSolicitud('asignatura_api.php', 'PUT', asignatura, function (status, response) {
+                    if (status === 200) {
+                        document.getElementById("form-asignatura").reset();
+                        document.getElementById("id_asignatura").value = null;
+                        document.getElementById("form-title").innerText = "Editar Asignatura";
+                        document.querySelector("button[type='submit']").textContent = "Crear";
+                        cargarAsignaturas();
+                    } else {
+
+                    }
+                })
+            }
+        }
+
         //funcion para cargar la información del tutor en el modal para mostrarla
 
         function mostrarInfo(id_tutor) {
