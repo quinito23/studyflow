@@ -17,8 +17,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        if (isset($_GET['id_asignatura'])) {
-            $asignatura->id_asignatura = $_GET['id_asignatura'];
+        if (isset($_GET['id'])) {
+            $asignatura->id_asignatura = $_GET['id'];
             if ($asignatura->leer()) {
                 echo json_encode(array(
                     "id_asignatura" => $asignatura->id_asignatura,
@@ -85,6 +85,7 @@ switch ($method) {
         break;
 
     case 'DELETE':
+        $data = json_decode(file_get_contents('php://input'));
         if (isset($data->id_asignatura)) {
             $asignatura->id_asignatura = $data->id_asignatura;
 

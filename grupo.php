@@ -44,11 +44,12 @@ class Grupo
     //metodo para leer todos los grupos y mostrarlos en la tabla
     public function leer_todos()
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ad.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura GROUP BY g.id_grupo ORDER BY g.nombre ASC";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre as nombre_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura GROUP BY g.id_grupo ORDER BY g.nombre ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
         //gestionamos los grupos
+        $grupos = array();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $grupos[] = array(
                 "id_grupo" => $row['id_grupo'],
@@ -65,7 +66,7 @@ class Grupo
     //leer un grupo específico
     public function leer()
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE g.id_grupo = :id_grupo GROUP BY g.id_grupo LIMIT 0,1";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre as nombre_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE g.id_grupo = :id_grupo GROUP BY g.id_grupo LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
 
         //limpieza de datos
@@ -76,7 +77,7 @@ class Grupo
         //ejecutamos la consulta
         $stmt->execute();
 
-        $row = $stmt->fecth(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             $this->id_grupo = $row['id_grupo'];
             $this->nombre = $row['nombre'];

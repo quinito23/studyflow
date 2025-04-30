@@ -17,8 +17,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        if (isset($_GET['id_grupo'])) {
-            $grupo->id_grupo = $_GET['id_grupo'];
+        if (isset($_GET['id'])) {
+            $grupo->id_grupo = $_GET['id'];
             if ($grupo->leer()) {
                 echo json_encode(array(
                     "id_grupo" => $grupo->id_grupo,
@@ -42,7 +42,7 @@ switch ($method) {
         break;
 
     case 'POST':
-        $data->json_decode(file_get_contents("php://input"));
+        $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->nombre) && !isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
@@ -68,7 +68,7 @@ switch ($method) {
 
         $data = json_decode(file_get_contents('php://input'));
 
-        if (!isset($data->id_grupo) && !isset($data->nombre) && isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
+        if (!isset($data->id_grupo) && !isset($data->nombre) && !isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
             echo json_encode(array('message' => 'faltan datos requeridos'));
             exit;
         }
@@ -86,7 +86,7 @@ switch ($method) {
             }
 
         } catch (Exception $e) {
-            echo json_encode(array("message" => "Error al catualizar grupo : " . $e->getMessage()));
+            echo json_encode(array("message" => "Error al actualizar grupo : " . $e->getMessage()));
         }
         break;
 
@@ -96,6 +96,7 @@ switch ($method) {
         if (!isset($data->id_grupo)) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
+        $grupo->id_grupo = $data->id_grupo;
         try {
             if ($grupo->eliminar()) {
                 echo json_encode(array("message" => "Grupo eliminado exitosamente"));

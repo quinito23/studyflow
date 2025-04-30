@@ -128,7 +128,7 @@ class Asignatura
     //metodo para obtener los grupos asociados a una asignatura 
     public function obtenerGrupos()
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM grupo g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo WHERE g.id_asignatura = :id_asignatura GROUP BY g.id_grupo";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre_asignatura as nombre_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM grupo g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE g.id_asignatura = :id_asignatura GROUP BY g.id_grupo";
         $stmt = $this->conn->prepare($query);
 
         //limpiamos los datos
@@ -147,6 +147,7 @@ class Asignatura
                 "nombre" => $row['nombre'],
                 "capacidad_maxima" => $row['capacidad_maxima'],
                 "id_asignatura" => $row['id_asignatura'],
+                "nombre_asignatura" => $row['nombre_asignatura'],
                 "numero_alumnos" => $row['numero_alumnos']
             );
 

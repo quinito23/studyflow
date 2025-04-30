@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,13 @@
 
     </style>
 </head>
+
 <body>
 
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle Navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
+                aria-label="Toggle Navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -31,7 +34,8 @@
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <ul class="nav flex-column">
@@ -62,7 +66,7 @@
         <div id="notificacion" class="notificacion"></div>
 
         <div id="asignatura-form" class="container">
-            <h3>Crear Asignatura</h3>
+            <h3 id="form-title">Crear Asignatura</h3>
             <form id="form-asignatura">
                 <input type="hidden" id="id_asignatura" name="id_asignatura">
                 <div class="mb-3">
@@ -101,8 +105,16 @@
     <script>
         const notificacion = document.getElementById("notificacion");
 
-            //Función para hacer soliictudes AJAX
-            function hacerSolicitud(url, metodo, datos, callback) {
+        function mostrarNotificacion(mensaje) {
+            notificacion.textContent = mensaje;
+            notificacion.style.display = 'block';
+            setTimeout(() => {
+                notificacion.style.display = 'none';
+            }, 3000);
+        }
+
+        //Función para hacer soliictudes AJAX
+        function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
             xhr.setRequestHeader('Content-type', 'application/json');
@@ -114,23 +126,23 @@
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
-        function cargarAsignaturas(){
-            hacerSolicitud('asignatura_api.php', 'GET', null, function(status, response){
-                if (status === 200){
-                    try{
+        function cargarAsignaturas() {
+            hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
+                if (status === 200) {
+                    try {
                         const asignaturas = JSON.parse(response);
                         const listaAsignaturas = document.getElementById("lista-asignaturas");
                         listaAsignaturas.innerHTML = '';
 
                         asignaturas.forEach(asignatura => {
-                            const row = `
-                            <tr>
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
                                 <td>${asignatura.nombre}</td>
                                 <td>${asignatura.descripcion}</td>
                                 <td>${asignatura.nivel}</td>
                                 <td>
 
-                                    <div class="d-grip gap-2 d-md-block">
+                                    <div class="d-grid gap-2 d-md-block">
                                         <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${asignatura.id_asignatura})">
                                             <i class="bi bi-info-circle"></i>
                                         </button>
@@ -143,47 +155,90 @@
                                     </div>
                                 </td>
                                     `;
-                                listaAsignaturas.innerHTML += row;
+                            listaAsignaturas.appendChild(row);
                         });
 
-                    }catch(e){
+                    } catch (e) {
                         mostrarNotificacion("Error al cargar las asignaturas");
-                    }
-                }
-            });    
-        }
-
-        function editarAsignatura(idAsignatura){
-            const data = {id_asignatura: idAsignatura};
-            hacerSolicitud('asignatura_api.php', 'POST', data, function(status, respoonse){
-                if (status === 200){
-                    const asignatura = JSON.parse(response);
-                    if(asignatura){
-                        document.getElementById("nombre").value = asignatura.nombre;
-                        document.getElementById("descripcion").value = asignatura.descripcion;
-                        document.getElementById("nivel").value = asignatura.nivel;
-                        document.getElementById("id_asignatura").value = asignatura.id_asignatura;
-                        document.querySelector("button[typr='submit']").textContent = "Actualizar";
-                    }else{
-                        mostrarNotificacion('Error al cargar los datos de la asignatura');
                     }
                 }
             });
         }
 
-        function eliminarAsignatura(idAsignatura){
-            if(confirm('¿Estás seguro de que quieres eliminar esta asignatura?')){
-                const data = {"id_asignatura": idAsignatura};
-                hacerSolicitud('asignatura_api.php', 'DELETE', data, function(status, response){
-                    if(status === 200){
+        function crearAsignatura(event) {
+            event.preventDefault();
+            const id_asignatura = document.getElementById("id_asignatura").value;
+            const nombre = document.getElementById("nombre").value;
+            const descripcion = document.getElementById("descripcion").value;
+            const nivel = document.getElementById("nivel").value;
+
+            const asignatura = { id_asignatura, nombre, descripcion, nivel };
+
+            if (id_asignatura) {
+                hacerSolicitud('asignatura_api.php', 'PUT', asignatura, function (status, response) {
+                    if (status === 200) {
+                        document.getElementById("form-asignatura").reset();
+                        document.getElementById("id_asignatura").value = null;
+                        document.getElementById("form-title").innerText = "Editar Asignatura";
                         cargarAsignaturas();
-                    }else{
+                    } else {
+                        mostrarNotificacion('Error al actualizar la asignatura');
+                    }
+                });
+            } else {
+                hacerSolicitud('asignatura_api.php', 'POST', asignatura, function (status, response) {
+                    if (status === 200) {
+                        document.getElementById("form-asignatura").reset();
+                        document.getElementById("id_asignatura").value = null;
+                        document.getElementById("form-title").innerText = "Crear Asignatura";
+                        document.querySelector("button[type='submit']").textContent = "Crear";
+
+                        cargarAsignaturas();
+                    } else {
+                        mostrarNotificacion('Error al crear la asignatura');
+                    }
+                })
+            }
+        }
+
+        function editarAsignatura(id_asignatura) {
+            hacerSolicitud(`asignatura_api.php?id=${id_asignatura}`, 'GET', null, function (status, response) {
+                if (status === 200) {
+                    const asignatura = JSON.parse(response);
+                    if (asignatura) {
+                        document.getElementById("nombre").value = asignatura.nombre;
+                        document.getElementById("descripcion").value = asignatura.descripcion;
+                        document.getElementById("nivel").value = asignatura.nivel;
+                        document.getElementById("id_asignatura").value = asignatura.id_asignatura;
+                        document.getElementById("form-title").innerText = "Editar Asignatura";
+                        document.querySelector("button[typr='submit']").textContent = "Actualizar";
+                    } else {
+                        mostrarNotificacion('Error al cargar los datos de la asignatura');
+                    }
+                } else {
+                    mostrarNotificacion('error al cargar los datos de la asignatura');
+                }
+            });
+        }
+
+        function eliminarAsignatura(id_asignatura) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta asignatura?')) {
+                const data = { "id_asignatura": id_asignatura };
+                hacerSolicitud('asignatura_api.php', 'DELETE', data, function (status, response) {
+                    if (status === 200) {
+                        cargarAsignaturas();
+                    } else {
                         mostrarNotificacion('Error al eliminar la asignatura');
                     }
                 });
             }
         }
+
+        //inicializar
+        document.getElementById("form-asignatura").addEventListener("submit", crearAsignatura);
+        window.onload = cargarAsignaturas;
     </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
