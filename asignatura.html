@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignaturas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="d-flex align-items-center navbar-dark">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle Navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="mx-auto">StudyFlow</h1>
+        </div>
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Asignaturas</li>
+            </ol>
+        </nav>
+    </header>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="profesor.html">Profesores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="alumno.html">Alumnos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tutor.html">Tutores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="asignatura.html">Asignaturas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="grupo.html">Grupos</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!--Contenido principal-->
+
+    <main class="main-content">
+        <h2 class="text-center">Gestión de Asignaturas</h2>
+
+        <div id="notificacion" class="notificacion"></div>
+
+        <div id="asignatura-form" class="container">
+            <h3>Crear Asignatura</h3>
+            <form id="form-asignatura">
+                <input type="hidden" id="id_asignatura" name="id_asignatura">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="nivel" class="form-label">Nivel</label>
+                    <input type="text" class="form-control" id="nivel" name="nivel">
+                </div>
+                <button type="submit" class="btn btn-primary">Crear</button>
+                <button type="reset" class="btn btn-light">Limpiar</button>
+            </form>
+        </div>
+
+        <h3>Lista de Asignaturas</h3>
+        <div class="table-responsive">
+            <table class="table" id="tabla-asignaturas">
+                <thead>
+                    <tr class="table-primary">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Nivel</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-asignaturas"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const notificacion = document.getElementById("notificacion");
+
+            //Función para hacer soliictudes AJAX
+            function hacerSolicitud(url, metodo, datos, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open(metodo, url, true);
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    callback(xhr.status, xhr.responseText);
+                }
+            };
+            xhr.send(datos ? JSON.stringify(datos) : null);
+        }
+
+        function cargarAsignaturas(){
+            hacerSolicitud('asignatura_api.php', 'GET', null, function(status, response){
+                if (status === 200){
+                    try{
+                        const asignaturas = JSON.parse(response);
+                        const listaAsignaturas = document.getElementById("lista-asignaturas");
+                        listaAsignaturas.innerHTML = '';
+
+                        asignaturas.forEach(asignatura => {
+                            const row = `
+                            <tr>
+                                <td>${asignatura.nombre}</td>
+                                <td>${asignatura.descripcion}</td>
+                                <td>${asignatura.nivel}</td>
+                                <td>
+
+                                    <div class="d-grip gap-2 d-md-block">
+                                        <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${asignatura.id_asignatura})">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick = "editarAsignatura(${asignatura.id_asignatura})">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick = "eliminarAsignatura(${asignatura.id_asignatura})">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                    `;
+                                listaAsignaturas.innerHTML += row;
+                        });
+
+                    }catch(e){
+                        mostrarNotificacion("Error al cargar las asignaturas");
+                    }
+                }
+            });    
+        }
+
+        function editarAsignatura(idAsignatura){
+            const data = {id_asignatura: idAsignatura};
+            hacerSolicitud('asignatura_api.php', 'POST', data, function(status, respoonse){
+                if (status === 200){
+                    const asignatura = JSON.parse(response);
+                    if(asignatura){
+                        document.getElementById("nombre").value = asignatura.nombre;
+                        document.getElementById("descripcion").value = asignatura.descripcion;
+                        document.getElementById("nivel").value = asignatura.nivel;
+                        document.getElementById("id_asignatura").value = asignatura.id_asignatura;
+                        document.querySelector("button[typr='submit']").textContent = "Actualizar";
+                    }else{
+                        mostrarNotificacion('Error al cargar los datos de la asignatura');
+                    }
+                }
+            });
+        }
+
+        function eliminarAsignatura(idAsignatura){
+            if(confirm('¿Estás seguro de que quieres eliminar esta asignatura?')){
+                const data = {"id_asignatura": idAsignatura};
+                hacerSolicitud('asignatura_api.php', 'DELETE', data, function(status, response){
+                    if(status === 200){
+                        cargarAsignaturas();
+                    }else{
+                        mostrarNotificacion('Error al eliminar la asignatura');
+                    }
+                });
+            }
+        }
+    </script>
+    
+</body>
+</html>

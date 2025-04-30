@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitudes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
     <style>
         body {
@@ -175,7 +173,6 @@
         }
     </style>
 </head>
-
 <body>
 
     <!--Header-->
@@ -284,14 +281,12 @@
             </table>
         </div>
 
-        <div class="modal fade" id="asignarGruposModal" tabindex="-1" aria-labelledby="asignarGruposModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="asignarGruposModal" tabindex="-1" aria-labelledby="asignarGruposModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="asignarGruposModalLabel">Asignar Grupos</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="close"></button>
                     </div>
                     <div class="modal-body">
                         <div id="gruposPorAsignatura">
@@ -299,8 +294,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary"
-                                onclick="confirmarAceptar()">Confirmar</button>
+                            <button type="button" class="btn btn-primary" onclick="confirmarAceptar()"></button>
                         </div>
                     </div>
                 </div>
@@ -337,9 +331,9 @@
         }
 
         // Funcion para cargar las solicitudes al iniciar la página
-        function cargarSolicitudes() {
-            hacerSolicitud('solicitud_api.php', 'GET', null, function (status, response) {
-                try {
+        function cargarSolicitudes(){
+            hacerSolicitud('solicitud_api.php', 'GET', null, function(status, response){
+                try{
                     const solicitudes = JSON.parse(response);
                     const listaPendientes = document.getElementById("solicitudes-pendientes-lista");
                     const listaAceptadas = document.getElementById("solicitudes-aceptadas-lista");
@@ -369,15 +363,15 @@
                             </tr>
                             `;
 
-                        if (solicitud.estado === 'pendiente') {
-                            listaPendientes.innerHTML += row;
-                        } else if (solicitud.estado === 'aceptado') {
-                            listaAceptadas.innerHTML += row;
-                        } else if (solicitud.estado === 'rechazado') {
-                            listaRechazadas.innerHTML += row;
-                        }
+                            if (solicitud.estado === 'pendiente'){
+                                listaPendientes.innerHTML += row;
+                            } else if (solicitud.estado === 'aceptado'){
+                                listaAceptadas.innerHTML += row;
+                            } else if(solicitud.estado === 'rechazado'){
+                                listaRechazadas.innerHTML += row;
+                            }
                     });
-                } catch (e) {
+                }catch(e){
                     console.error("Error al parsear la respuesta:", e.message);
                     // Cambio: Mostrar notificación si falla la carga de solicitudes
                     mostrarNotificacion("Error al cargar las solicitudes", "error");
@@ -386,19 +380,19 @@
         }
 
         // funcion para aceptar una solicitud
-        function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto) {
-            const datos = { id_solicitud: idSolicitud, id_anonimo: idAnonimo, rol_propuesto: rolPropuesto, accion: 'aceptar' };
-            hacerSolicitud('solicitud_api.php', 'POST', datos, function (status, response) {
-                try {
+        function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto){
+            const datos = {id_solicitud : idSolicitud, id_anonimo : idAnonimo, rol_propuesto : rolPropuesto, accion: 'aceptar'};
+            hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
+                try{
                     const result = JSON.parse(response);
-                    if (result.message === "Solicitud aceptada exitosamente") {
+                    if(result.message === "Solicitud aceptada exitosamente"){
                         mostrarNotificacion("Solicitud aceptada con éxito", "success");
                         cargarSolicitudes(); // recargamos las tablas para mostrar los cambios
-
-                    } else {
+                        
+                    }else{
                         mostrarNotificacion(result.message, "error");
                     }
-                } catch (e) {
+                }catch(e){
                     console.error("Error al parsear la respuesta:", e.message);
                     mostrarNotificacion("Error al aceptar la solicitud: " + e.message, "error");
                 }
@@ -406,17 +400,17 @@
         }
 
         //funcion para rechazar una solicitud
-        function rechazarSolicitud(idSolicitud) {
-            const datos = { id_solicitud: idSolicitud, accion: 'rechazar' };
-            hacerSolicitud('solicitud_api.php', 'POST', datos, function (status, response) {
-                try {
+        function rechazarSolicitud(idSolicitud){
+            const datos = {id_solicitud : idSolicitud, accion: 'rechazar'};
+            hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
+                try{
                     const result = JSON.parse(response);
-                    if (result.message === "Solicitud rechazada exitosamente") {
+                    if(result.message === "Solicitud rechazada exitosamente"){
                         cargarSolicitudes(); // recargamos las tablas para mostrar los cambios
-                    } else {
+                    }else{
                         return false;
                     }
-                } catch (e) {
+                }catch(e){
                     console.error("Error al parsear la respuesta:", e.message);
                 }
             });
@@ -426,8 +420,7 @@
         window.onload = cargarSolicitudes;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
+    
+    
 </body>
-
 </html>
