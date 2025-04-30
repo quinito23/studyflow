@@ -17,13 +17,96 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        try {
-            $grupos = $grupo->leer_todos();
-            echo json_encode($grupos);
-        } catch (Exception $e) {
-            echo json_encode(array("message" => "Error al listar grupos" . $e->getMessage()));
+        if (isset($_GET['id_grupo'])) {
+            $grupo->id_grupo = $_GET['id_grupo'];
+            if ($grupo->leer()) {
+                echo json_encode(array(
+                    "id_grupo" => $grupo->id_grupo,
+                    "nombre" => $grupo->nombre,
+                    "capacidad_maxima" => $grupo->capacidad_maxima,
+                    "id_asignatura" => $grupo->id_asignatura,
+                    "nombre_asignatura" => $grupo->nombre_asignatura,
+                    "numero_alumnos" => $grupo->numero_alumnos
+                ));
+            } else {
+                echo json_encode(array("message" => "Grupo no encontrado"));
+            }
+        } else {
+            try {
+                $grupos = $grupo->leer_todos();
+                echo json_encode($grupos);
+            } catch (Exception $e) {
+                echo json_encode(array("message" => "Error al listar grupos : " . $e->getMessage()));
+            }
         }
         break;
+
+    case 'POST':
+        $data->json_decode(file_get_contents("php://input"));
+
+        if (!isset($data->nombre) && !isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
+            echo json_encode(array("message" => "Faltan datos requeridos"));
+            exit;
+        }
+
+        $grupo->nombre = $data->nombre;
+        $grupo->capacidad_maxima = $data->capacidad_maxima;
+        $grupo->id_asignatura = $data->id_asignatura;
+
+        try {
+            if ($grupo->crear()) {
+                echo json_encode(array("message" => "Grupo creado exitosamente"));
+            } else {
+                echo json_encode(array("message" => "No se pudo crear el grupo"));
+            }
+        } catch (Exception $e) {
+            echo json_encode(array("message" => "Error al crear grupo : " . $e->getMessage()));
+        }
+        break;
+
+    case 'PUT':
+
+        $data = json_decode(file_get_contents('php://input'));
+
+        if (!isset($data->id_grupo) && !isset($data->nombre) && isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
+            echo json_encode(array('message' => 'faltan datos requeridos'));
+            exit;
+        }
+
+        $grupo->id_grupo = $data->id_grupo;
+        $grupo->nombre = $data->nombre;
+        $grupo->capacidad_maxima = $data->capacidad_maxima;
+        $grupo->id_asignatura = $data->id_asignatura;
+
+        try {
+            if ($grupo->actualizar()) {
+                echo json_encode(array("message" => "grupo actualizado exitosamente"));
+            } else {
+                echo json_encode(array("message" => "No se pudo actualizar el grupo"));
+            }
+
+        } catch (Exception $e) {
+            echo json_encode(array("message" => "Error al catualizar grupo : " . $e->getMessage()));
+        }
+        break;
+
+    case 'DELETE':
+        $data = json_decode(file_get_contents('php://input'));
+
+        if (!isset($data->id_grupo)) {
+            echo json_encode(array("message" => "Faltan datos requeridos"));
+        }
+        try {
+            if ($grupo->eliminar()) {
+                echo json_encode(array("message" => "Grupo eliminado exitosamente"));
+            } else {
+                echo json_encode(array("message" => "No se pudo eliminar el grupo"));
+            }
+        } catch (Exception $e) {
+            echo json_encode(array("message" => "Error al eliminar el grupo" . $e->getMessage()));
+        }
+        break;
+
     default:
         echo json_encode(array("message" => "Metodo no permitido"));
         break;

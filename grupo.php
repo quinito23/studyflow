@@ -9,6 +9,8 @@ class Grupo
     public $nombre;
     public $capacidad_maxima;
     public $id_asignatura;
+    public $nombre_asignatura;
+    public $numero_alumnos;
 
     public function __construct($db)
     {
@@ -105,7 +107,10 @@ class Grupo
         $stmt->bindParam(':id_asignatura', $this->id_asignatura);
         $stmt->bindParam(':id_grupo', $this->id_grupo);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
     }
 
     //metodo para eliminar un grupo
@@ -119,7 +124,10 @@ class Grupo
         // le pasamos los parametros a la consulta
         $stmt->bindParam(':id_grupo', $this->id_grupo);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
     }
 
     //metodo para obtener los alumnos de un grupo
