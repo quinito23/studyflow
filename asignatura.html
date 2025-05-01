@@ -9,7 +9,152 @@
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+                body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #112a4a;
+            color: #f8f9fa;
+            font-size: 16px;
+            margin: 0px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
+        .header {
+            background-color: #0d1f38;
+            padding: 1rem 2rem;
+            color: white;
+            border-bottom: 1px solid #ffffff33;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .d-flex {
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-left: clamp(1rem, 3vw, 2rem);
+        }
+
+        .navbar-toggler {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-right: 1rem;
+            z-index: 1000;
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0.5rem 0;
+            margin-bottom: 0;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+        }
+
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: #007bff;
+        }
+
+        .breadcrumb-item a {
+            color: #f8f9fa;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item .active {
+            color: #d3d6db;
+        }
+
+        .offcanvas {
+            background-color: #0d1f38;
+            color: white;
+            width: 20vw !important;
+            min-width: 200px !important;
+        }
+
+        .offcanvas-header {
+            border-bottom: 1px solid #ffffff33;
+        }
+
+        .offcanvas-title {
+            color: white;
+            font-size: clamp(1rem, 3vw, 1.25rem);
+        }
+
+        .offcanvas-body .nav-link {
+            color: #f8f9fa;
+            padding: 0.75rem, 1rem;
+            display: block;
+            text-decoration: none;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .offcanvas-body .nav-link.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .main-content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+        }
+
+        .table thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table {
+            margin-top: 2rem;
+            background-color: #e9ecef;
+            color: #333;
+            font-size: clamp(0.7rem, 1.5vw, 1rem);
+        }
+
+        .table tbody tr {
+            background-color: #d3d6db;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+        }
+
+        #notificacion {
+            color: #dc3545;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        #asignatura-form {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: #0d1f38;
+            margin-bottom: 2rem;
+        }
+
+        .modal-content {
+            background-color: #0d1f38;
+            color: #f8f9fa;
+        }
+
+        .modal-header, .modal-footer {
+            border-color: #ffffff33;
+        }
     </style>
 </head>
 

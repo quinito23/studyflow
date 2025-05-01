@@ -131,6 +131,12 @@
                                 <option value="profesor">Profesor</option>
                             </select>
                         </div>
+                        <div class="mb-3" id="asignaturas-section">
+                            <label for="asignaturas-registro" class="form-label">Asignaturas</label>
+                            <select class="form-control" id="asignaturas-registro" name="asignaturas" multiple>
+                                <!--Las asignaturas son cargadas dinamicamente-->
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
                     </form>
                 </div>
@@ -149,6 +155,28 @@
                 }
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
+        }
+
+        function cargarAsignaturas(){
+            hacerSolicitud('asignatura_api.php', 'GET', null, function(status, response){
+                try{
+                    if(status === 200){
+                        const asignaturas = JSON.parse(response);
+                        const selectAsignaturas = document.getElementById("asignaturas-registro");
+                        selectAsignaturas.innerHTML = '';
+                        asignaturas.forEach(asignatura=>{
+                            const option = document.createElement('option');
+                            option.value = asignatura.id_asignatura;
+                            option.textContent = asignatura.nombre;
+                            selectAsignaturas.appendChild(option);
+                        });
+                    }else{
+                        mostrarNotificacion("Error al cargar las asignaturas");
+                    }
+                }catch(e){
+                    mostrarNotificacion("Error al cargar las asignaturas");
+                }
+            });
         }
 
         function iniciarSesion(event) {
@@ -191,7 +219,11 @@
             const telefono = document.getElementById("telefono-registro").value;
             const rol_propuesto = document.getElementById("rol-registro").value;
 
-            const datosRegistro = { correo, contrasenia, nombre, apellidos, telefono, rol_propuesto };
+            //datos de la asignatura
+            const selectedAsignaturas = document.getElementById("asignaturas-registro").selectedOptions;
+            const asignaturas = Array.from(selectedAsignaturas).map(option=>option.value);
+
+            const datosRegistro = { correo, contrasenia, nombre, apellidos, telefono, rol_propuesto, asignaturas };
             console.log("Datos del registro:", datosRegistro);
 
             hacerSolicitud('registro_api.php', 'POST', datosRegistro, function(status, response) {
@@ -212,6 +244,10 @@
 
         document.getElementById("login-form").addEventListener("submit", iniciarSesion);
         document.getElementById("registro-form").addEventListener("submit", registrarAnonimo);
+
+        window.onload = function(){
+            cargarAsignaturas();
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

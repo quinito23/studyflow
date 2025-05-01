@@ -289,12 +289,19 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="close"></button>
                     </div>
                     <div class="modal-body">
-                        <div id="gruposPorAsignatura">
-                            <!--los grupos disponibles se cargarán de manera dinámica-->
+                        <div class="mb-3">
+                            <label class="form-label">Asignaturas propuestas:</label>
+                            <ul id="asignaturasPropuestas"></ul>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar grupos:</label>
+                            <select class="form-select" id="gruposSeleccionados" multiple>
+                                <!--Los grupos disponibles se cargaran dinamicamente-->
+                            </select>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" onclick="confirmarAceptar()"></button>
+                            <button type="button" class="btn btn-primary" onclick="confirmarAceptar()">Confirmar</button>
                         </div>
                     </div>
                 </div>
@@ -381,22 +388,98 @@
 
         // funcion para aceptar una solicitud
         function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto){
-            const datos = {id_solicitud : idSolicitud, id_anonimo : idAnonimo, rol_propuesto : rolPropuesto, accion: 'aceptar'};
+
+            if(rolPropuesto !== 'alumno'){
+                const datos = {id_solicitud : idSolicitud, id_anonimo : idAnonimo, rol_propuesto : rolPropuesto, accion: 'aceptar', grupos: []};
+                confirmarAceptar(datos);
+                return;
+            }
+
+            solicitudActual = {idSolicitud, idAnonimo, rolPropuesto};
+
+            //obtener las asignaturas asociadas a la solicitud
+            hacerSolicitud(`solicitud_api.php?getAsignaturas=${idSolicitud}`, 'GET', null, function(status, response){
+                try{
+                    const asignaturas = JSON.parse(response);
+                    if(status !== 200 || !asignaturas || asignaturas.length === 0){
+                        mostrarNotificacion("No se encontraron asignaturas");
+                        return;
+                    }
+
+                    //Mostrar las asignaturas propuestas
+                    const asignaturasPropuestas = document.getElementById("asignaturasPropuestas");
+                    asignaturasPropuestas.innerHTML = '';
+                    asignaturas.forEach(asignatura => {
+                        const li = document.createElement('li');
+                        li.textContent = asignatura.nombre;
+                        asignaturasPropuestas.appendChild(li);
+                    });
+
+
+                    //ontener los grupos disponibles
+                    hacerSolicitud('grupo_api.php', 'GET', null, function(status, response){
+                        try{
+                            const grupos = JSON.parse(response);
+                            if(status !== 200 || !grupos){
+                                mostrarNotificacion("Error al cargar los grupos");
+                            }
+
+                            const gruposSeleccionados = document.getElementById("gruposSeleccionados");
+                            gruposSeleccionados.innerHTML = '';
+                            grupos.forEach(grupo => {
+                                const option = document.createElement('option');
+                                option.value = grupo.id_grupo;
+                                option.textContent = `${grupo.nombre} (${grupo.nombre_asignatura}) - Capacidad: ${grupo.numero_alumnos}/${grupo.capacidad_maxima}`;
+                                gruposSeleccionados.appendChild(option);
+                            });
+
+                            const modal = new bootstrap.Modal(document.getElementById("asignarGruposModal"));
+                            modal.show();
+                        }catch(e){
+                            mostrarNotificacion("Error al cargar los grupos");
+                        }
+                    });
+                } catch(e){
+                    mostrarNotificacion("Error al cargar las asignaturas");
+                }
+            });
+        }
+
+        // funcion para obtener los grupos seleccionados y enviarlos la backend como un array
+        function confirmarAceptar(){
+            if (!solicitudActual) return;
+
+            
+            const {idSolicitud, idAnonimo, rolPropuesto} = solicitudActual;
+            const gruposSeleccionados = document.getElementById("gruposSeleccionados");
+            const grupos = Array.from(gruposSeleccionados.selectedOptions).map(option => option.value);
+
+            const datos = {
+                id_solicitud: idSolicitud,
+                id_anonimo: idAnonimo,
+                rol_propuesto: rolPropuesto,
+                accion: 'aceptar', 
+                grupos: grupos
+            };
+        
+
             hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
                 try{
                     const result = JSON.parse(response);
-                    if(result.message === "Solicitud aceptada exitosamente"){
-                        mostrarNotificacion("Solicitud aceptada con éxito", "success");
-                        cargarSolicitudes(); // recargamos las tablas para mostrar los cambios
-                        
+                    if(status === 200 && result.message == "Solicitud aceptada exitosamente"){
+                        mostrarNotificacion("Solicitud aceptada con exito");
+                        cargarSolicitudes();
+                        bootstrap.Modal.getInstance(document.getElementById("asignarGruposModal")).hide();
                     }else{
-                        mostrarNotificacion(result.message, "error");
+                        mostrarNotificacion(result.message || "Error al aceptar la solicitud");
                     }
                 }catch(e){
-                    console.error("Error al parsear la respuesta:", e.message);
-                    mostrarNotificacion("Error al aceptar la solicitud: " + e.message, "error");
+                    mostrarNotificacion("Error al aceptar la solicitud");
                 }
             });
+
+            solicitudActual = null;
+
         }
 
         //funcion para rechazar una solicitud
