@@ -389,13 +389,16 @@
         // funcion para aceptar una solicitud
         function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto){
 
+            const datos = {
+                id_solicitud: idSolicitud,
+                id_anonimo: idAnonimo,
+                rol_propuesto: rolPropuesto
+            };
+
             if(rolPropuesto !== 'alumno'){
-                const datos = {id_solicitud : idSolicitud, id_anonimo : idAnonimo, rol_propuesto : rolPropuesto, accion: 'aceptar', grupos: []};
-                confirmarAceptar(datos);
+                confirmarAceptar(datos, []); //los corchetes hacen referencia a la lista de grupos
                 return;
             }
-
-            solicitudActual = {idSolicitud, idAnonimo, rolPropuesto};
 
             //obtener las asignaturas asociadas a la solicitud
             hacerSolicitud(`solicitud_api.php?getAsignaturas=${idSolicitud}`, 'GET', null, function(status, response){
@@ -435,6 +438,10 @@
 
                             const modal = new bootstrap.Modal(document.getElementById("asignarGruposModal"));
                             modal.show();
+
+                            //guardar datos en el botón de confirmación para usarlos después
+                            const confirmarBtn = document.querySelector('#asignarGruposModal .btn-primary');
+                            confirmarBtn.onclick = () => confirmarAceptar(datos, Array.from(gruposSeleccionados.selectedOptions).map(option=>parseInt(option.value)));
                         }catch(e){
                             mostrarNotificacion("Error al cargar los grupos");
                         }
@@ -446,30 +453,27 @@
         }
 
         // funcion para obtener los grupos seleccionados y enviarlos la backend como un array
-        function confirmarAceptar(){
-            if (!solicitudActual) return;
-
-            
-            const {idSolicitud, idAnonimo, rolPropuesto} = solicitudActual;
-            const gruposSeleccionados = document.getElementById("gruposSeleccionados");
-            const grupos = Array.from(gruposSeleccionados.selectedOptions).map(option => option.value);
-
-            const datos = {
-                id_solicitud: idSolicitud,
-                id_anonimo: idAnonimo,
-                rol_propuesto: rolPropuesto,
-                accion: 'aceptar', 
+        function confirmarAceptar(datos, grupos = []){
+            const payload = {
+                id_solicitud: datos.id_solicitud,
+                id_anonimo: datos.id_anonimo,
+                rol_propuesto: datos.rol_propuesto,
+                accion: 'aceptar',
                 grupos: grupos
             };
-        
 
-            hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
+            hacerSolicitud('solicitud_api.php', 'POST', payload, function(status, response){
+                console.log("Estado de la respuesta:", status);
+                console.log("Respuesta del backend:", response);
                 try{
                     const result = JSON.parse(response);
-                    if(status === 200 && result.message == "Solicitud aceptada exitosamente"){
+                    if(status === 200 && result.message === "Solicitud aceptada exitosamente"){
                         mostrarNotificacion("Solicitud aceptada con exito");
                         cargarSolicitudes();
-                        bootstrap.Modal.getInstance(document.getElementById("asignarGruposModal")).hide();
+                        const modal = bootstrap.Modal.getInstance(document.getElementById("asignarGruposModal"));
+                        if(modal){
+                            modal.hide();
+                        }
                     }else{
                         mostrarNotificacion(result.message || "Error al aceptar la solicitud");
                     }
@@ -477,8 +481,6 @@
                     mostrarNotificacion("Error al aceptar la solicitud");
                 }
             });
-
-            solicitudActual = null;
 
         }
 

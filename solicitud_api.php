@@ -142,7 +142,22 @@ switch ($method) {
                     if (!$profesor->crear()) {
                         throw new Exception("No se pudo crear el profesor");
                     }
+
+                    //asignar las asignaturas propuestas en la solicitud al profesor
+                    $asignaturas = $solicitud->obtenerAsignaturas($idSolicitud);
+                    if(!empty($asignaturas)){
+                        $query = "UPDATE asignatura SET id_usuario = :id_usuario WHERE id_asignatura = :id_asignatura";
+                        $stmt = $db->prepare($query);
+                        foreach($asignaturas as $asignatura){
+                            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                            $stmt->bindParam(':id_asignatura', $asignatura['id_asignatura'], PDO::PARAM_INT);
+                            if(!$stmt->execute()){
+                                throw new Exception("Error al asignar asignatura al profesor");
+                            }
+                        }
+                    }
                 }
+                
 
                 //actualizamos el estado de la solicitud a 'aceptado'
                 $query = "UPDATE solicitud SET estado = 'aceptado' WHERE id_solicitud = :id_solicitud";

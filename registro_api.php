@@ -70,8 +70,8 @@ switch ($method) {
                     throw new Exception("No se pudo crear la solicitud");
                 }
 
-                //si el rol propuesto es alumno y se envian las asignaturas que se quieren cursar , las asociamos a la solicitud
-                if($data->rol_propuesto == 'alumno' && isset($data->asignaturas) && is_array($data->asignaturas) && !empty($data->asignaturas)){
+                //Asociamos las asignaturas a la solicitud
+                if(isset($data->asignaturas) && is_array($data->asignaturas) && !empty($data->asignaturas)){
                     $query = "INSERT INTO solicitud_asignatura (id_solicitud, id_asignatura) VALUES (:id_solicitud, :id_asignatura)";
                     $stmt = $db->prepare($query);
 
