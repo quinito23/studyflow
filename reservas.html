@@ -2,7 +2,7 @@
 session_start();
 
 //verificar autenticacion y rol
-if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     header("Location: login.php");
     exit;
 }
@@ -13,15 +13,16 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Reservar</title>
     <style>
-                body {
+        body {
             font-family: 'Roboto', sans-serif;
             background-color: #112a4a;
             color: #f8f9fa;
@@ -213,12 +214,14 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
         }
     </style>
 </head>
+
 <body>
     <!--Header-->
     <header class="header">
         <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
         <div class="d-flex align-items-center navbar-dark">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle Navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
+                aria-label="Toggle Navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -235,7 +238,8 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="close"></button>
         </div>
         <div class="offcanvas-body">
             <ul class="nav flex-column">
@@ -260,23 +264,25 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
             </div>
             <div class="col-md-6">
                 <label for="hora_inicio" class="form-label">Hora de Inicio:</label>
-                <input type="date" class="form-control" id="hora_inicio" required>
+                <input type="time" class="form-control" id="hora_inicio" required>
             </div>
             <div class="col-md-6">
                 <label for="hora_fin" class="form-label">Hora de Finalización:</label>
-                <input type="date" class="form-control" id="hora_fin" required>
+                <input type="time" class="form-control" id="hora_fin" required>
             </div>
             <div class="col-md-6">
                 <label for="aula" class="form-label">Aula:</label>
-                <select id="aula" class="form-select" multiple>
+                <select id="aula" class="form-select">
                     <!--Aquí serán listadas las aulas disponibles para elegir-->
                 </select>
             </div>
             <div class="col-md-6">
                 <label for="asignatura" class="form-label">Asignatura:</label>
-                <select id="asignatura" class="form-select" multiple>
-                    <!--Aquí serán listados las asignaturas disponibles a elegir-->
-                </select>
+                <select id="asignatura" class="form-select"></select>
+            </div>
+            <div class="col-md-6">
+                <label for="grupo" class="form-label">Grupo:</label>
+                <select id="grupo" class="form-select"></select>
             </div>
             <input type="hidden" id="id_reserva">
             <div class="d-grid gap-2 d-md-block">
@@ -323,14 +329,14 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
         const errorMessage = document.getElementById('error-message');
         const formTitle = document.getElementById('form-title');
 
-        function mostrarError(mensaje){
+        function mostrarError(mensaje) {
             errorMessage.textContent = mensaje;
             errorMessage.style.display = 'block';
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 3000);
         }
-        
+
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -343,27 +349,52 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
-        function cargarAulas(){
-            hacerSolicitud('aula_api.php', 'GET', null, function(status, response){
-                try{
+        function cargarAulas() {
+            const fecha = document.getElementById('fecha').value;
+            const hora_inicio = document.getElementById('hora_inicio').value;
+            const hora_fin = document.getElementById('hora_fin').value;
+            const id_grupo = document.getElementById('grupo').value;
+            const id_asignatura = document.getElementById('asignatura').value;
+
+            //dependiendo de si se sekecciona hora inicio y fin y grupo o no, la url será de una manera u otra , por lo que manejamos eso
+            let url = 'aula_api.php';
+            if (fecha && hora_inicio && hora_fin) {
+                url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
+                if (id_grupo) {
+                    url += `&id_grupo=${id_grupo}`;
+                } else if (id_asignatura) {
+                    url += `&id_asignatura=${id_asignatura}`;
+                }
+            }
+
+            hacerSolicitud('aula_api.php', 'GET', null, function (status, response) {
+                try {
                     const aulas = JSON.parse(response);
                     const aulaSelect = document.getElementById('aula');
                     aulaSelect.innerHTML = '<option value="">Seleccione un aula</option>';
-                    aulas.forEach(aula => {
+                    if (aulas.length > 0) {
+                        aulas.forEach(aula => {
+                            const option = document.createElement('option');
+                            option.value = aula.id_aula;
+                            option.textContent = aula.nombre;
+                            aulaSelect.appendChild(option);
+                        });
+                    } else {
                         const option = document.createElement('option');
-                        option.value = aula.id_aula;
-                        option.textContent = `${aula.nombre} (${aula.estado})`;
+                        option.value = '';
+                        option.textContent = 'No hay aulas disponibles para este grupo/horario';
+                        option.disabled = true;
                         aulaSelect.appendChild(option);
-                    });
-                }catch(e){
+                    }
+                } catch (e) {
                     mostrarError("Error al cargar las aulas: " + e.message);
                 }
             });
         }
 
-        function cargarAsignaturas(){
-            hacerSolicitud('asignatura_api.php', 'GET', null, function(status, response){
-                try{
+        function cargarAsignaturas() {
+            hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
+                try {
                     const asignaturas = JSON.parse(response);
                     const asignaturaSelect = document.getElementById('asignatura');
                     asignaturaSelect.innerHTML = '<option value="">Seleccione una asignatura</option>';
@@ -373,15 +404,15 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
                         option.textContent = asignatura.nombre;
                         asignaturaSelect.appendChild(option);
                     });
-                }catch(e){
+                } catch (e) {
                     mostrarError("Error al cargar las asignaturas: " + e.message);
                 }
             });
         }
 
-        function cargarGrupos(){
-            hacerSolicitud('grupo_api.php', 'GET', null, function(status, response){
-                try{
+        function cargarGrupos() {
+            hacerSolicitud('grupo_api.php', 'GET', null, function (status, response) {
+                try {
                     const grupos = JSON.parse(response);
                     const grupoSelect = document.getElementById('grupo');
                     grupoSelect.innerHTML = '<option value="">Seleccione un grupo</option>';
@@ -391,18 +422,18 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
                         option.textContent = grupo.nombre;
                         grupoSelect.appendChild(option);
                     });
-                }catch(e){
+                } catch (e) {
                     mostrarError("Error al cargar los grupos: " + e.message);
                 }
             });
         }
 
-        function cargarReservas(){
-            hacerSolicitud('reserva_api.php', 'GET', null, function(status, response){
-                try{
+        function cargarReservas() {
+            hacerSolicitud('reserva_api.php', 'GET', null, function (status, response) {
+                try {
                     const reservas = JSON.parse(response);
                     reservasLista.innerHTML = '';
-                    reservas.forEach (reserva => {
+                    reservas.forEach(reserva => {
                         const row = `
                         <tr>
                             <td>${reserva.fecha}</td>
@@ -425,15 +456,15 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
                         `;
                         reservasLista.innerHTML += row;
                     });
-                }catch(e){
+                } catch (e) {
                     mostrarError("Error al cargar las reservas: " + e.message);
                 }
             });
         }
 
-        function editarReserva(id_reserva){
-            hacerSolicitud(`reserva_api.php?id=${id_reserva}`, 'GET', null, function(status, response){
-                try{
+        function editarReserva(id_reserva) {
+            hacerSolicitud(`reserva_api.php?id=${id_reserva}`, 'GET', null, function (status, response) {
+                try {
                     const reserva = JSON.parse(response);
                     document.getElementById('id_reserva').value = reserva.id_reserva;
                     document.getElementById('fecha').value = reserva.fecha;
@@ -444,30 +475,31 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
                     document.getElementById('grupo').value = reserva.id_grupo;
                     formTitle.textContent = 'Editar Reserva';
                     document.querySelector('#reservas-form button[type="submit"]').textContent = 'Actualizar';
-                }catch(e){
+                    cargarAulas(); //recargamos las aulas disponibles con el nuevo horario y grupo
+                } catch (e) {
                     mostrarError("Error al cargar la reserva para editar: " + e.message);
                 }
             });
         }
 
-        function eliminarReserva(id_reserva){
-            if(!confirm('¿Estás seguro de eliminar esta reserva?'))return;
-            hacerSolicitud('reserva_api.php', 'DELETE', {id_reserva: id_reserva}, function(status, response){
-                try{
+        function eliminarReserva(id_reserva) {
+            if (!confirm('¿Estás seguro de eliminar esta reserva?')) return;
+            hacerSolicitud('reserva_api.php', 'DELETE', { id_reserva: id_reserva }, function (status, response) {
+                try {
                     const result = JSON.parse(response);
-                    if(status === 200 && result.message === "Reserva eliminada exitosamente"){
+                    if (status === 200 && result.message === "Reserva eliminada exitosamente") {
                         cargarReservas();
-                    }else{
+                    } else {
                         mostrarError(result.message || "Error al eliminar la reserva");
                     }
-                }catch(e){
+                } catch (e) {
                     mostrarError("Error al eliminar la reserva: " + e.message);
                 }
             });
         }
 
-        function crearReserva(event){
-            event.preventDefaut();
+        function crearReserva(event) {
+            event.preventDefault();
 
             const id_reserva = document.getElementById("id_reserva").value;
             const fecha = document.getElementById("fecha").value;
@@ -477,36 +509,36 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
             const id_asignatura = parseInt(document.getElementById("asignatura").value);
             const id_grupo = parseInt(document.getElementById("grupo").value);
 
-            const reserva = {id_reserva, fecha, hora_inicio, hora_fin, id_aula, id_asignatura, id_grupo};
+            const reserva = { id_reserva, fecha, hora_inicio, hora_fin, id_aula, id_asignatura, id_grupo };
 
-            if(id_reserva){
-                hacerSolicitud('reserva_api.php', 'PUT', reserva, function(status, change){
-                    try{
+            if (id_reserva) {
+                hacerSolicitud('reserva_api.php', 'PUT', reserva, function (status, change) {
+                    try {
                         const result = JSON.parse(response);
-                        if(status === 200 && result.message === "Reserva actualizada exitosamente"){
+                        if (status === 200 && result.message === "Reserva actualizada exitosamente") {
                             document.getElementById("reservas-form").reset();
                             document.getElementById("id_reserva").value = null;
                             formTitle.textContent = "Editar Reserva";
                             cargarReservas();
-                        }else{
+                        } else {
                             mostrarError("Error al actualizar la reserva");
 
                         }
-                    }catch(e){
+                    } catch (e) {
                         mostrarError("Error al actualizar la reserva : " + e.message);
                     }
                 });
-            }else{
-                hacerSolicitud('reserva_api.php', 'POST', reserva, function(status, response){
-                    try{
-                        const result =JSON.parse(response);
-                        if(status === 200 && result.message === "Reserva creada exitosamente"){
+            } else {
+                hacerSolicitud('reserva_api.php', 'POST', reserva, function (status, response) {
+                    try {
+                        const result = JSON.parse(response);
+                        if (status === 200 && result.message === "Reserva creada exitosamente") {
                             document.getElementById("reservas-form").reset();
                             cargarReservas();
-                        }else{
-                            errorMessage("Error al crear la reserva");
+                        } else {
+                            mostrarError("Error al crear la reserva");
                         }
-                    }catch(e){
+                    } catch (e) {
                         mostrarError('Error al crear la reserva : ' + e.message);
                     }
                 });
@@ -514,9 +546,21 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
 
         }
 
+        //actualizamos la lista de aulas al cambiar los campos fecha, horario y grupo
+        ['fecha', 'hora_inicio', 'hora_fin', 'grupo'].forEach(id => {
+            document.getElementById(id).addEventListener('change', cargarAulas);
+        })
+
         reservasForm.addEventListener('submit', crearReserva);
 
-        window.onload = function(){
+        reservasForm.addEventListener('reset', function () {
+            formTitle.textContent = 'Reservas';
+            document.querySelector('#reservas-form button[type="submit"]').textContent = 'Crear';
+            document.getElementById('id_reserva').value = '';
+            cargarAulas();
+        })
+
+        window.onload = function () {
             cargarAulas();
             cargarAsignaturas();
             cargarGrupos();
@@ -526,4 +570,5 @@ if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

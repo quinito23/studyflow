@@ -10,7 +10,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 //verificar autenticacion
-if(!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor'){
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     echo json_encode(array("message" => "Acceso denegado"));
     exit;
 }
@@ -23,15 +23,15 @@ $reserva = new Reserva($db);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-switch ($method){
+switch ($method) {
     case 'GET':
-        if(isset($_GET['id'])){
+        if (isset($_GET['id'])) {
             $reserva->id_reserva = $_GET['id'];
-            if($reserva->leer()){
+            if ($reserva->leer()) {
                 $reserva_data = array(
                     "id_reserva" => $reserva->id_reserva,
                     "id_usuario" => $reserva->id_usuario,
-                    "id_aula"=> $reserva->id_aula,
+                    "id_aula" => $reserva->id_aula,
                     "id_asignatura" => $reserva->id_asignatura,
                     "id_grupo" => $reserva->id_grupo,
                     "fecha" => $reserva->fecha,
@@ -40,12 +40,12 @@ switch ($method){
                     "estado" => $reserva->estado
                 );
                 echo json_encode($reserva_data);
-            }else{
+            } else {
                 echo json_encode(array("message" => "Reserva no encontrada"));
             }
-        }else{
+        } else {
             //tenemos que obtener el id_usuario de la sesion
-            $id_usuario = 47;
+            $id_usuario = $_SESSION['id_usuario'];
             $result = $reserva->leer_todos($id_usuario);
             echo json_encode($result);
         }
@@ -54,8 +54,8 @@ switch ($method){
     case 'POST':
         //crear una nueva reserva
         $data = json_decode(file_get_contents("php://input"));
-        if(isset($data->id_aula) && isset($data->id_asignatura) && isset($data->id_grupo) && isset($data->fecha) && isset($data->hora_inicio) && isset($data->hora_fin)){
-            try{
+        if (isset($data->id_aula) && isset($data->id_asignatura) && isset($data->id_grupo) && isset($data->fecha) && isset($data->hora_inicio) && isset($data->hora_fin)) {
+            try {
                 $reserva->id_usuario = $_SESSION['id_usuario'];
                 $reserva->id_aula = $data->id_aula;
                 $reserva->id_asignatura = $data->id_asignatura;
@@ -65,28 +65,27 @@ switch ($method){
                 $reserva->hora_fin = $data->hora_fin;
 
                 $id_reserva = $reserva->crear();
-                if($id_reserva){
+                if ($id_reserva) {
                     echo json_encode(array("message" => "Reserva creada exitosamente"));
-                }else{
+                } else {
                     echo json_encode(array("message" => "No se pudo crear la reserva"));
                 }
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 echo json_encode(array("message" => "Error " . $e->getMessage()));
             }
-        }else{
+        } else {
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
 
     case 'PUT':
-         //actualizar una reserva
-         $data = json_decode(file_get_contents("php://input"));
+        //actualizar una reserva
+        $data = json_decode(file_get_contents("php://input"));
 
-         if(isset($data->id_reserva) && isset($data->id_aula) && isset($data->id_asignatura) && isset($data->id_grupo) && isset($data->fecha) && isset($data->hora_inicio) && isset($data->hora_fin)){
-            try{
-                $reserva->id_reserva = $data->reserva;
+        if (isset($data->id_reserva) && isset($data->id_aula) && isset($data->id_asignatura) && isset($data->id_grupo) && isset($data->fecha) && isset($data->hora_inicio) && isset($data->hora_fin)) {
+            try {
+                $reserva->id_reserva = $data->id_reserva;
                 $reserva->id_usuario = $_SESSION['id_usuario'];
-                $reserva->id_usuario = $data->id_usuario;
                 $reserva->id_aula = $data->id_aula;
                 $reserva->id_asignatura = $data->id_asignatura;
                 $reserva->id_grupo = $data->id_grupo;
@@ -94,15 +93,15 @@ switch ($method){
                 $reserva->hora_inicio = $data->hora_inicio;
                 $reserva->hora_fin = $data->hora_fin;
 
-                if($id_reserva->actualizar()){
+                if ($reserva->actualizar()) {
                     echo json_encode(array("message" => "Reserva actualizada exitosamente"));
-                }else{
+                } else {
                     echo json_encode(array("message" => "No se pudo actualizar la reserva"));
                 }
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 echo json_encode(array("message" => "Error " . $e->getMessage()));
             }
-        }else{
+        } else {
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -110,14 +109,14 @@ switch ($method){
     case 'DELETE':
         //eliminar una reserva
         $data = json_decode(file_get_contents("php://input"));
-        if(isset($data->id_reserva)){
+        if (isset($data->id_reserva)) {
             $reserva->id_reserva = $data->id_reserva;
-            if($reserva->eliminar()){
+            if ($reserva->eliminar()) {
                 echo json_encode(array("message" => "Reserva eliminada exitosamente"));
-            }else{
+            } else {
                 echo json_encode(array("message" => "No se pudo eliminar la reserva"));
             }
-        }else{
+        } else {
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
