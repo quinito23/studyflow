@@ -41,6 +41,15 @@ class Solicitud {
         error_log("Error al crear la solicitud: " . $errorInfo[2]);
         throw new Exception("Error al crear la solicitud");
     }
+
+    //funcion para obtener las asignaturas de la solicitud
+    public function obtenerAsignaturas($id_solicitud){
+        $query = "SELECT a.id_asignatura, a.nombre FROM asignatura a JOIN solicitud_asignatura sa ON a.id_asignatura = sa.id_asignatura WHERE sa.id_solicitud = :id_solicitud";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_solicitud', $id_solicitud, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 
 ?>

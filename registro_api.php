@@ -70,6 +70,20 @@ switch ($method) {
                     throw new Exception("No se pudo crear la solicitud");
                 }
 
+                //Asociamos las asignaturas a la solicitud
+                if(isset($data->asignaturas) && is_array($data->asignaturas) && !empty($data->asignaturas)){
+                    $query = "INSERT INTO solicitud_asignatura (id_solicitud, id_asignatura) VALUES (:id_solicitud, :id_asignatura)";
+                    $stmt = $db->prepare($query);
+
+                    foreach($data->asignaturas as $id_asignatura){
+                        $stmt->bindParam(':id_solicitud', $id_solicitud, PDO::PARAM_INT);
+                        $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
+                        if(!$stmt->execute()){
+                            throw new Exception("Error al asociar asignatura a la solicitud");
+                        }
+                    }
+                }
+
                 // Confirmamos la transacción
                 $db->commit();
 

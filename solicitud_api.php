@@ -27,17 +27,23 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        //Listamos todas las solicitudes con los datos del anonimo
-        try {
-            $query = "SELECT s.id_solicitud, s.id_anonimo, s.estado, s.fecha_realizacion, s.rol_propuesto, a.nombre, a.apellidos, a.correo FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo";
-
-            $stmt = $db->prepare($query);
-            $stmt->execute();
-            $solicitudes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($solicitudes);
-        } catch (Exception $e) {
-            error_log("Error al listar solicitudes: " . $e->getMessage());
-            echo json_encode(array("message" => "Error al listar solicitudes: " . $e->getMessage()));
+        if(isset($_GET['getAsignaturas'])){
+            $id_solicitud = intval($_GET['getAsignaturas']);
+            $asignaturas = $solicitud->obtenerAsignaturas($id_solicitud);
+            echo json_encode($asignaturas);
+        }else{
+            //Listamos todas las solicitudes con los datos del anonimo
+            try {
+                $query = "SELECT s.id_solicitud, s.id_anonimo, s.estado, s.fecha_realizacion, s.rol_propuesto, a.nombre, a.apellidos, a.correo FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo";
+    
+                $stmt = $db->prepare($query);
+                $stmt->execute();
+                $solicitudes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($solicitudes);
+            } catch (Exception $e) {
+                error_log("Error al listar solicitudes: " . $e->getMessage());
+                echo json_encode(array("message" => "Error al listar solicitudes: " . $e->getMessage()));
+            }
         }
         break;
     case 'POST':
@@ -88,13 +94,13 @@ switch ($method) {
                 }
 
                 // Obtener el ID del usuario recién creado
-                $idUsuario = $usuario->id_usuario;
+                $id_usuario = $usuario->id_usuario;
 
 
                 // y según el rol , lo agregamos a alumno o profesor
 
                 if ($solicitudData['rol_propuesto'] === 'alumno') {
-                    $alumno->id_usuario = $idUsuario;
+                    $alumno->id_usuario = $id_usuario;
                     $alumno->correo = $solicitudData['correo'];
                     $alumno->contrasenia = $solicitudData['contrasenia'];
                     $alumno->nombre = $solicitudData['nombre'];
@@ -104,11 +110,23 @@ switch ($method) {
                     $alumno->DNI = null;
                     $alumno->fecha_nacimiento = null;
                     $tutores = []; // No asignamos tutores inicialmente
+
+                    if(isset($data->grupos) && is_array($data->grupos) && !empty($data->grupos)){
+                        foreach($data->grupos as $id_grupo){
+                            $query = "INSERT INTO alumno_grupo(id_usuario, id_grupo) VALUES (:id_usuario, :id_grupo)";
+                            $stmt = $db->prepare($query);
+                            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                            $stmt->bindParam(':id_grupo', $id_grupo, PDO::PARAM_INT);
+                            $stmt->execute();
+
+                        }
+                    }
+
                     if (!$alumno->crear($tutores)) {
                         throw new Exception("No se pudo crear el alumno");
                     }
                 } elseif ($solicitudData['rol_propuesto'] === 'profesor') {
-                    $profesor->id_usuario = $idUsuario;
+                    $profesor->id_usuario = $id_usuario;
                     $profesor->correo = $solicitudData['correo'];
                     $profesor->contrasenia = $solicitudData['contrasenia'];
                     $profesor->nombre = $solicitudData['nombre'];
@@ -124,7 +142,22 @@ switch ($method) {
                     if (!$profesor->crear()) {
                         throw new Exception("No se pudo crear el profesor");
                     }
+
+                    //asignar las asignaturas propuestas en la solicitud al profesor
+                    $asignaturas = $solicitud->obtenerAsignaturas($idSolicitud);
+                    if(!empty($asignaturas)){
+                        $query = "UPDATE asignatura SET id_usuario = :id_usuario WHERE id_asignatura = :id_asignatura";
+                        $stmt = $db->prepare($query);
+                        foreach($asignaturas as $asignatura){
+                            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                            $stmt->bindParam(':id_asignatura', $asignatura['id_asignatura'], PDO::PARAM_INT);
+                            if(!$stmt->execute()){
+                                throw new Exception("Error al asignar asignatura al profesor");
+                            }
+                        }
+                    }
                 }
+                
 
                 //actualizamos el estado de la solicitud a 'aceptado'
                 $query = "UPDATE solicitud SET estado = 'aceptado' WHERE id_solicitud = :id_solicitud";
