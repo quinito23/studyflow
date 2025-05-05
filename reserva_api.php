@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 
 include_once 'DBConnection.php';
 include_once 'reserva.php';
@@ -99,7 +99,7 @@ switch ($method) {
                     echo json_encode(array("message" => "No se pudo actualizar la reserva"));
                 }
             } catch (Exception $e) {
-                echo json_encode(array("message" => "Error " . $e->getMessage()));
+                echo json_encode(array("message" => "Error :" . $e->getMessage()));
             }
         } else {
             echo json_encode(array("message" => "Faltan datos requeridos"));

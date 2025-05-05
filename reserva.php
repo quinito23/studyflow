@@ -50,13 +50,13 @@ class Reserva
     }
 
     //Metodo para verificar que un grupo no este asociado a otra asignatura con reserva activa
-    protected function verificarAsignacionGrupo()
+    public function verificarAsignacionGrupo()
     {
         if (!$this->id_grupo || !$this->id_asignatura)
             return true;
 
         $currentTime = date('Y-m-d H:i:s');
-        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE id_grupo = :id_grupo AND id_asignatura != :id_asignatura AND (CONCAT(fecha, ' ', hora_fin) > :currentTime) AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio) AND id_reserva != :id_reserva";
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE id_grupo = :id_grupo AND id_asignatura != :id_asignatura AND fecha = :fecha AND (CONCAT(fecha, ' ', hora_fin) > :currentTime) AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio) AND id_reserva != :id_reserva";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_grupo', $this->id_grupo, PDO::PARAM_INT);
         $stmt->bindParam(':id_asignatura', $this->id_asignatura, PDO::PARAM_INT);
@@ -162,7 +162,7 @@ class Reserva
                 "id_asignatura" => $row['id_asignatura'],
                 "id_grupo" => $row['id_grupo'],
                 "fecha" => $row['fecha'],
-                "hora inicio" => $row['hora_inicio'],
+                "hora_inicio" => $row['hora_inicio'],
                 "hora_fin" => $row['hora_fin'],
                 "estado" => $row['estado'],
                 "aula" => $row['aula'],

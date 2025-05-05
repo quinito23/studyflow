@@ -360,14 +360,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             let url = 'aula_api.php';
             if (fecha && hora_inicio && hora_fin) {
                 url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
-                if (id_grupo) {
-                    url += `&id_grupo=${id_grupo}`;
-                } else if (id_asignatura) {
-                    url += `&id_asignatura=${id_asignatura}`;
-                }
+                if (id_grupo) url += `&id_grupo=${id_grupo}`;
+                if (id_asignatura) url += `&id_asignatura=${id_asignatura}`;
             }
 
-            hacerSolicitud('aula_api.php', 'GET', null, function (status, response) {
+            hacerSolicitud(url, 'GET', null, function (status, response) {
                 try {
                     const aulas = JSON.parse(response);
                     const aulaSelect = document.getElementById('aula');
@@ -512,7 +509,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             const reserva = { id_reserva, fecha, hora_inicio, hora_fin, id_aula, id_asignatura, id_grupo };
 
             if (id_reserva) {
-                hacerSolicitud('reserva_api.php', 'PUT', reserva, function (status, change) {
+                hacerSolicitud('reserva_api.php', 'PUT', reserva, function (status, response) {
                     try {
                         const result = JSON.parse(response);
                         if (status === 200 && result.message === "Reserva actualizada exitosamente") {

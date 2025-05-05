@@ -1,10 +1,17 @@
+<?php
+session_start();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         body {
             background-color: #2D2C55;
@@ -65,18 +72,22 @@
         }
     </style>
 </head>
+
 <body>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane" aria-selected="true">Iniciar Sesión</button>
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane"
+                type="button" role="tab" aria-controls="login-tab-pane" aria-selected="true">Iniciar Sesión</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="registro-tab" data-bs-toggle="tab" data-bs-target="#registro-tab-pane" type="button" role="tab" aria-controls="registro-tab-pane" aria-selected="false">Registro</button>
+            <button class="nav-link" id="registro-tab" data-bs-toggle="tab" data-bs-target="#registro-tab-pane"
+                type="button" role="tab" aria-controls="registro-tab-pane" aria-selected="false">Registro</button>
         </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel" aria-labelledby="login-tab" tabindex="0">
+        <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel" aria-labelledby="login-tab"
+            tabindex="0">
             <div class="card login-card">
                 <div class="card-header">
                     <h3>Iniciar Sesión</h3>
@@ -85,11 +96,13 @@
                     <form id="login-form">
                         <div class="mb-3">
                             <label for="correo-login" class="form-label">Correo electronico</label>
-                            <input type="email" class="form-control" id="correo-login" name="correo" placeholder="Ingrese el correo electronico" required>
+                            <input type="email" class="form-control" id="correo-login" name="correo"
+                                placeholder="Ingrese el correo electronico" required>
                         </div>
                         <div class="mb-3">
                             <label for="contrasenia-login" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="contrasenia-login" name="contrasenia" placeholder="Ingrese la contraseña" required>
+                            <input type="password" class="form-control" id="contrasenia-login" name="contrasenia"
+                                placeholder="Ingrese la contraseña" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                     </form>
@@ -105,23 +118,28 @@
                     <form id="registro-form">
                         <div class="mb-3">
                             <label for="correo-registro" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="correo-registro" name="correo" placeholder="Ingrese el correo electrónico" required>
+                            <input type="email" class="form-control" id="correo-registro" name="correo"
+                                placeholder="Ingrese el correo electrónico" required>
                         </div>
                         <div class="mb-3">
                             <label for="contrasenia-registro" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="contrasenia-registro" name="contrasenia" placeholder="Ingrese la contraseña" required>
+                            <input type="password" class="form-control" id="contrasenia-registro" name="contrasenia"
+                                placeholder="Ingrese la contraseña" required>
                         </div>
                         <div class="mb-3">
                             <label for="nombre-registro" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre-registro" name="nombre" placeholder="Ingrese su nombre" required>
+                            <input type="text" class="form-control" id="nombre-registro" name="nombre"
+                                placeholder="Ingrese su nombre" required>
                         </div>
                         <div class="mb-3">
                             <label for="apellidos-registro" class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" id="apellidos-registro" name="apellidos" placeholder="Ingrese sus apellidos" required>
+                            <input type="text" class="form-control" id="apellidos-registro" name="apellidos"
+                                placeholder="Ingrese sus apellidos" required>
                         </div>
                         <div class="mb-3">
                             <label for="telefono-registro" class="form-label">Telefono</label>
-                            <input type="text" class="form-control" id="telefono-registro" name="telefono" placeholder="Ingrese su teléfono" required>
+                            <input type="text" class="form-control" id="telefono-registro" name="telefono"
+                                placeholder="Ingrese su teléfono" required>
                         </div>
                         <div class="mb-3">
                             <label for="rol-registro" class="form-label">Rol propuesto</label>
@@ -157,23 +175,23 @@
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
-        function cargarAsignaturas(){
-            hacerSolicitud('asignatura_api.php', 'GET', null, function(status, response){
-                try{
-                    if(status === 200){
+        function cargarAsignaturas() {
+            hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
+                try {
+                    if (status === 200) {
                         const asignaturas = JSON.parse(response);
                         const selectAsignaturas = document.getElementById("asignaturas-registro");
                         selectAsignaturas.innerHTML = '';
-                        asignaturas.forEach(asignatura=>{
+                        asignaturas.forEach(asignatura => {
                             const option = document.createElement('option');
                             option.value = asignatura.id_asignatura;
                             option.textContent = asignatura.nombre;
                             selectAsignaturas.appendChild(option);
                         });
-                    }else{
+                    } else {
                         mostrarNotificacion("Error al cargar las asignaturas");
                     }
-                }catch(e){
+                } catch (e) {
                     mostrarNotificacion("Error al cargar las asignaturas");
                 }
             });
@@ -187,7 +205,7 @@
 
             const usuario = { correo: correo, contrasenia: contrasenia };
 
-            hacerSolicitud('login_api.php', 'POST', usuario, function(status, response) {
+            hacerSolicitud('login_api.php', 'POST', usuario, function (status, response) {
                 console.log("Status (login_api.php):", status);
                 console.log("Response (login_api.php):", response);
                 try {
@@ -198,7 +216,7 @@
                         } else if (result.rol === "alumno") {
                             window.location.href = 'PanelAlumno.php';
                         } else if (result.rol === "profesor") {
-                            window.location.href = 'PanelProfesor.php';
+                            window.location.href = 'reservas.php';
                         }
                     } else {
                         console.error("Error en login:", result.message);
@@ -221,12 +239,12 @@
 
             //datos de la asignatura
             const selectedAsignaturas = document.getElementById("asignaturas-registro").selectedOptions;
-            const asignaturas = Array.from(selectedAsignaturas).map(option=>option.value);
+            const asignaturas = Array.from(selectedAsignaturas).map(option => option.value);
 
             const datosRegistro = { correo, contrasenia, nombre, apellidos, telefono, rol_propuesto, asignaturas };
             console.log("Datos del registro:", datosRegistro);
 
-            hacerSolicitud('registro_api.php', 'POST', datosRegistro, function(status, response) {
+            hacerSolicitud('registro_api.php', 'POST', datosRegistro, function (status, response) {
                 console.log("Status (registro_api.php):", status);
                 console.log("Response (registro_api.php):", response);
                 try {
@@ -245,10 +263,11 @@
         document.getElementById("login-form").addEventListener("submit", iniciarSesion);
         document.getElementById("registro-form").addEventListener("submit", registrarAnonimo);
 
-        window.onload = function(){
+        window.onload = function () {
             cargarAsignaturas();
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
