@@ -64,6 +64,12 @@ switch ($method) {
                 $reserva->hora_inicio = $data->hora_inicio;
                 $reserva->hora_fin = $data->hora_fin;
 
+                //verificamos que no haya solapamiento con otra reserva
+                if (!$reserva->verificarSolapamiento()) {
+                    echo json_encode(array('error' => 'Ya existe una reserva para este grupo en el horario seleccionado'));
+                    exit;
+                }
+
                 $id_reserva = $reserva->crear();
                 if ($id_reserva) {
                     echo json_encode(array("message" => "Reserva creada exitosamente"));
@@ -92,6 +98,12 @@ switch ($method) {
                 $reserva->fecha = $data->fecha;
                 $reserva->hora_inicio = $data->hora_inicio;
                 $reserva->hora_fin = $data->hora_fin;
+
+                //verificar solapamiento
+                if (!$reserva->verificarSolapamiento()) {
+                    echo json_encode(array('error' => 'Ya existe una reserva para este grupo en el horario seleccionado'));
+                    exit;
+                }
 
                 if ($reserva->actualizar()) {
                     echo json_encode(array("message" => "Reserva actualizada exitosamente"));

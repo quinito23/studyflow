@@ -32,8 +32,16 @@ switch ($method) {
                 echo json_encode(array("message" => "Grupo no encontrado"));
             }
         } else {
+            $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : null;
+            $hora_inicio = isset($_GET['hora_inicio']) ? $_GET['hora_inicio'] : null;
+            $hora_fin = isset($_GET['hora_fin']) ? $_GET['hora_fin'] : null;
+
             try {
-                $grupos = $grupo->leer_todos();
+                if ($fecha && $hora_inicio && $hora_fin) {
+                    $grupos = $grupo->leerDisponibles($fecha, $hora_inicio, $hora_fin);
+                } else {
+                    $grupos = $grupo->leer_todos();
+                }
                 echo json_encode($grupos);
             } catch (Exception $e) {
                 echo json_encode(array("message" => "Error al listar grupos : " . $e->getMessage()));

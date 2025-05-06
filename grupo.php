@@ -63,6 +63,31 @@ class Grupo
         return $grupos;
     }
 
+    //metodo para leer todos los grupos disponibles en una franja horaria , para evitar reservas solapadas
+    public function leerDisponibles($fecha, $hora_inicio, $hora_fin)
+    {
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre as nombre_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura LEFT JOIN reserva r ON r.id_grupo = g.id_grupo AND r.fecha = :fecha AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio) AND r.estado IN ('activa', 'pendiente') WHERE r.id_reserva IS NULL GROUP BY g.id_grupo ORDER BY g.nombre ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':fecha', $fecha);
+        $stmt->bindParam(':hora_inicio', $hora_inicio);
+        $stmt->bindParam(':hora_fin', $hora_fin);
+        $stmt->execute();
+
+        $grupos = array();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $grupos[] = array(
+                "id_grupo" => $row['id_grupo'],
+                "nombre" => $row['nombre'],
+                "capacidad_maxima" => $row['capacidad_maxima'],
+                "id_asignatura" => $row['id_asignatura'],
+                "nombre_asignatura" => $row['nombre_asignatura'],
+                "numero_alumnos" => $row['numero_alumnos']
+            );
+        }
+        return $grupos;
+    }
+
     //leer un grupo específico
     public function leer()
     {

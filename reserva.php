@@ -49,26 +49,31 @@ class Reserva
         return $stmt->fetchColumn() == 0;
     }
 
-    //Metodo para verificar que un grupo no este asociado a otra asignatura con reserva activa
-    public function verificarAsignacionGrupo()
+    //Metodo para verificar que no se puedan solapar las reservas
+    public function verificarSolapamiento()
     {
-        if (!$this->id_grupo || !$this->id_asignatura)
+        if (!$this->id_grupo || !$this->fecha || !$this->hora_inicio || !$this->hora_fin) {
             return true;
+        }
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE id_grupo = :id_grupo AND fecha = :fecha AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio)";
 
-        $currentTime = date('Y-m-d H:i:s');
-        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE id_grupo = :id_grupo AND id_asignatura != :id_asignatura AND fecha = :fecha AND (CONCAT(fecha, ' ', hora_fin) > :currentTime) AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio) AND id_reserva != :id_reserva";
+        if ($this->id_reserva) {
+            $query .= " AND id_reserva != :id_reserva";
+        }
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_grupo', $this->id_grupo, PDO::PARAM_INT);
-        $stmt->bindParam(':id_asignatura', $this->id_asignatura, PDO::PARAM_INT);
         $stmt->bindParam(':fecha', $this->fecha);
         $stmt->bindParam(':hora_inicio', $this->hora_inicio);
         $stmt->bindParam(':hora_fin', $this->hora_fin);
-        $stmt->bindParam(':currentTime', $currentTime);
-        $stmt->bindParam(':id_reserva', $this->id_reserva, PDO::PARAM_INT);
+        if ($this->id_reserva) {
+            $stmt->bindParam(':id_reserva', $this->id_reserva, PDO::PARAM_INT);
+        }
 
         $stmt->execute();
         return $stmt->fetchColumn() == 0;
     }
+
 
     //metodo para calcular el estado de la reserva
     protected function calcularEstado()
@@ -90,11 +95,6 @@ class Reserva
         //verificar la disponibilidad del aula
         if (!$this->verificarDisponibilidad()) {
             throw new Exception("El aula no esta disponible en ese horario");
-        }
-
-        //verificamos que el grupo no este asociado a otra asignatura con reserva activa
-        if (!$this->verificarAsignacionGrupo()) {
-            throw new Exception("El grupo ya tiene una reserva activa");
         }
 
         //iniciamos una transaccion
@@ -217,9 +217,6 @@ class Reserva
             throw new Exception("El aula no esta disponible en ese horario");
         }
 
-        if (!$this->verificarAsignacionGrupo()) {
-            throw new Exception("El grupo ya esta asociado a otra asignatura en una reserva activa");
-        }
 
         $query = "UPDATE " . $this->table_name . " SET id_aula = :id_aula, id_asignatura = :id_asignatura, id_grupo = :id_grupo, fecha = :fecha, hora_inicio = :hora_inicio, hora_fin = :hora_fin, estado = :estado WHERE id_reserva = :id_reserva";
         $stmt = $this->conn->prepare($query);

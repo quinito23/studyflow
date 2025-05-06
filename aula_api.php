@@ -39,7 +39,7 @@ if ($fecha && $hora_inicio && $hora_fin) {
 
     //consulta para obtener las aulas disponibles
     $currentTime = date('Y-m-d H:i:s');
-    $query = "SELECT a.id_aula, a.nombre FROM aula a LEFT JOIN reserva r ON a.id_aula = r.id_aula AND r.fecha = :fecha AND (CONCAT(r.fecha, ' ', r.hora_fin) > :currentTime) AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio) AND r.id_reserva != 0 WHERE r.id_aula IS NULL";
+    $query = "SELECT a.id_aula, a.nombre FROM aula a LEFT JOIN reserva r ON a.id_aula = r.id_aula AND r.fecha = :fecha AND (CONCAT(r.fecha, ' ', r.hora_fin) > :currentTime) AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio) WHERE r.id_aula IS NULL";
     $stmt = $db->prepare($query);
     $stmt->bindParam(':fecha', $fecha);
     $stmt->bindParam(':hora_inicio', $hora_inicio);
@@ -50,29 +50,10 @@ if ($fecha && $hora_inicio && $hora_fin) {
 
     $aulas = array(); //array que contendra las aulas disponibles
     foreach ($listaAulas as $aula) {
-        $reserva = new Reserva($db);
-        $reserva->id_aula = $aula['id_aula'];
-        $reserva->fecha = $fecha;
-        $reserva->hora_inicio = $hora_inicio;
-        $reserva->hora_fin = $hora_fin;
-        $reserva->id_reserva = 0; // para evitar comparar con la propia reserva , y asi evitar un fallo grave
-
-        $disponible = true;
-
-        //verificamos si el grupo ya tiene un reserva hecha para ese horario
-        if ($id_grupo && $disponible) {
-            $reserva->id_grupo = $id_grupo;
-            $reserva->id_asignatura = $id_asignatura;
-            $disponible = $reserva->verificarAsignacionGrupo();
-        }
-
-        if ($disponible) {
-            $aulas[] = array(
-                "id_aula" => $aula['id_aula'],
-                "nombre" => $aula["nombre"]
-            );
-        }
-
+        $aulas[] = array(
+            "id_aula" => $aula['id_aula'],
+            "nombre" => $aula["nombre"]
+        );
     }
 } else {
     //si no se proporcionan horarios , devolver todas las aulas

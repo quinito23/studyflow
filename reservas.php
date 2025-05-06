@@ -244,10 +244,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         <div class="offcanvas-body">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="reservas.html">Reservar</a>
+                    <a class="nav-link active" href="reservas.php">Reservar</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="misReservas.html">Mis Reservas</a>
+                    <a class="nav-link" href="mis_reservas.php">Mis Reservas</a>
                 </li>
             </ul>
         </div>
@@ -408,17 +408,35 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         }
 
         function cargarGrupos() {
-            hacerSolicitud('grupo_api.php', 'GET', null, function (status, response) {
+            const fecha = document.getElementById('fecha').value;
+            const hora_inicio = document.getElementById('hora_inicio').value;
+            const hora_fin = document.getElementById('hora_fin').value;
+
+            let url = 'grupo_api.php';
+            if (fecha && hora_inicio && hora_fin) {
+                url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
+            }
+
+            hacerSolicitud(url, 'GET', null, function (status, response) {
                 try {
                     const grupos = JSON.parse(response);
                     const grupoSelect = document.getElementById('grupo');
                     grupoSelect.innerHTML = '<option value="">Seleccione un grupo</option>';
-                    grupos.forEach(grupo => {
+                    if (grupos.length > 0) {
+                        grupos.forEach(grupo => {
+                            const option = document.createElement('option');
+                            option.value = grupo.id_grupo;
+                            option.textContent = grupo.nombre;
+                            grupoSelect.appendChild(option);
+                        });
+                    } else {
                         const option = document.createElement('option');
-                        option.value = grupo.id_grupo;
-                        option.textContent = grupo.nombre;
+                        option.value = '';
+                        option.textContent = 'No hay grupos disponibles para este horario';
+                        option.disabled = true;
                         grupoSelect.appendChild(option);
-                    });
+                    }
+
                 } catch (e) {
                     mostrarError("Error al cargar los grupos: " + e.message);
                 }
@@ -473,6 +491,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                     formTitle.textContent = 'Editar Reserva';
                     document.querySelector('#reservas-form button[type="submit"]').textContent = 'Actualizar';
                     cargarAulas(); //recargamos las aulas disponibles con el nuevo horario y grupo
+                    cargarGrupos();
                 } catch (e) {
                     mostrarError("Error al cargar la reserva para editar: " + e.message);
                 }
@@ -544,9 +563,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         }
 
         //actualizamos la lista de aulas al cambiar los campos fecha, horario y grupo
-        ['fecha', 'hora_inicio', 'hora_fin', 'grupo'].forEach(id => {
-            document.getElementById(id).addEventListener('change', cargarAulas);
-        })
+        ['fecha', 'hora_inicio', 'hora_fin'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function () {
+                cargarAulas();
+                cargarGrupos();
+            });
+        });
 
         reservasForm.addEventListener('submit', crearReserva);
 
