@@ -216,7 +216,7 @@ session_start();
                         } else if (result.rol === "alumno") {
                             window.location.href = 'PanelAlumno.php';
                         } else if (result.rol === "profesor") {
-                            window.location.href = 'reservas.php';
+                            window.location.href = 'vista_reservas.php';
                         }
                     } else {
                         console.error("Error en login:", result.message);

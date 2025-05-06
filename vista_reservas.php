@@ -286,7 +286,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             </div>
             <input type="hidden" id="id_reserva">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Actualizar</button>
+                <button class="btn btn-primary" type="submit">Crear</button>
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </div>
         </form>
@@ -305,7 +305,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                         <th scope="col">Profesor</th>
                         <th scope="col">Grupo</th>
                         <th scope="col">Estado</th>
-                        <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="reservas-lista">
@@ -444,7 +443,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         }
 
         function cargarReservas() {
-            hacerSolicitud('reserva_api.php', 'GET', null, function (status, response) {
+            hacerSolicitud('reserva_api.php?todas=1', 'GET', null, function (status, response) {
                 try {
                     const reservas = JSON.parse(response);
                     reservasLista.innerHTML = '';
@@ -458,57 +457,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                             <td>${reserva.profesor}</td>
                             <td>${reserva.grupo}</td>
                             <td>${reserva.estado}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm me-1" onclick="editarReserva(${reserva.id_reserva})">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm" onclick="eliminarReserva(${reserva.id_reserva})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
                         </tr>
-
                         `;
                         reservasLista.innerHTML += row;
                     });
                 } catch (e) {
                     mostrarError("Error al cargar las reservas: " + e.message);
-                }
-            });
-        }
-
-        function editarReserva(id_reserva) {
-            hacerSolicitud(`reserva_api.php?id=${id_reserva}`, 'GET', null, function (status, response) {
-                try {
-                    const reserva = JSON.parse(response);
-                    document.getElementById('id_reserva').value = reserva.id_reserva;
-                    document.getElementById('fecha').value = reserva.fecha;
-                    document.getElementById('hora_inicio').value = reserva.hora_inicio;
-                    document.getElementById('hora_fin').value = reserva.hora_fin;
-                    document.getElementById('aula').value = reserva.id_aula;
-                    document.getElementById('asignatura').value = reserva.id_asignatura;
-                    document.getElementById('grupo').value = reserva.id_grupo;
-                    formTitle.textContent = 'Editar Reserva';
-                    cargarAulas(); //recargamos las aulas disponibles con el nuevo horario y grupo
-                    cargarGrupos();
-                } catch (e) {
-                    mostrarError("Error al cargar la reserva para editar: " + e.message);
-                }
-            });
-        }
-
-        function eliminarReserva(id_reserva) {
-            if (!confirm('¿Estás seguro de eliminar esta reserva?')) return;
-            hacerSolicitud('reserva_api.php', 'DELETE', { id_reserva: id_reserva }, function (status, response) {
-                try {
-                    const result = JSON.parse(response);
-                    if (status === 200 && result.message === "Reserva eliminada exitosamente") {
-                        cargarReservas();
-                    } else {
-                        mostrarError(result.message || "Error al eliminar la reserva");
-                    }
-                } catch (e) {
-                    mostrarError("Error al eliminar la reserva: " + e.message);
                 }
             });
         }
@@ -526,40 +480,22 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
 
             const reserva = { id_reserva, fecha, hora_inicio, hora_fin, id_aula, id_asignatura, id_grupo };
 
-            if (id_reserva) {
-                hacerSolicitud('reserva_api.php', 'PUT', reserva, function (status, response) {
-                    try {
-                        const result = JSON.parse(response);
-                        if (status === 200 && result.message === "Reserva actualizada exitosamente") {
-                            document.getElementById("reservas-form").reset();
-                            document.getElementById("id_reserva").value = null;
-                            formTitle.textContent = "Editar Reserva";
-                            cargarReservas();
-                        } else {
-                            mostrarError("Error al actualizar la reserva");
-
-                        }
-                    } catch (e) {
-                        mostrarError("Error al actualizar la reserva : " + e.message);
+            hacerSolicitud('reserva_api.php', 'POST', reserva, function (status, response) {
+                try {
+                    const result = JSON.parse(response);
+                    if (status === 200 && result.message === "Reserva creada exitosamente") {
+                        document.getElementById("reservas-form").reset();
+                        cargarReservas();
+                    } else {
+                        mostrarError("Error al crear la reserva");
                     }
-                });
-            } else {
-                hacerSolicitud('reserva_api.php', 'POST', reserva, function (status, response) {
-                    try {
-                        const result = JSON.parse(response);
-                        if (status === 200 && result.message === "Reserva creada exitosamente") {
-                            document.getElementById("reservas-form").reset();
-                            cargarReservas();
-                        } else {
-                            mostrarError("Error al crear la reserva");
-                        }
-                    } catch (e) {
-                        mostrarError('Error al crear la reserva : ' + e.message);
-                    }
-                });
-            }
-
+                } catch (e) {
+                    mostrarError('Error al crear la reserva : ' + e.message);
+                }
+            });
         }
+
+
 
         //actualizamos la lista de aulas al cambiar los campos fecha, horario y grupo
         ['fecha', 'hora_inicio', 'hora_fin'].forEach(id => {
@@ -573,9 +509,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
 
         reservasForm.addEventListener('reset', function () {
             formTitle.textContent = 'Reservas';
+            document.querySelector('#reservas-form button[type="submit"]').textContent = 'Crear';
             document.getElementById('id_reserva').value = '';
             cargarAulas();
-            cargarGrupos();
         })
 
         window.onload = function () {

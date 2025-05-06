@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 
 include_once 'DBConnection.php';
 include_once 'reserva.php';
@@ -10,7 +10,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 //verificar autenticacion
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
+if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'profesor' && $_SESSION['rol'] != 'administrador')) {
     echo json_encode(array("message" => "Acceso denegado"));
     exit;
 }
@@ -44,9 +44,14 @@ switch ($method) {
                 echo json_encode(array("message" => "Reserva no encontrada"));
             }
         } else {
-            //tenemos que obtener el id_usuario de la sesion
-            $id_usuario = $_SESSION['id_usuario'];
-            $result = $reserva->leer_todos($id_usuario);
+            if (isset($_GET['todas']) && $_GET['todas'] == 1) {
+                $result = $reserva->leer_todos(null); // le pasamos null para obtener todas las reservas
+            } else {
+                //tenemos que obtener el id_usuario de la sesion
+                $id_usuario = $_SESSION['id_usuario'];
+                $result = $reserva->leer_todos($id_usuario);
+            }
+
             echo json_encode($result);
         }
         break;

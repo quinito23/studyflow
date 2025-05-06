@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 
 class Reserva
 {
@@ -20,16 +20,6 @@ class Reserva
     {
         $this->conn = $db;
     }
-
-    //metodo para verificar que el usuario es un profesor
-    private function esProfesor($id_usuario)
-    {
-        if (!isset($_SESSION['id_usuario']) || $_SESSION['id_usuario'] != $id_usuario || $_SESSION['rol'] != 'profesor') {
-            return false;
-        }
-        return true;
-    }
-
     //metodo para verificar disponibilidad del aula considerando solo reservas activas
     protected function verificarDisponibilidad()
     {
@@ -87,10 +77,7 @@ class Reserva
     //metodo para crear una nueva reserva
     public function crear()
     {
-        //primero verificamos que el usuario que la crea es un profesor
-        if (!$this->esProfesor($this->id_usuario)) {
-            throw new Exception("El usuario no es un profesor");
-        }
+
 
         //verificar la disponibilidad del aula
         if (!$this->verificarDisponibilidad()) {
@@ -139,18 +126,22 @@ class Reserva
 
 
     //metodo para leer las reservas de un usuario
-    public function leer_todos($id_usuario)
+    public function leer_todos($id_usuario = null)
     {
-        //primero verificamos que el usuario es un profesor
-        if (!$this->esProfesor($id_usuario)) {
-            throw new Exception("El usuario no es un profesor");
-        }
+
 
         $currentTime = date("Y-m-d H:i:s");
-        $query = "SELECT r.id_reserva, r.id_usuario, r.id_aula, r.id_asignatura, r.id_grupo, r.fecha, r.hora_inicio, r.hora_fin, CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END AS estado, a.nombre AS aula , asig.nombre AS asignatura, g.nombre AS grupo, u.nombre AS profesor FROM " . $this->table_name . " r JOIN aula a ON r.id_aula = a.id_aula JOIN asignatura asig ON r.id_asignatura = asig.id_asignatura JOIN grupo g ON r.id_grupo = g.id_grupo JOIN usuario u ON r.id_usuario = u.id_usuario WHERE r.id_usuario = :id_usuario ORDER BY r.fecha DESC, r.hora_inicio DESC";
+        $query = "SELECT r.id_reserva, r.id_usuario, r.id_aula, r.id_asignatura, r.id_grupo, r.fecha, r.hora_inicio, r.hora_fin, CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END AS estado, a.nombre AS aula , asig.nombre AS asignatura, g.nombre AS grupo, u.nombre AS profesor FROM " . $this->table_name . " r JOIN aula a ON r.id_aula = a.id_aula JOIN asignatura asig ON r.id_asignatura = asig.id_asignatura JOIN grupo g ON r.id_grupo = g.id_grupo JOIN usuario u ON r.id_usuario = u.id_usuario ";
+        if ($id_usuario !== null) {
+            $query .= "     WHERE r.id_usuario = :id_usuario";
+        }
+        $query .= " ORDER BY r.fecha DESC, r.hora_inicio DESC";
+
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
         $stmt->bindParam(':currentTime', $currentTime);
+        if ($id_usuario !== null) {
+            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+        }
         $stmt->execute();
 
         $reservas = array();
@@ -207,10 +198,7 @@ class Reserva
     //metodo para actualizar una reserva
     public function actualizar()
     {
-        //verificar que el usuario sea un profesor
-        if (!$this->esProfesor($this->id_usuario)) {
-            throw new Exception("El usuario no es un profesor");
-        }
+
 
         //verificar la disponibilidad del aula
         if (!$this->verificarDisponibilidad()) {

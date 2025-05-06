@@ -2,7 +2,7 @@
 session_start();
 
 //verificar autenticacion y rol
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     header("Location: login.php");
     exit;
 }
@@ -444,7 +444,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         }
 
         function cargarReservas() {
-            hacerSolicitud('reserva_api.php', 'GET', null, function (status, response) {
+            hacerSolicitud('reserva_api.php?todas=1', 'GET', null, function (status, response) {
                 try {
                     const reservas = JSON.parse(response);
                     reservasLista.innerHTML = '';
