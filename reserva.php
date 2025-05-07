@@ -65,31 +65,65 @@ class Reserva
     }
 
     //metodo para obtener las reservas activas por asignatura
-    public function obtenerPorAsignatura($id_asignatura)
+    public function obtenerPorAsignatura($id_asignatura, $id_usuario = null)
     {
-        $currentTime = date('Y-m-d H:i:s');
-        $query = "SELECT r.id_reserva, r.id_usuario, r.id_aula, r.id_asignatura, r.id_grupo, r.fecha, r.hora_inicio, r.hora_fin, CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END AS estado, a.nombre AS aula, asig.nombre AS asignatura, g.nombre AS grupo, u.nombre AS profesor FROM " . $this->table_name . " r JOIN aula a ON r.id_aula = a.id_aula JOIN asignatura asig ON r.id_asignatura = asig.id_asignatura JOIN grupo g ON r.id_grupo = g.id_grupo JOIN usuario u ON r.id_usuario = u.id_usuario WHERE r.id_asignatura = :id_asignatura AND CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END = 'activa'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
-        $stmt->bindParam(':currentTime', $currentTime);
-        $stmt->execute();
-
-        $reservas = array();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $reservas[] = array(
-                "id_reserva" => $row['id_reserva'],
-                "fecha" => $row['fecha'],
-                "hora_inicio" => $row['hora_inicio'],
-                "hora_fin" => $row['hora_fin'],
-                "estado" => $row['estado'],
-                "aula" => $row['aula'],
-                "asignatura" => $row['asignatura'],
-                "grupo" => $row['grupo'],
-                "profesor" => $row['profesor']
-            );
+        // Validar que id_asignatura sea un entero
+        if (!is_numeric($id_asignatura) || (int)$id_asignatura <= 0) {
+            return [];
         }
-        return $reservas;
+
+        try {
+            $currentTime = date('Y-m-d H:i:s');
+            $query = "SELECT r.id_reserva, r.id_usuario, r.id_aula, r.id_asignatura, r.id_grupo, r.fecha, r.hora_inicio, r.hora_fin, 
+                     CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END AS estado, 
+                     a.nombre AS aula, asig.nombre AS asignatura, g.nombre AS grupo, u.nombre AS profesor 
+                     FROM " . $this->table_name . " r 
+                     JOIN aula a ON r.id_aula = a.id_aula 
+                     JOIN asignatura asig ON r.id_asignatura = asig.id_asignatura 
+                     JOIN grupo g ON r.id_grupo = g.id_grupo 
+                     JOIN usuario u ON r.id_usuario = u.id_usuario 
+                     WHERE r.id_asignatura = :id_asignatura 
+                     AND CONCAT(r.fecha, ' ', r.hora_fin) >= :currentTime";
+
+            // Si se proporciona id_usuario, verificamos que tenga rol 'alumno' (aunque esto ya se verifica en reserva_api.php)
+            if ($id_usuario) {
+                $query_usuario = "SELECT rol FROM usuario WHERE id_usuario = :id_usuario AND rol = 'alumno'";
+                $stmt_usuario = $this->conn->prepare($query_usuario);
+                $stmt_usuario->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                $stmt_usuario->execute();
+                $rol = $stmt_usuario->fetchColumn();
+
+                if (!$rol) {
+                    return []; // El usuario no tiene rol 'alumno' o no existe
+                }
+            }
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
+            $stmt->bindParam(':currentTime', $currentTime);
+            $stmt->execute();
+
+            $reservas = array();
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $reservas[] = array(
+                    "id_reserva" => $row['id_reserva'],
+                    "fecha" => $row['fecha'],
+                    "hora_inicio" => $row['hora_inicio'],
+                    "hora_fin" => $row['hora_fin'],
+                    "estado" => $row['estado'],
+                    "aula" => $row['aula'],
+                    "asignatura" => $row['asignatura'],
+                    "grupo" => $row['grupo'],
+                    "profesor" => $row['profesor']
+                );
+            }
+            return $reservas;
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPorAsignatura: " . $e->getMessage());
+            return [];
+        }
     }
+
 
 
     //metodo para calcular el estado de la reserva

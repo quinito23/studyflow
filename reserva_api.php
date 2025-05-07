@@ -10,7 +10,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 //verificar autenticacion
-if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'profesor' && $_SESSION['rol'] != 'administrador')) {
+if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'profesor' && $_SESSION['rol'] != 'administrador' && $_SESSION['rol'] != 'alumno')) {
     echo json_encode(array("message" => "Acceso denegado"));
     exit;
 }
@@ -33,7 +33,8 @@ switch ($method) {
                 exit;
             }
             $id_asignatura = $_GET['asignatura'];
-            $reservas = $reserva->obtenerPorAsignatura($id_asignatura);
+            $id_usuario = isset($_GET['id_usuario']) ? $_GET['id_usuario'] : null;
+            $reservas = $reserva->obtenerPorAsignatura($id_asignatura, $id_usuario);
             echo json_encode($reservas);
         } else {
             if (isset($_GET['id'])) {

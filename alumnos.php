@@ -375,22 +375,38 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
         }
 
         function mostrarReservas(id_asignatura) {
-            hacerSolicitud(`reserva_api.php?asignatura=${id_asignatura}`, 'GET', null, function (status, response) {
+            const id_usuario = <?php echo json_encode($_SESSION['id_usuario']); ?>;
+            if (!id_usuario) {
+                reservasList.innerHTML = '<li>Error: No se encontró el ID de usuario.</li>';
+                reservasModal.show();
+                return;
+            }
+            const url = `reserva_api.php?asignatura=${id_asignatura}&id_usuario=${id_usuario}`;
+            hacerSolicitud(url, 'GET', null, function (status, response) {
+                console.log('Respuesta de reserva_api.php:', response); // Depuración
+                console.log('Status:', status); // Depuración
                 try {
                     const reservas = JSON.parse(response);
                     reservasList.innerHTML = '';
-                    if (reservas.length > 0) {
+                    if (status !== 200) {
+                        reservasList.innerHTML = `<li>Error: Estado de respuesta ${status}</li>`;
+                        reservasModal.show();
+                        return;
+                    }
+                    if (reservas.message) {
+                        reservasList.innerHTML = `<li>${reservas.message}</li>`;
+                    } else if (reservas.length > 0) {
                         reservas.forEach(reserva => {
                             const li = document.createElement('li');
                             li.textContent = `${reserva.fecha} - ${reserva.hora_inicio} a ${reserva.hora_fin} | Aula: ${reserva.aula} | Profesor: ${reserva.profesor}`;
                             reservasList.appendChild(li);
                         });
                     } else {
-                        reservasList.innerHTML = `<li> No hay reservas para esta asignatura.</li>`;
+                        reservasList.innerHTML = `<li>No hay reservas para esta asignatura.</li>`;
                     }
                     reservasModal.show();
                 } catch (e) {
-                    reservasList.innerHTML = '<li> Error al cargar las reservas</li>';
+                    reservasList.innerHTML = `<li>Error al cargar las reservas: ${response}</li>`;
                     reservasModal.show();
                 }
             });
