@@ -25,36 +25,51 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        if (isset($_GET['id'])) {
-            $reserva->id_reserva = $_GET['id'];
-            if ($reserva->leer()) {
-                $reserva_data = array(
-                    "id_reserva" => $reserva->id_reserva,
-                    "id_usuario" => $reserva->id_usuario,
-                    "id_aula" => $reserva->id_aula,
-                    "id_asignatura" => $reserva->id_asignatura,
-                    "id_grupo" => $reserva->id_grupo,
-                    "fecha" => $reserva->fecha,
-                    "hora_inicio" => $reserva->hora_inicio,
-                    "hora_fin" => $reserva->hora_fin,
-                    "estado" => $reserva->estado
-                );
-                echo json_encode($reserva_data);
-            } else {
-                echo json_encode(array("message" => "Reserva no encontrada"));
+        //primero verificamos si se solicitan reservas por asignatura , para mostrarselas a los alumnos
+        if (isset($_GET['asignatura'])) {
+            //verificamos autenticacion y roles
+            if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSION['rol'] != 'administrador')) {
+                echo json_encode(array('message' => 'Acceso denegado'));
+                exit;
             }
+            $id_asignatura = $_GET['asiognatura'];
+            $reservas = $reserva->obtenerPorAsignatura($id_asignatura);
+            echo json_encode($reservas);
         } else {
-            if (isset($_GET['todas']) && $_GET['todas'] == 1) {
-                $result = $reserva->leer_todos(null); // le pasamos null para obtener todas las reservas
+            if (isset($_GET['id'])) {
+                $reserva->id_reserva = $_GET['id'];
+                if ($reserva->leer()) {
+                    $reserva_data = array(
+                        "id_reserva" => $reserva->id_reserva,
+                        "id_usuario" => $reserva->id_usuario,
+                        "id_aula" => $reserva->id_aula,
+                        "id_asignatura" => $reserva->id_asignatura,
+                        "id_grupo" => $reserva->id_grupo,
+                        "fecha" => $reserva->fecha,
+                        "hora_inicio" => $reserva->hora_inicio,
+                        "hora_fin" => $reserva->hora_fin,
+                        "estado" => $reserva->estado
+                    );
+                    echo json_encode($reserva_data);
+                } else {
+                    echo json_encode(array("message" => "Reserva no encontrada"));
+                }
             } else {
-                //tenemos que obtener el id_usuario de la sesion
-                $id_usuario = $_SESSION['id_usuario'];
-                $result = $reserva->leer_todos($id_usuario);
+                if (isset($_GET['todas']) && $_GET['todas'] == 1) {
+                    $result = $reserva->leer_todos(null); // le pasamos null para obtener todas las reservas
+                } else {
+                    //tenemos que obtener el id_usuario de la sesion
+                    $id_usuario = $_SESSION['id_usuario'];
+                    $result = $reserva->leer_todos($id_usuario);
+                }
+
+                echo json_encode($result);
             }
 
-            echo json_encode($result);
         }
         break;
+
+
 
     case 'POST':
         //crear una nueva reserva

@@ -64,6 +64,33 @@ class Reserva
         return $stmt->fetchColumn() == 0;
     }
 
+    //metodo para obtener las reservas activas por asignatura
+    public function obtenerPorAsignatura($id_asignatura)
+    {
+        $currentTime = date('Y-m-d H:i:s');
+        $query = "SELECT r.id_reserva, r.id_usuario, r.id_aula, r.id_asignatura, r.id_grupo, r.fecha, r.hora_inicio, r.hora_fin, CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END AS estado, a.nombre AS aula, asig.nombre AS asignatura, g.nombre AS grupo, u.nombre AS profesor FROM " . $this->table_name . " r JOIN aula a ON r.id_aula = a.id_aula JOIN asignatura asig ON r.id_asignatura = asig.id_asignatura JOIN grupo g ON r.id_grupo = g.id_grupo JOIN usuario u ON r.id_usuario = u.id_usuario WHERE r.id_asignatura = :id_asignatura AND CASE WHEN CONCAT(r.fecha, ' ', r.hora_fin) < :currentTime THEN 'pasada' ELSE 'activa' END = 'activa'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
+        $stmt->bindParam(':currentTime', $currentTime);
+        $stmt->execute();
+
+        $reservas = array();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $reservas[] = array(
+                "id_reserva" => $row['id_reserva'],
+                "fecha" => $row['fecha'],
+                "hora_inicio" => $row['hora_inicio'],
+                "hora_fin" => $row['hora_fin'],
+                "estado" => $row['estado'],
+                "aula" => $row['aula'],
+                "asignatura" => $row['asignatura'],
+                "grupo" => $row['grupo'],
+                "profesor" => $row['profesor']
+            );
+        }
+        return $reservas;
+    }
+
 
     //metodo para calcular el estado de la reserva
     protected function calcularEstado()

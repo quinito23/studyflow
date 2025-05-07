@@ -55,7 +55,7 @@ class Alumno extends Usuario
         //insertamos la relacion del alumno con los grupos en la tabla alumno_grupo
         foreach ($grupos as $id_grupo) {
             // creamos una consulta para verificar la capacidad del grupo y si ha llegado a su limite
-            $query = "SELECT COUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN group g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
+            $query = "SELECT COUNT(id_usuario) as numero_alumnos, g.capacidad_maxima FROM alumno_grupo ag JOIN grupo g ON ag.id_grupo = g.id_grupo WHERE ag.id_grupo = :id_grupo";
             $stmt = $this->conn->prepare($query);
             //le pasamos el parametro a la consulta
             $stmt->bindParam('id_grupo', $id_grupo);
@@ -187,6 +187,25 @@ class Alumno extends Usuario
             );
         }
         return $grupos;
+    }
+
+    //metodo para obtener las asignaturas asociadaas al alumno a traves de los grupos
+    public function obtenerAsignaturas($id_usuario)
+    {
+        $asignaturas = array();
+        $grupos = $this->obtenerGrupos($id_usuario);
+
+        foreach ($grupos as $grupo) {
+            $query = "SELECT id_asignatura, nombre, descripcion, nivel FROM asignatura WHERE id_asignatura = :id_asignatura";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id_asignatura', $grupo['id_asignatura'], PDO::PARAM_INT);
+            $stmt->execute();
+            $asignatura = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($asignatura) {
+                $asignaturas[] = $asignatura;
+            }
+        }
+        return $asignaturas;
     }
 
     //funcion para actualizar un alumno
