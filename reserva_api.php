@@ -32,7 +32,7 @@ switch ($method) {
                 echo json_encode(array('message' => 'Acceso denegado'));
                 exit;
             }
-            $id_asignatura = $_GET['asiognatura'];
+            $id_asignatura = $_GET['asignatura'];
             $reservas = $reserva->obtenerPorAsignatura($id_asignatura);
             echo json_encode($reservas);
         } else {

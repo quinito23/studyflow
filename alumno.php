@@ -168,7 +168,7 @@ class Alumno extends Usuario
     //metodo para obtener los grupos a los que pertenece el alumno
     public function obtenerGrupos($id_usuario)
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, COUNT(ag2.id_usuario) as numero_alumnos FROM grupo g INNER JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN alumno_grupo ag2 ON g.id_grupo = ag2.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE ag.id_usuario = :id_usuario GROUP BY g.id_grupo";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, a.id_asignatura, a.nombre AS nombre_asignatura, COUNT(ag2.id_usuario) as numero_alumnos FROM grupo g INNER JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN alumno_grupo ag2 ON g.id_grupo = ag2.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura WHERE ag.id_usuario = :id_usuario GROUP BY g.id_grupo, g.nombre, g.capacidad_maxima, a.id_asignatura, a.nombre";
         $stmt = $this->conn->prepare($query);
         //le pasamos los datos a la consulta
         $stmt->bindParam(':id_usuario', $id_usuario);

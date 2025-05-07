@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-05-2025 a las 18:40:58
+-- Tiempo de generación: 07-05-2025 a las 19:53:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -36,7 +36,9 @@ CREATE TABLE `alumno` (
 --
 
 INSERT INTO `alumno` (`id_usuario`) VALUES
-(35);
+(35),
+(38),
+(39);
 
 -- --------------------------------------------------------
 
@@ -48,6 +50,18 @@ CREATE TABLE `alumno_grupo` (
   `id_usuario` int(11) NOT NULL,
   `id_grupo` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `alumno_grupo`
+--
+
+INSERT INTO `alumno_grupo` (`id_usuario`, `id_grupo`) VALUES
+(37, 1),
+(38, 1),
+(38, 2),
+(38, 3),
+(38, 4),
+(39, 1);
 
 -- --------------------------------------------------------
 
@@ -213,10 +227,12 @@ CREATE TABLE `reserva` (
 --
 
 INSERT INTO `reserva` (`id_reserva`, `id_usuario`, `id_aula`, `id_asignatura`, `id_grupo`, `fecha`, `hora_inicio`, `hora_fin`, `estado`) VALUES
-(1, 37, 1, 2, 3, '2025-05-05', '18:35:00', '20:36:00', 'activa'),
-(2, 37, 3, 4, 5, '2025-05-05', '20:36:00', '22:40:00', 'activa'),
-(3, 37, 3, 4, 5, '2025-05-05', '18:36:00', '19:36:00', 'activa'),
-(4, 37, 2, 2, 3, '2025-05-05', '18:38:00', '19:39:00', 'activa');
+(6, 37, 2, 2, 3, '2025-05-06', '10:20:00', '11:19:00', 'activa'),
+(7, 37, 1, 2, 5, '2025-05-06', '10:22:00', '11:25:00', 'activa'),
+(8, 37, 1, 1, 1, '2025-05-06', '11:31:00', '12:32:00', 'activa'),
+(9, 37, 3, 3, 4, '2025-05-06', '11:00:00', '13:48:00', 'activa'),
+(10, 37, 1, 2, 3, '2025-05-06', '13:00:00', '14:37:00', 'activa'),
+(11, 36, 1, 2, 3, '2025-05-09', '10:00:00', '11:00:00', 'activa');
 
 -- --------------------------------------------------------
 
@@ -315,7 +331,9 @@ INSERT INTO `usuario` (`id_usuario`, `nombre`, `apellidos`, `DNI`, `telefono`, `
 (34, 'quinito', 'alias', '', '21312312', 'kinito@gmail.com', 'asdasd34', NULL, 'alumno'),
 (35, 'eevita', 'dinamita', '1312313t', '213123123', 'avita@gmail.com', 'asdasd3242', '2007-05-16', 'alumno'),
 (36, 'admin', 'admin', '213132312T', '1312312312', 'admin@gmail.com', 'admin', '2005-01-14', 'administrador'),
-(37, 'profe', 'profe', '', '1123123123', 'profesor@gmail.com', 'profe', NULL, 'profesor');
+(37, 'profe', 'profe', '', '1123123123', 'profesor@gmail.com', 'profe', NULL, 'alumno'),
+(38, 'Elena', 'Gómez Torres', '55555555E', '555666777', 'elena.gomez@example.com', 'contrasenia123', '2006-01-20', 'alumno'),
+(39, 'Miguel', 'Pérez Rodríguez', '66666666F', '666777888', 'miguel.perez@example.com', 'contrasenia123', '2005-12-10', 'alumno');
 
 --
 -- Índices para tablas volcadas
@@ -445,7 +463,7 @@ ALTER TABLE `grupo`
 -- AUTO_INCREMENT de la tabla `reserva`
 --
 ALTER TABLE `reserva`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud`
@@ -463,7 +481,7 @@ ALTER TABLE `tutor_legal`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- Restricciones para tablas volcadas

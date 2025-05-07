@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 
 include_once 'DBConnection.php';
 include_once 'alumno.php';
@@ -39,7 +39,7 @@ switch ($method) {
                 exit;
             }
 
-            $asignaturas->alumno->obtenerAsignaturas($id_usuario);
+            $asignaturas = $alumno->obtenerAsignaturas($id_usuario);
             echo json_encode($asignaturas);
         } else {
             // leer un alumno o todos, dependera de si se pasa id o no
