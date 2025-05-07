@@ -1,6 +1,6 @@
 <?php
 
-
+session_start();
 
 include_once 'DBConnection.php';
 include_once 'reserva.php';
@@ -11,7 +11,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 //verificar la autenticacion
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
+if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'profesor' && $_SESSION['rol'] != 'administrador')) {
     echo json_encode(array("message" => "Acceso denegado. Debes ser un profesor"));
     exit;
 }
