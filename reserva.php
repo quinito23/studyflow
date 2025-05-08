@@ -68,7 +68,7 @@ class Reserva
     public function obtenerPorAsignatura($id_asignatura, $id_usuario = null)
     {
         // Validar que id_asignatura sea un entero
-        if (!is_numeric($id_asignatura) || (int)$id_asignatura <= 0) {
+        if (!is_numeric($id_asignatura) || (int) $id_asignatura <= 0) {
             return [];
         }
 
@@ -82,25 +82,21 @@ class Reserva
                      JOIN asignatura asig ON r.id_asignatura = asig.id_asignatura 
                      JOIN grupo g ON r.id_grupo = g.id_grupo 
                      JOIN usuario u ON r.id_usuario = u.id_usuario 
+                     JOIN alumno_grupo ag ON r.id_grupo = ag.id_grupo 
+                     JOIN alumno al ON ag.id_usuario = al.id_usuario 
                      WHERE r.id_asignatura = :id_asignatura 
                      AND CONCAT(r.fecha, ' ', r.hora_fin) >= :currentTime";
 
-            // Si se proporciona id_usuario, verificamos que tenga rol 'alumno' (aunque esto ya se verifica en reserva_api.php)
             if ($id_usuario) {
-                $query_usuario = "SELECT rol FROM usuario WHERE id_usuario = :id_usuario AND rol = 'alumno'";
-                $stmt_usuario = $this->conn->prepare($query_usuario);
-                $stmt_usuario->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
-                $stmt_usuario->execute();
-                $rol = $stmt_usuario->fetchColumn();
-
-                if (!$rol) {
-                    return []; // El usuario no tiene rol 'alumno' o no existe
-                }
+                $query .= " AND ag.id_usuario = :id_usuario";
             }
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
             $stmt->bindParam(':currentTime', $currentTime);
+            if ($id_usuario) {
+                $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+            }
             $stmt->execute();
 
             $reservas = array();

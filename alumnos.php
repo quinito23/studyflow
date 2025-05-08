@@ -356,7 +356,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                             card.className = 'col';
                             card.innerHTML = `
                                 <div class="card" onclick="mostrarReservas(${asignatura.id_asignatura})">
-                                    <img src="https://image" class="card-img-top" alt="Imagen de Asignatura">
+                                    <img src="asignaturas.png" class="card-img-top" alt="Imagen de Asignatura">
                                     <div class="card-body">
                                         <h5 class="card-title">${asignatura.nombre}</h5>
                                         <p class="card-text">${asignatura.descripcion || 'Sin descripcción disponible.'}</p>
