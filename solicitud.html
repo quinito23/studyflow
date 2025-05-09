@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitudes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
     <style>
         body {
@@ -173,6 +175,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!--Header-->
@@ -203,13 +206,31 @@
         <div class="offcanvas-body">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" href="profesor.html">Profesores</a>
+                    <a class="nav-link " href="profesor.html">Profesores</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="alumno.html">Alumnos</a>
+                    <a class="nav-link" href="alumno.html">Alumnos</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="tutor.html">Tutores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="aula.html">Aulas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="asignatura.html">Asignaturas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="grupo.html">Grupos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="reservas.php">Reservas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tareas.php">Tareas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="solicitud.html">Solicitudes</a>
                 </li>
             </ul>
         </div>
@@ -281,12 +302,14 @@
             </table>
         </div>
 
-        <div class="modal fade" id="asignarGruposModal" tabindex="-1" aria-labelledby="asignarGruposModalLabel" aria-hidden="true">
+        <div class="modal fade" id="asignarGruposModal" tabindex="-1" aria-labelledby="asignarGruposModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="asignarGruposModalLabel">Asignar Grupos</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
@@ -301,7 +324,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" onclick="confirmarAceptar()">Confirmar</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="confirmarAceptar()">Confirmar</button>
                         </div>
                     </div>
                 </div>
@@ -338,9 +362,9 @@
         }
 
         // Funcion para cargar las solicitudes al iniciar la página
-        function cargarSolicitudes(){
-            hacerSolicitud('solicitud_api.php', 'GET', null, function(status, response){
-                try{
+        function cargarSolicitudes() {
+            hacerSolicitud('solicitud_api.php', 'GET', null, function (status, response) {
+                try {
                     const solicitudes = JSON.parse(response);
                     const listaPendientes = document.getElementById("solicitudes-pendientes-lista");
                     const listaAceptadas = document.getElementById("solicitudes-aceptadas-lista");
@@ -370,15 +394,15 @@
                             </tr>
                             `;
 
-                            if (solicitud.estado === 'pendiente'){
-                                listaPendientes.innerHTML += row;
-                            } else if (solicitud.estado === 'aceptado'){
-                                listaAceptadas.innerHTML += row;
-                            } else if(solicitud.estado === 'rechazado'){
-                                listaRechazadas.innerHTML += row;
-                            }
+                        if (solicitud.estado === 'pendiente') {
+                            listaPendientes.innerHTML += row;
+                        } else if (solicitud.estado === 'aceptado') {
+                            listaAceptadas.innerHTML += row;
+                        } else if (solicitud.estado === 'rechazado') {
+                            listaRechazadas.innerHTML += row;
+                        }
                     });
-                }catch(e){
+                } catch (e) {
                     console.error("Error al parsear la respuesta:", e.message);
                     // Cambio: Mostrar notificación si falla la carga de solicitudes
                     mostrarNotificacion("Error al cargar las solicitudes", "error");
@@ -387,7 +411,7 @@
         }
 
         // funcion para aceptar una solicitud
-        function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto){
+        function aceptarSolicitud(idSolicitud, idAnonimo, rolPropuesto) {
 
             const datos = {
                 id_solicitud: idSolicitud,
@@ -395,16 +419,16 @@
                 rol_propuesto: rolPropuesto
             };
 
-            if(rolPropuesto !== 'alumno'){
+            if (rolPropuesto !== 'alumno') {
                 confirmarAceptar(datos, []); //los corchetes hacen referencia a la lista de grupos
                 return;
             }
 
             //obtener las asignaturas asociadas a la solicitud
-            hacerSolicitud(`solicitud_api.php?getAsignaturas=${idSolicitud}`, 'GET', null, function(status, response){
-                try{
+            hacerSolicitud(`solicitud_api.php?getAsignaturas=${idSolicitud}`, 'GET', null, function (status, response) {
+                try {
                     const asignaturas = JSON.parse(response);
-                    if(status !== 200 || !asignaturas || asignaturas.length === 0){
+                    if (status !== 200 || !asignaturas || asignaturas.length === 0) {
                         mostrarNotificacion("No se encontraron asignaturas");
                         return;
                     }
@@ -420,10 +444,10 @@
 
 
                     //ontener los grupos disponibles
-                    hacerSolicitud('grupo_api.php', 'GET', null, function(status, response){
-                        try{
+                    hacerSolicitud('grupo_api.php', 'GET', null, function (status, response) {
+                        try {
                             const grupos = JSON.parse(response);
-                            if(status !== 200 || !grupos){
+                            if (status !== 200 || !grupos) {
                                 mostrarNotificacion("Error al cargar los grupos");
                             }
 
@@ -441,19 +465,19 @@
 
                             //guardar datos en el botón de confirmación para usarlos después
                             const confirmarBtn = document.querySelector('#asignarGruposModal .btn-primary');
-                            confirmarBtn.onclick = () => confirmarAceptar(datos, Array.from(gruposSeleccionados.selectedOptions).map(option=>parseInt(option.value)));
-                        }catch(e){
+                            confirmarBtn.onclick = () => confirmarAceptar(datos, Array.from(gruposSeleccionados.selectedOptions).map(option => parseInt(option.value)));
+                        } catch (e) {
                             mostrarNotificacion("Error al cargar los grupos");
                         }
                     });
-                } catch(e){
+                } catch (e) {
                     mostrarNotificacion("Error al cargar las asignaturas");
                 }
             });
         }
 
         // funcion para obtener los grupos seleccionados y enviarlos la backend como un array
-        function confirmarAceptar(datos, grupos = []){
+        function confirmarAceptar(datos, grupos = []) {
             const payload = {
                 id_solicitud: datos.id_solicitud,
                 id_anonimo: datos.id_anonimo,
@@ -462,22 +486,22 @@
                 grupos: grupos
             };
 
-            hacerSolicitud('solicitud_api.php', 'POST', payload, function(status, response){
+            hacerSolicitud('solicitud_api.php', 'POST', payload, function (status, response) {
                 console.log("Estado de la respuesta:", status);
                 console.log("Respuesta del backend:", response);
-                try{
+                try {
                     const result = JSON.parse(response);
-                    if(status === 200 && result.message === "Solicitud aceptada exitosamente"){
+                    if (status === 200 && result.message === "Solicitud aceptada exitosamente") {
                         mostrarNotificacion("Solicitud aceptada con exito");
                         cargarSolicitudes();
                         const modal = bootstrap.Modal.getInstance(document.getElementById("asignarGruposModal"));
-                        if(modal){
+                        if (modal) {
                             modal.hide();
                         }
-                    }else{
+                    } else {
                         mostrarNotificacion(result.message || "Error al aceptar la solicitud");
                     }
-                }catch(e){
+                } catch (e) {
                     mostrarNotificacion("Error al aceptar la solicitud");
                 }
             });
@@ -485,17 +509,17 @@
         }
 
         //funcion para rechazar una solicitud
-        function rechazarSolicitud(idSolicitud){
-            const datos = {id_solicitud : idSolicitud, accion: 'rechazar'};
-            hacerSolicitud('solicitud_api.php', 'POST', datos, function(status, response){
-                try{
+        function rechazarSolicitud(idSolicitud) {
+            const datos = { id_solicitud: idSolicitud, accion: 'rechazar' };
+            hacerSolicitud('solicitud_api.php', 'POST', datos, function (status, response) {
+                try {
                     const result = JSON.parse(response);
-                    if(result.message === "Solicitud rechazada exitosamente"){
+                    if (result.message === "Solicitud rechazada exitosamente") {
                         cargarSolicitudes(); // recargamos las tablas para mostrar los cambios
-                    }else{
+                    } else {
                         return false;
                     }
-                }catch(e){
+                } catch (e) {
                     console.error("Error al parsear la respuesta:", e.message);
                 }
             });
@@ -505,7 +529,8 @@
         window.onload = cargarSolicitudes;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    
+
+
 </body>
+
 </html>

@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 include_once 'DBConnection.php';
 include_once 'grupo.php';
@@ -31,6 +32,24 @@ switch ($method) {
             } else {
                 echo json_encode(array("message" => "Grupo no encontrado"));
             }
+        } else if (isset($_GET['id_asignatura'])) {
+            // Filter groups by subject (id_asignatura)
+            $id_asignatura = $_GET['id_asignatura'];
+            try {
+                $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, 
+                          a.nombre AS nombre_asignatura, 
+                          (SELECT COUNT(*) FROM alumno_grupo ag WHERE ag.id_grupo = g.id_grupo) AS numero_alumnos 
+                          FROM grupo g 
+                          JOIN asignatura a ON g.id_asignatura = a.id_asignatura 
+                          WHERE g.id_asignatura = :id_asignatura";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
+                $stmt->execute();
+                $grupos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($grupos);
+            } catch (Exception $e) {
+                echo json_encode(array("message" => "Error al listar grupos: " . $e->getMessage()));
+            }
         } else {
             $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : null;
             $hora_inicio = isset($_GET['hora_inicio']) ? $_GET['hora_inicio'] : null;
@@ -44,7 +63,7 @@ switch ($method) {
                 }
                 echo json_encode($grupos);
             } catch (Exception $e) {
-                echo json_encode(array("message" => "Error al listar grupos : " . $e->getMessage()));
+                echo json_encode(array("message" => "Error al listar grupos: " . $e->getMessage()));
             }
         }
         break;
@@ -52,7 +71,7 @@ switch ($method) {
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!isset($data->nombre) && !isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
+        if (!isset($data->nombre) || !isset($data->capacidad_maxima) || !isset($data->id_asignatura)) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
             exit;
         }
@@ -68,16 +87,15 @@ switch ($method) {
                 echo json_encode(array("message" => "No se pudo crear el grupo"));
             }
         } catch (Exception $e) {
-            echo json_encode(array("message" => "Error al crear grupo : " . $e->getMessage()));
+            echo json_encode(array("message" => "Error al crear grupo: " . $e->getMessage()));
         }
         break;
 
     case 'PUT':
-
         $data = json_decode(file_get_contents('php://input'));
 
-        if (!isset($data->id_grupo) && !isset($data->nombre) && !isset($data->capacidad_maxima) && !isset($data->id_asignatura)) {
-            echo json_encode(array('message' => 'faltan datos requeridos'));
+        if (!isset($data->id_grupo) || !isset($data->nombre) || !isset($data->capacidad_maxima) || !isset($data->id_asignatura)) {
+            echo json_encode(array('message' => 'Faltan datos requeridos'));
             exit;
         }
 
@@ -88,13 +106,12 @@ switch ($method) {
 
         try {
             if ($grupo->actualizar()) {
-                echo json_encode(array("message" => "grupo actualizado exitosamente"));
+                echo json_encode(array("message" => "Grupo actualizado exitosamente"));
             } else {
                 echo json_encode(array("message" => "No se pudo actualizar el grupo"));
             }
-
         } catch (Exception $e) {
-            echo json_encode(array("message" => "Error al actualizar grupo : " . $e->getMessage()));
+            echo json_encode(array("message" => "Error al actualizar grupo: " . $e->getMessage()));
         }
         break;
 
@@ -112,14 +129,12 @@ switch ($method) {
                 echo json_encode(array("message" => "No se pudo eliminar el grupo"));
             }
         } catch (Exception $e) {
-            echo json_encode(array("message" => "Error al eliminar el grupo" . $e->getMessage()));
+            echo json_encode(array("message" => "Error al eliminar el grupo: " . $e->getMessage()));
         }
         break;
 
     default:
-        echo json_encode(array("message" => "Metodo no permitido"));
+        echo json_encode(array("message" => "Método no permitido"));
         break;
-
 }
-
 ?>

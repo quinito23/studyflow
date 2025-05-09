@@ -244,10 +244,31 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <div class="offcanvas-body">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="reservas.php">Reservar</a>
+                    <a class="nav-link " href="profesor.html">Profesores</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="mis_reservas.php">Mis Reservas</a>
+                    <a class="nav-link" href="alumno.html">Alumnos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tutor.html">Tutores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="aula.html">Aulas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="asignatura.html">Asignaturas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="grupo.html">Grupos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="reservas.php">Reservas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tareas.php">Tareas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="solicitud.html">Solicitudes</a>
                 </li>
             </ul>
         </div>

@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-//verificar autenticacion y rol
 if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSION['rol'] != 'administrador')) {
     header("Location: login.php");
     exit();
@@ -29,7 +28,6 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             flex-direction: column;
         }
 
-        /* Header */
         .header {
             background-color: #0d1f38;
             padding: 1rem 2rem;
@@ -82,7 +80,6 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             color: #d3d6db;
         }
 
-        /* Sidebar */
         .offcanvas {
             background-color: #0d1f38;
             color: white;
@@ -112,7 +109,6 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             color: white;
         }
 
-        /* Contenido principal */
         .main-content {
             padding: 2rem;
             flex: 1;
@@ -124,22 +120,17 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             color: #ffffff;
             margin-bottom: 1.5rem;
             text-align: center;
-            /* Centra el título */
         }
 
-        /* Contenedor para centrar las cards verticalmente */
         .content-container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             min-height: calc(100vh - 160px);
-            /* Reducido de 180px a 160px para subir las cartas */
         }
 
-        /* Estilo para las tarjetas de asignaturas */
         #asignaturas-container {
             margin-top: 0rem;
-            /* Reducido de 2rem a 0rem para subir las cartas */
         }
 
         #asignaturas-container .card {
@@ -199,11 +190,6 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             font-size: clamp(1rem, 3vw, 1.25rem);
         }
 
-        .modal-title {
-            color: white;
-            text-align: center;
-        }
-
         .modal-body p {
             margin: 0.5rem 0;
             font-size: clamp(0.8rem, 2vw, 1rem);
@@ -220,15 +206,16 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             color: #d3d6db;
         }
 
-        /* Estilo para la lista de reservas */
-        #reservas-list {
+        #reservas-list,
+        #tareas-list {
             list-style: none;
             padding: 0;
             max-height: 300px;
             overflow-y: auto;
         }
 
-        #reservas-list li {
+        #reservas-list li,
+        #tareas-list li {
             background-color: #0d1f38;
             border: 1px solid #007bff;
             border-radius: 5px;
@@ -250,7 +237,6 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             border-color: #5a6268;
         }
 
-        /* Footer */
         .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
@@ -297,24 +283,23 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
     <main class="main-content">
         <h2>Mis Asignaturas</h2>
         <div class="content-container">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="asignaturas-container">
-                <!--Las cartas se crearán dinamicamente aquí-->
-            </div>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="asignaturas-container"></div>
         </div>
     </main>
-
-    <!--Creamos un modal emergente de botstrpas para mostrar las reservas al pulsar en la asignatura-->
 
     <div class="modal fade" id="reservasModal" tabindex="-1" aria-labelledby="reservasModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="reservasModalLabel">Reservas</h5>
+                    <h5 class="modal-title" id="reservasModalLabel">Reservas y Tareas</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="close"></button>
                 </div>
                 <div class="modal-body">
+                    <h3>Reservas</h3>
                     <ul id="reservas-list"></ul>
+                    <h3>Tareas</h3>
+                    <ul id="tareas-list"></ul>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -329,7 +314,8 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const asignaturasContainer = document.getElementById('asignaturas-container');
-        const reservasList = document.getElementById('reservas-list')
+        const reservasList = document.getElementById('reservas-list');
+        const tareasList = document.getElementById('tareas-list');
         const reservasModal = new bootstrap.Modal(document.getElementById('reservasModal'));
 
         function hacerSolicitud(url, metodo, datos, callback) {
@@ -355,11 +341,11 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                             const card = document.createElement('div');
                             card.className = 'col';
                             card.innerHTML = `
-                                <div class="card" onclick="mostrarReservas(${asignatura.id_asignatura})">
+                                <div class="card" onclick="mostrarReservasYTareas(${asignatura.id_asignatura})">
                                     <img src="asignaturas.png" class="card-img-top" alt="Imagen de Asignatura">
                                     <div class="card-body">
                                         <h5 class="card-title">${asignatura.nombre}</h5>
-                                        <p class="card-text">${asignatura.descripcion || 'Sin descripcción disponible.'}</p>
+                                        <p class="card-text">${asignatura.descripcion || 'Sin descripción disponible.'}</p>
                                     </div>
                                 </div>
                             `;
@@ -374,26 +360,24 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             });
         }
 
-        function mostrarReservas(id_asignatura) {
+        function mostrarReservasYTareas(id_asignatura) {
             const id_usuario = <?php echo json_encode($_SESSION['id_usuario']); ?>;
             if (!id_usuario) {
                 reservasList.innerHTML = '<li>Error: No se encontró el ID de usuario.</li>';
+                tareasList.innerHTML = '<li>Error: No se encontró el ID de usuario.</li>';
                 reservasModal.show();
                 return;
             }
-            const url = `reserva_api.php?asignatura=${id_asignatura}&id_usuario=${id_usuario}`;
-            hacerSolicitud(url, 'GET', null, function (status, response) {
-                console.log('Respuesta de reserva_api.php:', response); // Depuración
-                console.log('Status:', status); // Depuración
+
+            // Cargar reservas
+            const urlReservas = `reserva_api.php?asignatura=${id_asignatura}&id_usuario=${id_usuario}`;
+            hacerSolicitud(urlReservas, 'GET', null, function (status, response) {
                 try {
                     const reservas = JSON.parse(response);
                     reservasList.innerHTML = '';
                     if (status !== 200) {
                         reservasList.innerHTML = `<li>Error: Estado de respuesta ${status}</li>`;
-                        reservasModal.show();
-                        return;
-                    }
-                    if (reservas.message) {
+                    } else if (reservas.message) {
                         reservasList.innerHTML = `<li>${reservas.message}</li>`;
                     } else if (reservas.length > 0) {
                         reservas.forEach(reserva => {
@@ -404,21 +388,42 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                     } else {
                         reservasList.innerHTML = `<li>No hay reservas para esta asignatura.</li>`;
                     }
-                    reservasModal.show();
                 } catch (e) {
                     reservasList.innerHTML = `<li>Error al cargar las reservas: ${response}</li>`;
+                }
+            });
+
+            // Cargar tareas
+            const urlTareas = `tarea_api.php?asignatura=${id_asignatura}&id_usuario=${id_usuario}`;
+            hacerSolicitud(urlTareas, 'GET', null, function (status, response) {
+                try {
+                    const tareas = JSON.parse(response);
+                    tareasList.innerHTML = '';
+                    if (status !== 200) {
+                        tareasList.innerHTML = `<li>Error: Estado de respuesta ${status}</li>`;
+                    } else if (tareas.message) {
+                        tareasList.innerHTML = `<li>${tareas.message}</li>`;
+                    } else if (tareas.length > 0) {
+                        tareas.forEach(tarea => {
+                            const li = document.createElement('li');
+                            li.textContent = `${tarea.descripcion} | Fecha Entrega: ${tarea.fecha_entrega} | Profesor: ${tarea.profesor}`;
+                            tareasList.appendChild(li);
+                        });
+                    } else {
+                        tareasList.innerHTML = `<li>No hay tareas para esta asignatura.</li>`;
+                    }
+                    reservasModal.show();
+                } catch (e) {
+                    tareasList.innerHTML = `<li>Error al cargar las tareas: ${response}</li>`;
                     reservasModal.show();
                 }
             });
         }
 
-
         window.onload = function () {
             cargarAsignaturas();
         };
     </script>
-
-
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     header("Location: login.php");
     exit;
 }
@@ -15,7 +15,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <title>Tareas</title>
+    <title>Mis Tareas</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -199,8 +199,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         </div>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="dashboardAdmin.php">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Tareas</li>
+                <li class="breadcrumb-item"><a href="dashboardProfesor.php">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mis Tareas</li>
             </ol>
         </nav>
     </header>
@@ -214,38 +214,20 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <div class="offcanvas-body">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link " href="profesor.html">Profesores</a>
+                    <a class="nav-link" href="vista_reservas.php">Reservar</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="alumno.html">Alumnos</a>
+                    <a class="nav-link" href="mis_reservas.php">Mis Reservas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="tutor.html">Tutores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="aula.html">Aulas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="asignatura.html">Asignaturas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="grupo.html">Grupos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="reservas.php">Reservas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="tareas.php">Tareas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="solicitud.html">Solicitudes</a>
+                    <a class="nav-link active" href="mis_tareas.php">Mis Tareas</a>
                 </li>
             </ul>
         </div>
     </div>
 
     <main class="main-content">
-        <h2 class="text-center" id="form-title">Tareas</h2>
+        <h2 class="text-center" id="form-title">Mis Tareas</h2>
         <form id="tareas-form" class="row g-3">
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripción:</label>
@@ -322,17 +304,34 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         }
 
         function cargarAsignaturas() {
-            hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
+            const id_usuario = <?php echo json_encode($_SESSION['id_usuario']); ?>;
+            hacerSolicitud(`asignatura_api.php?id_usuario=${id_usuario}`, 'GET', null, function (status, response) {
                 try {
                     const asignaturas = JSON.parse(response);
                     const asignaturaSelect = document.getElementById('asignatura');
                     asignaturaSelect.innerHTML = '<option value="">Seleccione una asignatura</option>';
-                    asignaturas.forEach(asignatura => {
-                        const option = document.createElement('option');
-                        option.value = asignatura.id_asignatura;
-                        option.textContent = asignatura.nombre;
-                        asignaturaSelect.appendChild(option);
-                    });
+
+                    // Check if response is an error object
+                    if (asignaturas.message) {
+                        mostrarError(asignaturas.message);
+                        return;
+                    }
+
+                    // Handle empty array or valid array
+                    if (Array.isArray(asignaturas)) {
+                        if (asignaturas.length === 0) {
+                            mostrarError("No tienes asignaturas asignadas");
+                        } else {
+                            asignaturas.forEach(asignatura => {
+                                const option = document.createElement('option');
+                                option.value = asignatura.id_asignatura;
+                                option.textContent = asignatura.nombre;
+                                asignaturaSelect.appendChild(option);
+                            });
+                        }
+                    } else {
+                        mostrarError("Respuesta inesperada del servidor");
+                    }
                 } catch (e) {
                     mostrarError("Error al cargar las asignaturas: " + e.message);
                 }
@@ -351,19 +350,31 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     const grupos = JSON.parse(response);
                     const grupoSelect = document.getElementById('grupo');
                     grupoSelect.innerHTML = '<option value="">Seleccione un grupo</option>';
-                    if (grupos.length > 0) {
-                        grupos.forEach(grupo => {
+
+                    // Check if response is an error object
+                    if (grupos.message) {
+                        mostrarError(grupos.message);
+                        return;
+                    }
+
+                    // Handle empty array or valid array
+                    if (Array.isArray(grupos)) {
+                        if (grupos.length > 0) {
+                            grupos.forEach(grupo => {
+                                const option = document.createElement('option');
+                                option.value = grupo.id_grupo;
+                                option.textContent = grupo.nombre;
+                                grupoSelect.appendChild(option);
+                            });
+                        } else {
                             const option = document.createElement('option');
-                            option.value = grupo.id_grupo;
-                            option.textContent = grupo.nombre;
+                            option.value = '';
+                            option.textContent = 'No hay grupos disponibles';
+                            option.disabled = true;
                             grupoSelect.appendChild(option);
-                        });
+                        }
                     } else {
-                        const option = document.createElement('option');
-                        option.value = '';
-                        option.textContent = 'No hay grupos disponibles';
-                        option.disabled = true;
-                        grupoSelect.appendChild(option);
+                        mostrarError("Respuesta inesperada del servidor");
                     }
                 } catch (e) {
                     mostrarError("Error al cargar los grupos: " + e.message);
@@ -372,32 +383,44 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         }
 
         function cargarTareas() {
-            hacerSolicitud('tarea_api.php?todas=1', 'GET', null, function (status, response) {
+            hacerSolicitud('tarea_api.php', 'GET', null, function (status, response) {
                 try {
                     const tareas = JSON.parse(response);
                     tareasLista.innerHTML = '';
-                    tareas.forEach(tarea => {
-                        const row = `
-                            <tr>
-                                <td>${tarea.descripcion}</td>
-                                <td>${tarea.fecha_creacion}</td>
-                                <td>${tarea.fecha_entrega}</td>
-                                <td>${tarea.asignatura}</td>
-                                <td>${tarea.grupo}</td>
-                                <td>${tarea.profesor}</td>
-                                <td>${tarea.estado}</td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm me-1" onclick="editarTarea(${tarea.id_tarea})">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="eliminarTarea(${tarea.id_tarea})">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                        tareasLista.innerHTML += row;
-                    });
+
+                    // Check if response is an error object
+                    if (tareas.message) {
+                        mostrarError(tareas.message);
+                        return;
+                    }
+
+                    // Handle empty array or valid array
+                    if (Array.isArray(tareas)) {
+                        tareas.forEach(tarea => {
+                            const row = `
+                                <tr>
+                                    <td>${tarea.descripcion}</td>
+                                    <td>${tarea.fecha_creacion}</td>
+                                    <td>${tarea.fecha_entrega}</td>
+                                    <td>${tarea.asignatura}</td>
+                                    <td>${tarea.grupo}</td>
+                                    <td>${tarea.profesor}</td>
+                                    <td>${tarea.estado}</td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm me-1" onclick="editarTarea(${tarea.id_tarea})">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="eliminarTarea(${tarea.id_tarea})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            tareasLista.innerHTML += row;
+                        });
+                    } else {
+                        mostrarError("Respuesta inesperada del servidor");
+                    }
                 } catch (e) {
                     mostrarError("Error al cargar las tareas: " + e.message);
                 }
@@ -408,6 +431,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             hacerSolicitud(`tarea_api.php?id=${id_tarea}`, 'GET', null, function (status, response) {
                 try {
                     const tarea = JSON.parse(response);
+                    if (tarea.message) {
+                        mostrarError(tarea.message);
+                        return;
+                    }
                     document.getElementById('id_tarea').value = tarea.id_tarea;
                     document.getElementById('descripcion').value = tarea.descripcion;
                     document.getElementById('fecha_entrega').value = tarea.fecha_entrega.replace(' ', 'T');
@@ -456,11 +483,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         if (status === 200 && result.message === "Tarea actualizada exitosamente") {
                             document.getElementById("tareas-form").reset();
                             document.getElementById("id_tarea").value = null;
-                            formTitle.textContent = "Tareas";
+                            formTitle.textContent = "Mis Tareas";
                             document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
                             cargarTareas();
                         } else {
-                            mostrarError("Error al actualizar la tarea");
+                            mostrarError(result.message || "Error al actualizar la tarea");
                         }
                     } catch (e) {
                         mostrarError("Error al actualizar la tarea: " + e.message);
@@ -474,10 +501,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             document.getElementById("tareas-form").reset();
                             cargarTareas();
                         } else {
-                            mostrarError("Error al crear la tarea");
+                            mostrarError(result.message || "Error al crear la tarea");
                         }
                     } catch (e) {
-                        mostrarError('Error al crear la tarea: ' + e.message);
+                        mostrarError("Error al crear la tarea: " + e.message);
                     }
                 });
             }
@@ -486,7 +513,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         document.getElementById('asignatura').addEventListener('change', cargarGrupos);
         tareasForm.addEventListener('submit', crearTarea);
         tareasForm.addEventListener('reset', function () {
-            formTitle.textContent = 'Tareas';
+            formTitle.textContent = 'Mis Tareas';
             document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
             document.getElementById('id_tarea').value = '';
             cargarGrupos();

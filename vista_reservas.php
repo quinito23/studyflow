@@ -249,6 +249,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                 <li class="nav-item">
                     <a class="nav-link" href="mis_reservas.php">Mis Reservas</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mis_tareas.php">Tareas</a>
+                </li>
             </ul>
         </div>
     </div>

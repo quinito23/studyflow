@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 include_once 'DBConnection.php';
 include_once 'asignatura.php';
@@ -27,21 +28,36 @@ switch ($method) {
                     "nivel" => $asignatura->nivel
                 ));
             } else {
-                echo json_encode(array("message" => "asignatura no encontrada"));
+                echo json_encode(array("message" => "Asignatura no encontrada"));
+            }
+        } else if (isset($_GET['id_usuario'])) {
+            // Filter subjects by professor (id_usuario)
+            $id_usuario = $_GET['id_usuario'];
+            try {
+                $query = "SELECT id_asignatura, nombre, descripcion, nivel 
+                          FROM asignatura 
+                          WHERE id_usuario = :id_usuario";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                $stmt->execute();
+                $asignaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($asignaturas);
+            } catch (Exception $e) {
+                echo json_encode(array("message" => "Error al listar asignaturas: " . $e->getMessage()));
             }
         } else {
             try {
                 $asignaturas = $asignatura->leer_todos();
                 echo json_encode($asignaturas);
             } catch (Exception $e) {
-                echo json_encode(array("message" => "Error al listar las asignaturas :" . $e->getMessage()));
+                echo json_encode(array("message" => "Error al listar las asignaturas: " . $e->getMessage()));
             }
         }
         break;
 
-    case "POST":
+    case 'POST':
         $data = json_decode(file_get_contents("php://input"));
-        if (!isset($data->nombre) && !isset($data->descripcion) && !isset($data->nivel)) {
+        if (!isset($data->nombre) || !isset($data->descripcion) || !isset($data->nivel)) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
             exit;
         }
@@ -64,8 +80,9 @@ switch ($method) {
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!isset($data->id_asignatura) && !isset($data->nombre) && !isset($data->descripcion) && !isset($data->nivel)) {
+        if (!isset($data->id_asignatura) || !isset($data->nombre) || !isset($data->descripcion) || !isset($data->nivel)) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
+            exit;
         }
 
         $asignatura->id_asignatura = $data->id_asignatura;
@@ -80,7 +97,7 @@ switch ($method) {
                 echo json_encode(array("message" => "No se pudo actualizar la asignatura"));
             }
         } catch (Exception $e) {
-            echo json_encode(array("message" => "Error al actualizar la asignatura" . $e->getMessage()));
+            echo json_encode(array("message" => "Error al actualizar la asignatura: " . $e->getMessage()));
         }
         break;
 
@@ -100,8 +117,7 @@ switch ($method) {
         break;
 
     default:
-        echo json_encode(array("message" => "Metodo no permitido"));
+        echo json_encode(array("message" => "Método no permitido"));
         break;
 }
-
 ?>
