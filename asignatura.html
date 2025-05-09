@@ -239,6 +239,13 @@
                     <label for="nivel" class="form-label">Nivel</label>
                     <input type="text" class="form-control" id="nivel" name="nivel">
                 </div>
+                <div class="mb-3">
+                    <label for="id_usuario" class="form-label">Profesor</label>
+                    <select class="form-select" id="id_usuario" name="id_usuario">
+                        <option value="">N/A</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Crear</button>
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </form>
@@ -252,6 +259,7 @@
                         <th scope="col">Nombre</th>
                         <th scope="col">Descripción</th>
                         <th scope="col">Nivel</th>
+                        <th scope="col">Profesor</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
@@ -282,6 +290,28 @@
                 }
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
+        }
+
+        function cargarProfesores() {
+            hacerSolicitud('profesor_api.php', 'GET', null, function (status, response) {
+                if (status === 200) {
+                    try {
+                        const profesores = JSON.parse(response);
+                        const selectProfesor = document.getElementById("id_usuario");
+                        selectProfesor.innerHTML = '<option value="">N/A</option>';
+                        profesores.forEach(profesor => {
+                            const option = document.createElement('option');
+                            option.value = profesor.id_usuario;
+                            option.textContent = `${profesor.nombre}`;
+                            selectProfesor.appendChild(option);
+                        });
+                    } catch (e) {
+                        mostrarNotificacion("Error al cargar los profesores");
+                    }
+                } else {
+                    mostrarNotificacion("Error al cargar los profesores");
+                }
+            });
         }
 
         function cargarAsignaturas() {

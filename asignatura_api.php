@@ -25,7 +25,8 @@ switch ($method) {
                     "id_asignatura" => $asignatura->id_asignatura,
                     "nombre" => $asignatura->nombre,
                     "descripcion" => $asignatura->descripcion,
-                    "nivel" => $asignatura->nivel
+                    "nivel" => $asignatura->nivel,
+                    "id_usuario" => $asignatura->id_usuario
                 ));
             } else {
                 echo json_encode(array("message" => "Asignatura no encontrada"));
@@ -65,6 +66,7 @@ switch ($method) {
         $asignatura->nombre = $data->nombre;
         $asignatura->descripcion = $data->descripcion;
         $asignatura->nivel = $data->nivel;
+        $asignatura->id_usuario = isset($data->id_usuario) && $data->id_usuario != '' ? $data->id_usuario : null;
 
         try {
             if ($asignatura->crear()) {
@@ -89,6 +91,7 @@ switch ($method) {
         $asignatura->nombre = $data->nombre;
         $asignatura->descripcion = $data->descripcion;
         $asignatura->nivel = $data->nivel;
+        $asignatura->id_usuario = isset($data->id_usuario) && $data->id_usuario != '' ? $data->id_usuario : null;
 
         try {
             if ($asignatura->actualizar()) {

@@ -10,6 +10,8 @@ class Asignatura
     public $descripcion;
     public $nivel;
 
+    public $id_usuario;
+
     public function __construct($db)
     {
         $this->conn = $db;
@@ -19,18 +21,20 @@ class Asignatura
 
     public function crear()
     {
-        $query = "INSERT INTO " . $this->table_name . " (nombre, descripcion, nivel) VALUES (:nombre, :descripcion, :nivel)";
+        $query = "INSERT INTO " . $this->table_name . " (nombre, descripcion, nivel, id_usuario) VALUES (:nombre, :descripcion, :nivel, :id_usuario)";
         $stmt = $this->conn->prepare($query);
 
         //limpiamos los datos
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
         $this->nivel = htmlspecialchars(strip_tags($this->nivel));
+        $this->id_usuario = $this->id_usuario ? htmlspecialchars(strip_tags($this->id_usuario)) : null;
 
         //pasamos los datos a la consulta
         $stmt->bindParam(':nombre', $this->nombre);
         $stmt->bindParam(':descripcion', $this->descripcion);
         $stmt->bindParam(':nivel', $this->nivel);
+        $stmt->bindParam(':id_usuario', $this->id_usuario, PDO::PARAM_INT);
 
         //ejecutamos la consulta
 
