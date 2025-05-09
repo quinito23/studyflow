@@ -48,7 +48,7 @@ class Asignatura
     //metodo para leer todos las asignaturas
     public function leer_todos()
     {
-        $query = "SELECT id_asignatura, nombre, descripcion, nivel FROM " . $this->table_name . " ORDER BY nombre ASC";
+        $query = "SELECT a.id_asignatura, a.nombre, a.descripcion, a.nivel, a.id_usuario, CONCAT(u.nombre, ' ', u.apellidos) AS profesor FROM " . $this->table_name . " a LEFT JOIN usuario u ON a.id_usuario = u.id_usuario ORDER BY nombre ASC";
         $stmt = $this->conn->prepare($query);
         //ejecutamos la consulta
         $stmt->execute();
@@ -59,7 +59,9 @@ class Asignatura
                 "id_asignatura" => $row['id_asignatura'],
                 "nombre" => $row['nombre'],
                 "descripcion" => $row['descripcion'],
-                "nivel" => $row['nivel']
+                "nivel" => $row['nivel'],
+                "id_usuario" => $row['id_usuario'],
+                "profesor" => $row['profesor'] ?: 'N/A'
             );
         }
         return $asignaturas;
@@ -68,7 +70,7 @@ class Asignatura
     //leer una asignatura especifica
     public function leer()
     {
-        $query = "SELECT id_asignatura, nombre, descripcion, nivel FROM " . $this->table_name . " WHERE id_asignatura = :id_asignatura LIMIT 0,1";
+        $query = "SELECT a.id_asignatura, a.nombre, a.descripcion, a.nivel, a.id_usuario, CONCAT(u.nombre, ' ', u.apellidos) AS profesor FROM " . $this->table_name . " a LEFT JOIN usuario u ON a.id_usuario = u.id_usuario WHERE id_asignatura = :id_asignatura LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
 
         //limpiamos los datos
@@ -85,6 +87,8 @@ class Asignatura
             $this->nombre = $row['nombre'];
             $this->descripcion = $row['descripcion'];
             $this->nivel = $row['nivel'];
+            $this->id_usuario = $row['id_usuario'];
+
             return true;
         }
         return false;
@@ -94,13 +98,14 @@ class Asignatura
     //metodo para actualizar una asignatura
     public function actualizar()
     {
-        $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, descripcion = :descripcion, nivel = :nivel WHERE id_asignatura = :id_asignatura";
+        $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, descripcion = :descripcion, nivel = :nivel, id_usuario = :id_usuario WHERE id_asignatura = :id_asignatura";
         $stmt = $this->conn->prepare($query);
 
         //hacemos la limpieza de parametros
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
         $this->nivel = htmlspecialchars(strip_tags($this->nivel));
+        $this->id_usuario = $this->id_usuario ? htmlspecialchars(strip_tags($this->id_usuario)) : null;
         $this->id_asignatura = htmlspecialchars(strip_tags($this->id_asignatura));
 
         //pasamos los parametros a la consulta
@@ -108,6 +113,7 @@ class Asignatura
         $stmt->bindParam(':nombre', $this->nombre);
         $stmt->bindParam(':descripcion', $this->descripcion);
         $stmt->bindParam(':nivel', $this->nivel);
+        $stmt->bindParam(':id_usuario', $this->id_usuario, PDO::PARAM_INT);
 
         //ejecutamos la consulta
         return $stmt->execute();

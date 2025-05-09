@@ -35,9 +35,7 @@ switch ($method) {
             // Filter subjects by professor (id_usuario)
             $id_usuario = $_GET['id_usuario'];
             try {
-                $query = "SELECT id_asignatura, nombre, descripcion, nivel 
-                          FROM asignatura 
-                          WHERE id_usuario = :id_usuario";
+                $query = "SELECT a.id_asignatura, a.nombre, a.descripcion, a.nivel, a.id_usuario, u.nombre AS profesor FROM asignatura a LEFT JOIN usuario u ON a.id_usuario = u.id_usuario WHERE a.id_usuario = :id_usuario";
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
                 $stmt->execute();
