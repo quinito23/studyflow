@@ -70,10 +70,18 @@ session_start();
             width: 100%;
             max-width: 400px;
         }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 
 <body>
+    <div id="notificacion" class="notificacion"></div>
+
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane"
@@ -116,30 +124,50 @@ session_start();
                 </div>
                 <div class="card-body">
                     <form id="registro-form">
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="correo-registro" class="form-label">Correo Electrónico</label>
                             <input type="email" class="form-control" id="correo-registro" name="correo"
                                 placeholder="Ingrese el correo electrónico" required>
+                            <div class="error-message" id="correo-error"></div>
+                            
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="contrasenia-registro" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="contrasenia-registro" name="contrasenia"
                                 placeholder="Ingrese la contraseña" required>
+                            <div class="error-message" id="contrasenia-error"></div>
+                            
                         </div>
                         <div class="mb-3">
                             <label for="nombre-registro" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="nombre-registro" name="nombre"
                                 placeholder="Ingrese su nombre" required>
+                            <div class="error-message" id="nombre-error"></div>
+                            
                         </div>
                         <div class="mb-3">
                             <label for="apellidos-registro" class="form-label">Apellidos</label>
                             <input type="text" class="form-control" id="apellidos-registro" name="apellidos"
                                 placeholder="Ingrese sus apellidos" required>
+                            <div class="error-message" id="apellidos-error"></div>
+                            
                         </div>
                         <div class="mb-3">
                             <label for="telefono-registro" class="form-label">Telefono</label>
                             <input type="text" class="form-control" id="telefono-registro" name="telefono"
                                 placeholder="Ingrese su teléfono" required>
+                            <div class="error-message" id="telefono-error"></div>
+                            
+                        </div>
+                        <div class="mb-3">
+                            <label for="dni-registro" class="form-label">DNI</label>
+                            <input type="text" class="form-control" id="dni-registro" name="DNI" placeholder="Ej. 12345678Z" required>
+                            <div class="error-message" id="dni-error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha-nacimiento-registro" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="fecha-nacimiento-registro" name="fecha_nacimiento" required>
+                            <div class="error-message" id="fecha-nacimiento-error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="rol-registro" class="form-label">Rol propuesto</label>
@@ -148,6 +176,8 @@ session_start();
                                 <option value="alumno">Alumno</option>
                                 <option value="profesor">Profesor</option>
                             </select>
+                            <div class="error-message" id="rol-error"></div>
+                            
                         </div>
                         <div class="mb-3" id="asignaturas-section">
                             <label for="asignaturas-registro" class="form-label">Asignaturas</label>
@@ -155,6 +185,7 @@ session_start();
                                 <!--Las asignaturas son cargadas dinamicamente-->
                             </select>
                         </div>
+                        <div class="error-message" id="asignaturas-error"></div>
                         <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
                     </form>
                 </div>
@@ -162,6 +193,7 @@ session_start();
         </div>
     </div>
 
+    <script src="validacion.js"></script>
     <script>
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
@@ -173,6 +205,15 @@ session_start();
                 }
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
+        }
+
+        function mostrarNotificacion(mensaje, esDuplicado = false) {
+            const notificacion = document.getElementById('notificacion');
+            notificacion.innerHTML = esDuplicado ? `${mensaje} <a href="#" onclick="document.getElementById('login-tab').click(); return false;">Inicia sesión</a>` : mensaje;
+            notificacion.style.display = 'block';
+            setTimeout(() => {
+                notificacion.style.display = 'none';
+            }, 5000);
         }
 
         function cargarAsignaturas() {
@@ -196,6 +237,8 @@ session_start();
                 }
             });
         }
+
+
 
         function iniciarSesion(event) {
             event.preventDefault();
@@ -230,18 +273,22 @@ session_start();
         function registrarAnonimo(event) {
             console.log("Función registrarAnonimo ejecutada");
             event.preventDefault();
+
+
             const correo = document.getElementById("correo-registro").value;
             const contrasenia = document.getElementById("contrasenia-registro").value;
             const nombre = document.getElementById("nombre-registro").value;
             const apellidos = document.getElementById("apellidos-registro").value;
             const telefono = document.getElementById("telefono-registro").value;
+            const DNI = document.getElementById("dni-registro").value;
+            const fecha_nacimiento = document.getElementById("fecha-nacimiento-registro").value;
             const rol_propuesto = document.getElementById("rol-registro").value;
 
             //datos de la asignatura
             const selectedAsignaturas = document.getElementById("asignaturas-registro").selectedOptions;
             const asignaturas = Array.from(selectedAsignaturas).map(option => option.value);
 
-            const datosRegistro = { correo, contrasenia, nombre, apellidos, telefono, rol_propuesto, asignaturas };
+            const datosRegistro = { correo, contrasenia, nombre, apellidos, telefono, DNI, fecha_nacimiento, rol_propuesto, asignaturas };
             console.log("Datos del registro:", datosRegistro);
 
             hacerSolicitud('registro_api.php', 'POST', datosRegistro, function (status, response) {
@@ -261,7 +308,60 @@ session_start();
         }
 
         document.getElementById("login-form").addEventListener("submit", iniciarSesion);
-        document.getElementById("registro-form").addEventListener("submit", registrarAnonimo);
+        document.getElementById("registro-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const datos = {
+                correo: document.getElementById("correo-registro").value,
+                contrasenia: document.getElementById("contrasenia-registro").value,
+                nombre: document.getElementById("nombre-registro").value,
+                apellidos: document.getElementById("apellidos-registro").value,
+                telefono: document.getElementById("telefono-registro").value,
+                DNI: document.getElementById("dni-registro").value,
+                fecha_nacimiento: document.getElementById("fecha-nacimiento-registro").value,
+                rol_propuesto: document.getElementById("rol-registro").value,
+                asignaturas: Array.from(document.getElementById("asignaturas-registro").selectedOptions).map(opt => opt.value)
+            };
+
+            const reglas = {
+                correo: { validar: validarCorreo, errorId: "correo-error" },
+                contrasenia: { validar: validarContrasenia, errorId: "contrasenia-error" },
+                nombre: { validar: validarTexto, errorId: "nombre-error", minLength: 2 },
+                apellidos: { validar: validarTexto, errorId: "apellidos-error", minLength: 2 },
+                telefono: { validar: validarTelefono, errorId: "telefono-error" },
+                DNI: { validar: validarDNI, errorId: "dni-error" },
+                fecha_nacimiento: { 
+                    validar: (valor) => validarFechaNacimiento(valor, document.getElementById("rol-registro").value),
+                    errorId: "fecha-nacimiento-error"
+                },
+                rol_propuesto: { 
+                    validar: (valor) => valor && ['alumno', 'profesor'].includes(valor) ? "" : "Seleccione un rol",
+                    errorId: "rol-error"
+                },
+                asignaturas: { validar: validarAsignaturas, errorId: "asignaturas-error" },
+                duplicados: { validar: validarDuplicados, errorId: "notificacion" }
+            };
+
+            const validation = await validarCampos(datos, reglas);
+            if (validation.isValid) {
+                registrarAnonimo(event);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    if (field === 'duplicados') {
+                        mostrarNotificacion(validation.errors[field], true);
+                    } else {
+                        document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                    }
+                });
+            }
+        });
+
+        document.getElementById("registro-form").addEventListener("reset", function () {
+            ['correo-error', 'contrasenia-error', 'nombre-error', 'apellidos-error', 'telefono-error', 
+             'dni-error', 'fecha-nacimiento-error', 'rol-error', 'asignaturas-error'].forEach(id => {
+                document.getElementById(id).textContent = '';
+            });
+            document.getElementById('notificacion').style.display = 'none';
+        });
 
         window.onload = function () {
             cargarAsignaturas();

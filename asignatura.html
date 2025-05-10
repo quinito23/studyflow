@@ -156,6 +156,16 @@
         .modal-footer {
             border-color: #ffffff33;
         }
+
+                /*Footer*/
+        .footer {
+            background-color: #0d1f38;
+            color: #f8f9fa;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #ffffff33;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+        }
     </style>
 </head>
 
@@ -233,15 +243,15 @@
                 </div>
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
-                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="nivel" class="form-label">Nivel</label>
-                    <input type="text" class="form-control" id="nivel" name="nivel">
+                    <input type="text" class="form-control" id="nivel" name="nivel" required>
                 </div>
                 <div class="mb-3">
                     <label for="id_usuario" class="form-label">Profesor</label>
-                    <select class="form-select" id="id_usuario" name="id_usuario">
+                    <select class="form-select" id="id_usuario" name="id_usuario" required>
                         <option value="">N/A</option>
                     </select>
                 </div>
@@ -267,6 +277,11 @@
             </table>
         </div>
     </main>
+
+        <!--Footer-->
+    <footer class="footer">
+        <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
+    </footer>
 
     <script>
         const notificacion = document.getElementById("notificacion");

@@ -250,18 +250,22 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripción:</label>
                 <textarea class="form-control" id="descripcion" required></textarea>
+                <div class="error-message" id="descripcion-error"></div>
             </div>
             <div class="col-md-6">
                 <label for="fecha_entrega" class="form-label">Fecha de Entrega:</label>
                 <input type="datetime-local" class="form-control" id="fecha_entrega" required>
+                <div class="error-message" id="fecha-entrega-error"></div>
             </div>
             <div class="col-md-6">
                 <label for="asignatura" class="form-label">Asignatura:</label>
                 <select id="asignatura" class="form-select"></select>
+                <div class="error-message" id="asignatura-error"></div>
             </div>
             <div class="col-md-6">
                 <label for="grupo" class="form-label">Grupo:</label>
                 <select id="grupo" class="form-select"></select>
+                <div class="error-message" id="grupo-error"></div>
             </div>
             <input type="hidden" id="id_tarea">
             <div class="d-grid gap-2 d-md-block">
@@ -295,6 +299,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
+    <script src="validacion.js"></script>
     <script>
         const tareasForm = document.getElementById('tareas-form');
         const tareasLista = document.getElementById('tareas-lista');
@@ -483,13 +488,55 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             }
         }
 
+        tareasForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const datos = {
+                descripcion: document.getElementById("descripcion").value,
+                fecha_entrega: document.getElementById("fecha_entrega").value,
+                id_asignatura: document.getElementById("asignatura").value,
+                id_grupo: document.getElementById("grupo").value
+            };
+
+            const reglas = {
+                descripcion: { 
+                    validar: (valor) => validarTexto(valor, 2), 
+                    errorId: "descripcion-error" 
+                },
+                fecha_entrega: { 
+                    validar: validarFechaEntrega, 
+                    errorId: "fecha-entrega-error" 
+                },
+                id_asignatura: { 
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura", 
+                    errorId: "asignatura-error" 
+                },
+                id_grupo: { 
+                    validar: (valor) => valor ? "" : "Seleccione un grupo", 
+                    errorId: "grupo-error" 
+                }
+            };
+
+            const validation = validarCampos(datos, reglas);
+            if (validation.isValid) {
+                crearTarea(event);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                });
+            }
+        });
+
         document.getElementById('asignatura').addEventListener('change', cargarGrupos);
-        tareasForm.addEventListener('submit', crearTarea);
+        
         tareasForm.addEventListener('reset', function () {
             formTitle.textContent = 'Tareas';
             document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
             document.getElementById('id_tarea').value = '';
             cargarGrupos();
+            ['descripcion-error', 'fecha-entrega-error', 'asignatura-error', 'grupo-error'].forEach(id => {
+                document.getElementById(id).textContent = '';
+            });
         });
 
         window.onload = function () {

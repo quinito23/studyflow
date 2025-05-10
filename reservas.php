@@ -33,7 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             flex-direction: column;
         }
 
-        #alumno-form {
+        #reservas-form {
             border: 2px solid #007bff;
             /* Borde azul */
             border-radius: 8px;
@@ -191,12 +191,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         }
 
         .error-message {
-            background-color: #f8d7da;
             color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-top: 1rem;
-            display: none;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
         }
 
         .form-title {
@@ -282,14 +279,17 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             <div class="col-md-6">
                 <label for="fecha" class="form-label">Fecha:</label>
                 <input type="date" class="form-control" id="fecha" required>
+                <div class="error-message" id="fecha-error"></div>
             </div>
             <div class="col-md-6">
                 <label for="hora_inicio" class="form-label">Hora de Inicio:</label>
                 <input type="time" class="form-control" id="hora_inicio" required>
+                <div class="error-message" id="hora-error"></div>
             </div>
             <div class="col-md-6">
                 <label for="hora_fin" class="form-label">Hora de Finalización:</label>
                 <input type="time" class="form-control" id="hora_fin" required>
+                <div class="error-message" id="hora-error"></div>
             </div>
             <div class="col-md-6">
                 <label for="aula" class="form-label">Aula:</label>
@@ -344,6 +344,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
+    <script src="validacion.js"></script>
     <script>
         const reservasForm = document.getElementById('reservas-form');
         const reservasLista = document.getElementById('reservas-lista');
@@ -591,14 +592,58 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             });
         });
 
-        reservasForm.addEventListener('submit', crearReserva);
+        reservasForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const datos = {
+                fecha: document.getElementById("fecha").value,
+                hora_inicio: document.getElementById("hora_inicio").value,
+                hora_fin: document.getElementById("hora_fin").value,
+                id_aula: document.getElementById("aula").value,
+                id_asignatura: document.getElementById("asignatura").value,
+                id_grupo: document.getElementById("grupo").value
+            };
+
+            const reglas = {
+                fecha: { validar: validarFecha, errorId: "fecha-error" },
+                horario: { 
+                    validar: () => validarHorarioReserva(datos.hora_inicio, datos.hora_fin),
+                    errorId: "hora-error"
+                },
+                id_aula: { 
+                    validar: (valor) => valor ? "" : "Seleccione un aula",
+                    errorId: "aula-error"
+                },
+                id_asignatura: { 
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura",
+                    errorId: "asignatura-error"
+                },
+                id_grupo: { 
+                    validar: (valor) => valor ? "" : "Seleccione un grupo",
+                    errorId: "grupo-error"
+                }
+            };
+
+            const validation = validarCampos(datos, reglas);
+            if (validation.isValid) {
+                crearReserva(event);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                });
+            }
+        });
 
         reservasForm.addEventListener('reset', function () {
             formTitle.textContent = 'Reservas';
             document.querySelector('#reservas-form button[type="submit"]').textContent = 'Crear';
             document.getElementById('id_reserva').value = '';
             cargarAulas();
-        })
+            // Limpiar mensajes de error
+            ['fecha-error', 'hora-error', 'aula-error', 'asignatura-error', 'grupo-error'].forEach(id => {
+                document.getElementById(id).textContent = '';
+            });
+        });
 
         window.onload = function () {
             cargarAulas();

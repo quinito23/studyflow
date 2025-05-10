@@ -156,6 +156,22 @@
         .modal-footer {
             border-color: #ffffff33;
         }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+                /*Footer*/
+        .footer {
+            background-color: #0d1f38;
+            color: #f8f9fa;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #ffffff33;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+        }
     </style>
 </head>
 
@@ -227,10 +243,12 @@
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    <div class="error-message" id="nombre-error"></div>
                 </div>
                 <div class="mb-3">
                     <label for="capacidad_maxima" class="form-label">Capacidad Maxima</label>
                     <input type="number" class="form-control" id="capacidad_maxima" name="capacidad_maxima" required>
+                    <div class="error-message" id="capacidad-maxima-error"></div>
                 </div>
                 <div class="mb-3">
                     <label for="id_asignatura" class="form-label">Asignatura</label>
@@ -260,6 +278,12 @@
         </div>
     </main>
 
+            <!--Footer-->
+    <footer class="footer">
+        <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
+    </footer>
+
+    <script src="validacion.js"></script>
     <script>
         const notificacion = document.getElementById("notificacion");
 
@@ -398,7 +422,45 @@
         }
 
         //inicializar
-        document.getElementById("form-grupo").addEventListener("submit", crearGrupo);
+                document.getElementById("form-grupo").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const datos = {
+                nombre: document.getElementById("nombre").value,
+                capacidad_maxima: document.getElementById("capacidad_maxima").value,
+                id_asignatura: document.getElementById("id_asignatura").value
+            };
+
+            const reglas = {
+                nombre: { 
+                    validar: (valor) => validarTexto(valor, 2), 
+                    errorId: "nombre-error" 
+                },
+                capacidad_maxima: { 
+                    validar: validarCapacidad, 
+                    errorId: "capacidad-maxima-error" 
+                },
+                id_asignatura: { 
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura", 
+                    errorId: "id-asignatura-error" 
+                }
+            };
+
+            const validation = validarCampos(datos, reglas);
+            if (validation.isValid) {
+                crearGrupo(event);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                });
+            }
+        });
+
+
+
+
+
+
         window.onload = function () {
             cargarAsignaturas();
             cargarGrupos();

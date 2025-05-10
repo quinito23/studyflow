@@ -10,13 +10,15 @@ class Anonimo {
     public $nombre;
     public $apellidos;
     public $telefono;
+    public $DNI;
+    public $fecha_nacimiento;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
     public function crear() {
-        $query = "INSERT INTO " . $this->table_name . " (correo, contrasenia, nombre, apellidos, telefono) VALUES (:correo, :contrasenia, :nombre, :apellidos, :telefono)";
+        $query = "INSERT INTO " . $this->table_name . " (correo, contrasenia, nombre, apellidos, telefono, DNI, fecha_nacimiento) VALUES (:correo, :contrasenia, :nombre, :apellidos, :telefono, :DNI, :fecha_nacimiento)";
         $stmt = $this->conn->prepare($query);
         
         $this->correo = htmlspecialchars(strip_tags($this->correo));
@@ -24,12 +26,18 @@ class Anonimo {
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->apellidos = htmlspecialchars(strip_tags($this->apellidos));
         $this->telefono = htmlspecialchars(strip_tags($this->telefono));
+        $this->DNI = htmlspecialchars(strip_tags($this->DNI));
+        $this->fecha_nacimiento = htmlspecialchars(strip_tags($this->fecha_nacimiento));
+
 
         $stmt->bindParam(':correo', $this->correo);
         $stmt->bindParam(':contrasenia', $this->contrasenia);
         $stmt->bindParam(':nombre', $this->nombre);
         $stmt->bindParam(':apellidos', $this->apellidos);
         $stmt->bindParam(':telefono', $this->telefono);
+        $stmt->bindParam(':DNI', $this->DNI);
+        $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
+
 
         if ($stmt->execute()) {
             return $this->conn->lastInsertId();

@@ -34,7 +34,7 @@ switch ($method) {
         }else{
             //Listamos todas las solicitudes con los datos del anonimo
             try {
-                $query = "SELECT s.id_solicitud, s.id_anonimo, s.estado, s.fecha_realizacion, s.rol_propuesto, a.nombre, a.apellidos, a.correo FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo";
+                $query = "SELECT s.id_solicitud, s.id_anonimo, s.estado, s.fecha_realizacion, s.rol_propuesto, a.nombre, a.apellidos, a.correo, a.DNI FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo";
     
                 $stmt = $db->prepare($query);
                 $stmt->execute();
@@ -61,7 +61,7 @@ switch ($method) {
 
             if ($accion === 'aceptar') {
                 //obtener los datos de la solicitud y del anonimo que la ha hecho
-                $query = "SELECT s.id_anonimo, s.rol_propuesto, a.correo, a.contrasenia, a.nombre, a.apellidos, a.telefono FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo WHERE s.id_solicitud = :id_solicitud";
+                $query = "SELECT s.id_anonimo, s.rol_propuesto, a.correo, a.contrasenia, a.nombre, a.apellidos, a.telefono, a.DNI, a.fecha_nacimiento FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo WHERE s.id_solicitud = :id_solicitud";
                 $stmt = $db->prepare($query);
 
                 $stmt->bindParam(':id_solicitud', $idSolicitud);
@@ -80,11 +80,11 @@ switch ($method) {
                 //creamos el usuario usando el metodo crear de la clase usuario
                 $usuario->nombre = $solicitudData['nombre'];
                 $usuario->apellidos = $solicitudData['apellidos'];
-                $usuario->DNI = null;
+                $usuario->DNI = $solicitudData['DNI'];
                 $usuario->telefono = $solicitudData['telefono'];
                 $usuario->correo = $solicitudData['correo'];
                 $usuario->contrasenia = $solicitudData['contrasenia'];
-                $usuario->fecha_nacimiento = null;
+                $usuario->fecha_nacimiento = $solicitudData['fecha_nacimiento'];
                 $usuario->rol = $solicitudData['rol_propuesto'];
 
 
@@ -107,8 +107,8 @@ switch ($method) {
                     $alumno->apellidos = $solicitudData['apellidos'];
                     $alumno->telefono = $solicitudData['telefono'];
                     $alumno->rol = 'alumno';
-                    $alumno->DNI = null;
-                    $alumno->fecha_nacimiento = null;
+                    $alumno->DNI = $solicitudData['DNI'];
+                    $alumno->fecha_nacimiento = $solicitudData['fecha_nacimiento'];
                     $tutores = []; // No asignamos tutores inicialmente
 
                     if(isset($data->grupos) && is_array($data->grupos) && !empty($data->grupos)){
@@ -133,8 +133,8 @@ switch ($method) {
                     $profesor->apellidos = $solicitudData['apellidos'];
                     $profesor->telefono = $solicitudData['telefono'];
                     $profesor->rol = 'profesor';
-                    $profesor->DNI = null;
-                    $profesor->fecha_nacimiento = null;
+                    $profesor->DNI = $solicitudData['DNI'];
+                    $profesor->fecha_nacimiento = $solicitudData['fecha_nacimiento'];
                     $profesor->sueldo = null; // Valores por defecto
                     $profesor->jornada = null;
                     $profesor->fecha_inicio_contrato = null;
