@@ -22,8 +22,16 @@ class Alumno extends Usuario
 
     // metodo para crear un nuevo profesor
 
-    public function crear($tutores, $grupos = [])
+    public function crear($tutores = [], $grupos = [])
     {
+
+        // si no hay id_usuario preexistente procedente de solicitud, primero se crea el usuario
+        if(empty($this->id_usuario)){
+            if(!$this->crearUsuario()){
+                throw new Exception("No se pudo crear el usuario para el alumno");
+            }
+        }
+
         //insertar en la tabla alumno
         $query = "INSERT INTO " . $this->table_name . " (id_usuario) VALUES (:id_usuario)";
         $stmt = $this->conn->prepare($query);
@@ -40,7 +48,7 @@ class Alumno extends Usuario
         }
 
 
-
+        //insertar relaciones con tutores
         foreach ($tutores as $id_tutor) {
             $query = "INSERT INTO alumno_tutor (id_usuario,id_tutor) VALUES (:id_usuario, :id_tutor)";
             $stmt = $this->conn->prepare($query);

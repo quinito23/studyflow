@@ -1,37 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Alumnos</title>
-
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #112a4a;
             color: #f8f9fa;
             font-size: 16px;
-            margin: 0px;
+            margin: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-
         #alumno-form {
             border: 2px solid #007bff;
-            /* Borde azul */
             border-radius: 8px;
             padding: 1.5rem;
             background-color: #0d1f38;
-            /* Fondo más oscuro */
             margin-bottom: 2rem;
         }
-
-        /*Header*/
         .header {
             background-color: #0d1f38;
             padding: 1rem 2rem;
@@ -39,108 +31,80 @@
             border-bottom: 1px solid #ffffff33;
             display: flex;
             flex-wrap: wrap;
-            /*Para permitir que los elementos se apilen si no caben*/
             justify-content: space-between;
             align-items: center;
         }
-
         .header .d-flex {
             gap: 1rem;
             align-items: center;
         }
-
         .header h1 {
             margin: 0;
             font-size: clamp(1.5rem, 5vw, 2.5rem);
-            /*Hacemos que el tamaño sea dinamico*/
             margin-left: clamp(1rem, 3vw, 2rem);
         }
-
         .navbar-toggler {
             font-size: clamp(1rem, 3vw, 1.5rem);
-            /*Hacemos que el tamaño sea dinamico*/
             margin-right: 1rem;
             z-index: 1000;
         }
-
         .navbar-toggler-icon {
             color: white;
         }
-
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
             font-size: clamp(0.7rem, 2vw, 0.9rem);
-            /*Hacemos que el tamaño sea dinamico*/
         }
-
-        /*Para cambiar el color del elemento que separa los elementos del breadcrumb ">"*/
         .breadcrumb-item+.breadcrumb-item::before {
             color: #007bff;
         }
-
         .breadcrumb-item a {
             color: #f8f9fa;
             text-decoration: none;
         }
-
-        .breadcrumb-item .active {
+        .breadcrumb-item.active {
             color: #d3d6db;
         }
-
-        /*sidebar*/
-
         .offcanvas {
             background-color: #0d1f38;
             color: white;
             width: 20vw !important;
             min-width: 200px !important;
-            /*ancho minimo para que no se corte cuando usamos un movil*/
         }
-
         .offcanvas-header {
             border-bottom: 1px solid #ffffff33;
         }
-
         .offcanvas-title {
             color: white;
             font-size: clamp(1rem, 3vw, 1.25rem);
         }
-
         .offcanvas-body .nav-link {
             color: #f8f9fa;
-            padding: 0.75rem, 1rem;
+            padding: 0.75rem 1rem;
             display: block;
             text-decoration: none;
             font-size: clamp(0.9rem, 2vw, 1rem);
-            /*Hacemos que el tamaño sea dinamico*/
         }
-
         .offcanvas-body .nav-link.active {
             background-color: #007bff;
             color: white;
         }
-
-        /*Contenido principal*/
         .main-content {
             padding: 2rem;
             flex: 1;
         }
-
-
         h2 {
             font-size: clamp(1.5rem, 4vw, 2rem);
             color: #ffffff;
             margin-bottom: 1.5rem;
         }
-
         .form-label {
             font-weight: 500;
             color: white;
             font-size: clamp(0.9rem, 2vw, 1rem);
         }
-
         .form-control,
         .form-select {
             background-color: white;
@@ -148,36 +112,28 @@
             border-radius: 5px;
             font-size: clamp(0.8rem, 2vw, 1rem);
         }
-
         .btn-primary {
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .btn-light {
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .table thead {
             background-color: #007bff;
+            border-color: #007bff;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+        }
+        .table thead {
+            background-color: #0056b3;
             color: white;
         }
-
         .table {
             margin-top: 2rem;
             background-color: #e9ecef;
             color: #333;
             font-size: clamp(0.7rem, 1.5vw, 1rem);
         }
-
         .table tbody tr {
             background-color: #d3d6db;
         }
-
         .table th,
         .table td {
             text-align: center;
         }
-
         .error-message {
             background-color: #f8d7da;
             color: #dc3545;
@@ -186,17 +142,19 @@
             margin-top: 1rem;
             display: none;
         }
-
-        .form-title {
-            align-items: center;
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
         }
-
         .modal-content {
             background-color: #112a4a;
             color: #f8f9fa;
             border-radius: 5px;
         }
-
         .modal-header {
             border-color: #ffffff33;
             display: flex;
@@ -204,37 +162,32 @@
             align-items: center;
             position: relative;
         }
-
-        .modal-header,
-        .modal-title {
+        .modal-header .modal-title {
             color: white;
             text-align: center;
             flex-grow: 1;
             font-size: clamp(1rem, 3vw, 1.25rem);
         }
-
-        .modal-title {
-            color: white;
-            text-align: center;
+        .modal-header .btn-close {
+            position: absolute;
+            right: 1rem;
         }
-
+        .modal-footer {
+            border-color: #ffffff33;
+        }
         .modal-body p {
             margin: 0.5rem 0;
             font-size: clamp(0.8rem, 2vw, 1rem);
         }
-
         .modal-body p strong {
             color: white;
             font-weight: 500;
             display: inline-block;
             width: clamp(120px, 30vw, 180px);
         }
-
         .modal-body p span {
             color: #d3d6db;
         }
-
-        /*Footer*/
         .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
@@ -243,18 +196,18 @@
             border-top: 1px solid #ffffff33;
             font-size: clamp(0.8rem, 2vw, 1rem);
         }
+        .error-text {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
     </style>
-
 </head>
-
 <body>
-
-    <!--Header-->
     <header class="header">
-        <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
         <div class="d-flex align-items-center navbar-dark">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
-                aria-label="Toggle Navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -267,12 +220,10 @@
         </nav>
     </header>
 
-    <!--Barra lateral dedsplegable con offcanvas de bootsraps-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <ul class="nav flex-column">
@@ -307,40 +258,43 @@
         </div>
     </div>
 
-
-    <!--Contenido principal-->
-
     <main class="main-content">
         <h2 class="text-center" id="form-title">Nuevo Alumno</h2>
-        <!--Formulario para crear o editar un alumno-->
         <form id="alumno-form" class="row g-3">
             <div class="col-md-6">
-                <label for="correo" class="form-label">Correo:</label>
+                <label for="correo" class="form-label">Correo</label>
                 <input type="email" class="form-control" id="correo" required>
+                <span id="correo-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="contrasenia" class="form-label">Contraseña:</label>
+                <label for="contrasenia" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="contrasenia" required>
+                <span id="contrasenia-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre:</label>
+                <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" id="nombre" required>
+                <span id="nombre-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="apellidos" class="form-label">Apellidos:</label>
+                <label for="apellidos" class="form-label">Apellidos</label>
                 <input type="text" class="form-control" id="apellidos" required>
+                <span id="apellidos-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="DNI" class="form-label">DNI:</label>
+                <label for="DNI" class="form-label">DNI</label>
                 <input type="text" class="form-control" id="DNI" required>
+                <span id="dni-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="telefono" class="form-label">Teléfono:</label>
+                <label for="telefono" class="form-label">Teléfono</label>
                 <input type="text" class="form-control" id="telefono" required>
+                <span id="telefono-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
+                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
                 <input type="date" class="form-control" id="fecha_nacimiento" required>
+                <span id="fecha-nacimiento-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="rol" class="form-label">Rol</label>
@@ -349,12 +303,14 @@
                     <option value="profesor">Profesor</option>
                     <option value="alumno" selected>Alumno</option>
                 </select>
+                <span id="rol-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
-                <label for="tutor" class="form-label">Tutor Legal:</label>
+                <label for="tutor" class="form-label">Tutor Legal</label>
                 <select id="tutor" class="form-select" multiple>
-                    <!--Aquí serán listados los tutores legales a elegir-->
+                    <!-- Opciones cargadas dinámicamente -->
                 </select>
+                <span id="tutor-error" class="error-text"></span>
             </div>
             <input type="hidden" id="id_usuario">
             <div class="d-grid gap-2 d-md-block">
@@ -362,11 +318,10 @@
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </div>
         </form>
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
 
         <h2 class="text-center">Alumnos</h2>
-
-        <!--Creamos la tabla para mostrar a los alumnos-->
-
         <div class="table-responsive">
             <table class="table" id="tabla-alumnos">
                 <thead>
@@ -374,33 +329,26 @@
                         <th scope="col">Nombre</th>
                         <th scope="col">Apellidos</th>
                         <th scope="col">DNI</th>
-                        <th scope="col">Telefono</th>
+                        <th scope="col">Teléfono</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="alumnos-lista">
-                    <!--Aquí serán listados los alumnos-->
-                </tbody>
+                <tbody id="alumnos-lista"></tbody>
             </table>
         </div>
-
-        <div id="error-message"></div>
-
-        <!--Creamos un modal emergente de botstrpas para mostrar la informacion de un usuario al pulsar el botón de info-->
 
         <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="infoModalLabel">Información del alumno</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="close"></button>
+                        <h5 class="modal-title" id="infoModalLabel">Información del Alumno</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p><strong>Nombre:</strong><span id="modal-nombre"></span></p>
                         <p><strong>Apellidos:</strong><span id="modal-apellidos"></span></p>
                         <p><strong>Correo:</strong><span id="modal-correo"></span></p>
-                        <p><strong>Contraseña</strong><span id="modal-contrasenia"></span></p>
+                        <p><strong>Contraseña:</strong><span id="modal-contrasenia"></span></p>
                         <p><strong>DNI:</strong><span id="modal-DNI"></span></p>
                         <p><strong>Teléfono:</strong><span id="modal-telefono"></span></p>
                         <p><strong>Fecha de Nacimiento:</strong><span id="modal-fecha_nacimiento"></span></p>
@@ -415,122 +363,197 @@
         </div>
     </main>
 
-    <!--FOOTER-->
     <footer class="footer">
-        <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
+        <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
-
+    <script src="validacion.js"></script>
     <script>
-        //creamos la funcio para enviar la solicitud ajax a la API con los datos del formulario
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
-            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
+                if (xhr.readyState === 4) {
                     callback(xhr.status, xhr.responseText);
                 }
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
-        //creamos la funcion para crear un nuevo alumno
-        function crearAlumno(event) {
-            event.preventDefault();
-
-            const id_usuario = document.getElementById("id_usuario").value;
-            const correo = document.getElementById("correo").value;
-            const contrasenia = document.getElementById("contrasenia").value;
-            const nombre = document.getElementById("nombre").value;
-            const apellidos = document.getElementById("apellidos").value;
-            const DNI = document.getElementById("DNI").value;
-            const telefono = document.getElementById("telefono").value;
-            const fecha_nacimiento = document.getElementById("fecha_nacimiento").value || null;
-            const rol = document.getElementById("rol").value;
-
-            //usamos un bucle for of para meter laos tutores seleccionados para el alumno en un array 
-            const selectedOptions = document.getElementById("tutor").selectedOptions;
-            const tutores = Array();
-            for (let option of selectedOptions) {
-                tutores.push(option.value); // almacenamos el id del tutor , que es lo que le asignamos al atributo valor
-            }
-
-            const alumno = { correo, contrasenia, nombre, apellidos, DNI, telefono, fecha_nacimiento, rol, tutores, id_usuario };
-
-            if (id_usuario) {
-                //si existe el id del usuario , significa que estamos actualizando el profesor , por lo que hacemos una solicitud PUT
-
-                hacerSolicitud('alumno_api.php', 'PUT', alumno, function (status, response) {
-                    if (status === 200) {
-                        document.getElementById("alumno-form").reset();
-                        cargarAlumnos();
-                        // resetear el titulo y el boton
-                        document.getElementById("id_usuario").value = null;
-                        document.getElementById("form-title").innerText = "Nuevo alumno";
-                        document.querySelector("button[type='submit']").textContent = "Crear alumno";
-                    } else {
-                        document.getElementById("error-message").innerText = 'Error al actualizar el alumno';
-                    }
-                });
-            } else {
-                hacerSolicitud('alumno_api.php', 'POST', alumno, function (status, response) {
-                    if (status === 200) {
-                        // limpiamos el formulario y recargamos la lista de alumnos
-                        document.getElementById("alumno-form").reset();
-                        cargarAlumnos();
-                    } else {
-                        document.getElementById("error-message").innerText = 'Error al crear el profesor';
-                    }
-                });
-            }
+        function mostrarMensaje(tipo, mensaje) {
+            const elemento = document.getElementById(`${tipo}-message`);
+            elemento.innerText = mensaje;
+            elemento.style.display = 'block';
+            setTimeout(() => elemento.style.display = 'none', 5000);
         }
 
-        //funcion para cragar todos los alumnos de la base de datos
+        function limpiarErrores() {
+            ['correo-error', 'contrasenia-error', 'nombre-error', 'apellidos-error', 'dni-error', 
+             'telefono-error', 'fecha-nacimiento-error', 'rol-error', 'tutor-error', 'error-message'].forEach(id => {
+                const elemento = document.getElementById(id);
+                elemento.textContent = '';
+                elemento.style.display = 'none';
+            });
+        }
+
+        function cargarTutores(id_usuario = null) {
+            const selectTutores = document.getElementById("tutor");
+            selectTutores.innerHTML = '';
+            
+            hacerSolicitud('tutor_api.php', 'GET', null, function (status, response) {
+                if (status === 200) {
+                    let tutores;
+                    try {
+                        tutores = JSON.parse(response);
+                    } catch (e) {
+                        mostrarMensaje('error', 'Error al procesar los tutores');
+                        return;
+                    }
+                    tutores.forEach(tutor => {
+                        const option = document.createElement('option');
+                        option.value = tutor.id_tutor;
+                        option.textContent = `${tutor.nombre} ${tutor.apellidos}`;
+                        selectTutores.appendChild(option);
+                    });
+
+                    if (id_usuario) {
+                        hacerSolicitud(`alumno_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
+                            if (status === 200) {
+                                let alumno;
+                                try {
+                                    alumno = JSON.parse(response);
+                                } catch (e) {
+                                    mostrarMensaje('error', 'Error al procesar los datos del alumno');
+                                    return;
+                                }
+                                alumno.tutores.forEach(tutor => {
+                                    const options = selectTutores.options;
+                                    for (let option of options) {
+                                        if (option.value == tutor.id_tutor) {
+                                            option.selected = true;
+                                        }
+                                    }
+                                });
+                            } else {
+                                mostrarMensaje('error', 'Error al cargar los tutores asignados');
+                            }
+                        });
+                    }
+                } else {
+                    mostrarMensaje('error', 'Error al cargar los tutores');
+                }
+            });
+        }
+
+        function crearAlumno(event, datos) {
+            event.preventDefault();
+            const alumno = { 
+                correo: datos.correo, 
+                contrasenia: datos.contrasenia, 
+                nombre: datos.nombre, 
+                apellidos: datos.apellidos, 
+                DNI: datos.DNI, 
+                telefono: datos.telefono, 
+                fecha_nacimiento: datos.fecha_nacimiento || null, 
+                rol: datos.rol, 
+                tutores: datos.tutores,
+                id_usuario: datos.id_usuario 
+            };
+
+            const metodo = datos.id_usuario ? 'PUT' : 'POST';
+
+            hacerSolicitud('alumno_api.php', metodo, alumno, function (status, response) {
+                let res;
+                try {
+                    res = JSON.parse(response);
+                } catch (e) {
+                    mostrarMensaje('error', 'Respuesta inválida del servidor');
+                    return;
+                }
+
+                limpiarErrores();
+
+                if (status === 200 || status === 201) {
+                    document.getElementById("alumno-form").reset();
+                    document.getElementById("id_usuario").value = '';
+                    document.getElementById("form-title").innerText = "Nuevo Alumno";
+                    document.querySelector("button[type='submit']").textContent = "Crear";
+                    cargarAlumnos();
+                    cargarTutores();
+                    mostrarMensaje('success', res.message || (metodo === 'PUT' ? 'Alumno actualizado exitosamente' : 'Alumno creado exitosamente'));
+                } else if (status === 400 && res.duplicados) {
+                    res.duplicados.forEach(campo => {
+                        if (campo === 'correo') {
+                            document.getElementById('correo-error').textContent = 'Correo ya registrado';
+                            document.getElementById('correo-error').style.display = 'block';
+                        } else if (campo === 'contrasenia') {
+                            document.getElementById('contrasenia-error').textContent = 'Contraseña ya registrada';
+                            document.getElementById('contrasenia-error').style.display = 'block';
+                        } else if (campo === 'DNI') {
+                            document.getElementById('dni-error').textContent = 'DNI ya registrado';
+                            document.getElementById('dni-error').style.display = 'block';
+                        }
+                    });
+                } else {
+                    mostrarMensaje('error', res.message || (metodo === 'PUT' ? 'Error al actualizar el alumno' : 'Error al crear el alumno'));
+                }
+            });
+        }
 
         function cargarAlumnos() {
             hacerSolicitud('alumno_api.php', 'GET', null, function (status, response) {
+                let alumnos;
+                try {
+                    alumnos = JSON.parse(response);
+                } catch (e) {
+                    mostrarMensaje('error', 'Respuesta inválida del servidor');
+                    return;
+                }
+
                 if (status === 200) {
-                    const alumnos = JSON.parse(response);
                     const listaAlumnos = document.getElementById("alumnos-lista");
                     listaAlumnos.innerHTML = '';
                     alumnos.forEach(alumno => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${alumno.nombre}</td>
-                            <td>${alumno.apellidos}</td>
-                            <td>${alumno.DNI}</td>
-                            <td>${alumno.telefono}</td>
+                            <td>${alumno.nombre || 'N/A'}</td>
+                            <td>${alumno.apellidos || 'N/A'}</td>
+                            <td>${alumno.DNI || 'N/A'}</td>
+                            <td>${alumno.telefono || 'N/A'}</td>
                             <td>
-                                <div class="d-grip gap-2 d-md-block">
-                                    <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${alumno.id_usuario})">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                    <button class="btn btn-success btn-sm" onclick = "editarAlumno(${alumno.id_usuario})">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick = "eliminarAlumno(${alumno.id_usuario})">
-                                        <i class="bi bi-trash3"></i>
-                                    </button>
-                                </div>
+                                <button class="btn btn-info btn-sm" onclick="mostrarInfo(${alumno.id_usuario})">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick="editarAlumno(${alumno.id_usuario})">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarAlumno(${alumno.id_usuario})">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
                             </td>
                         `;
                         listaAlumnos.appendChild(row);
                     });
                 } else {
-                    document.getElementById("error-message").innerText = 'Error al cargar alumnos'
+                    mostrarMensaje('error', alumnos.message || 'Error al cargar los alumnos');
                 }
             });
         }
 
-        //funcion para cargar la información del alumno en el modal para mostrarla
-
         function mostrarInfo(id_usuario) {
             hacerSolicitud(`alumno_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
+                let res;
+                try {
+                    res = JSON.parse(response);
+                } catch (e) {
+                    mostrarMensaje('error', 'Respuesta inválida del servidor');
+                    return;
+                }
+
                 if (status === 200) {
-                    const alumno = JSON.parse(response);
+                    const alumno = res;
                     if (alumno) {
-                        console.log("Tutores:", alumno.tutores);
                         document.getElementById("modal-nombre").textContent = alumno.nombre || 'N/A';
                         document.getElementById("modal-apellidos").textContent = alumno.apellidos || 'N/A';
                         document.getElementById("modal-correo").textContent = alumno.correo || 'N/A';
@@ -539,98 +562,162 @@
                         document.getElementById("modal-telefono").textContent = alumno.telefono || 'N/A';
                         document.getElementById("modal-fecha_nacimiento").textContent = alumno.fecha_nacimiento || 'N/A';
                         document.getElementById("modal-rol").textContent = alumno.rol || 'N/A';
-                        // antes de mostrar los tutores , vamos a aplicar el formato correcto
-                        let textoTutores = alumno.tutores.map(tutor => `${tutor.nombre} ${tutor.apellidos}`)
-                        document.getElementById("modal-tutores").textContent = textoTutores;
+                        document.getElementById("modal-tutores").textContent = alumno.tutores && alumno.tutores.length > 0 ? 
+                            alumno.tutores.map(tutor => `${tutor.nombre} ${tutor.apellidos}`).join(', ') : 'N/A';
 
-                        //mostramos el modal usando Bootstraps
                         const modal = new bootstrap.Modal(document.getElementById("infoModal"));
                         modal.show();
-
                     }
                 } else {
-                    document.getElementById("error-message").innerHTML = 'Error al cargar los datos del alumno';
-                    document.getElementById("error-message").style.display = 'block';
+                    mostrarMensaje('error', res.message || 'Error al cargar los datos del alumno');
                 }
             });
         }
 
-        //funcion para eliminar un alumno
-
         function eliminarAlumno(id_usuario) {
             if (confirm('¿Estás seguro de que quieres eliminar este alumno?')) {
-                //creamos un objeto json con el id del alumno
-                const data = { "id_usuario": id_usuario }
-
-                //hacemos la solicitud
+                const data = { id_usuario };
                 hacerSolicitud('alumno_api.php', 'DELETE', data, function (status, response) {
+                    let res;
+                    try {
+                        res = JSON.parse(response);
+                    } catch (e) {
+                        mostrarMensaje('error', 'Respuesta inválida del servidor');
+                        return;
+                    }
                     if (status === 200) {
                         cargarAlumnos();
+                        cargarTutores();
+                        mostrarMensaje('success', res.message || 'Alumno eliminado exitosamente');
                     } else {
-                        document.getElementById("error-message").innerText = 'Error al eliminar el alumno';
+                        mostrarMensaje('error', res.message || 'Error al eliminar el alumno');
                     }
                 });
             }
         }
 
-        //funcion para editar un alumno
-
         function editarAlumno(id_usuario) {
-            // primero tenemos que obtener los datos del alumno a editar para cargar sus datos en el formulario
             hacerSolicitud(`alumno_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
+                let res;
+                try {
+                    res = JSON.parse(response);
+                } catch (e) {
+                    mostrarMensaje('error', 'Respuesta inválida del servidor');
+                    return;
+                }
                 if (status === 200) {
-                    const alumno = JSON.parse(response);
+                    const alumno = res;
                     if (alumno) {
-                        document.getElementById("correo").value = alumno.correo;
-                        document.getElementById("contrasenia").value = alumno.contrasenia;
-                        document.getElementById("nombre").value = alumno.nombre;
-                        document.getElementById("apellidos").value = alumno.apellidos;
-                        document.getElementById("DNI").value = alumno.DNI;
-                        document.getElementById("telefono").value = alumno.telefono;
+                        document.getElementById("correo").value = alumno.correo || '';
+                        document.getElementById("contrasenia").value = alumno.contrasenia || '';
+                        document.getElementById("nombre").value = alumno.nombre || '';
+                        document.getElementById("apellidos").value = alumno.apellidos || '';
+                        document.getElementById("DNI").value = alumno.DNI || '';
+                        document.getElementById("telefono").value = alumno.telefono || '';
                         document.getElementById("fecha_nacimiento").value = alumno.fecha_nacimiento || '';
-                        document.getElementById("rol").value = alumno.rol;
+                        document.getElementById("rol").value = alumno.rol || 'alumno';
                         document.getElementById("id_usuario").value = alumno.id_usuario;
 
-                        document.querySelector("button[type='submit']").textContent = "Actualizar"
+                        cargarTutores(alumno.id_usuario);
+
+                        document.getElementById("form-title").innerText = "Editar Alumno";
+                        document.querySelector("button[type='submit']").textContent = "Actualizar";
                     }
                 } else {
-                    document.getElementById("error-message").innerText = 'Error al cargar los datos del alumno';
+                    mostrarMensaje('error', res.message || 'Error al cargar los datos del alumno');
                 }
             });
         }
 
-        //funcion para cargar los tutores legales y ponerlos como opciones en el select
-        function cargarTutores() {
-            hacerSolicitud('tutor_api.php', 'GET', null, function (status, response) {
-                if (status === 200) {
-                    const tutores = JSON.parse(response);
-                    const selectTutores = document.getElementById("tutor");
-                    selectTutores.innerHTML = '';
-                    tutores.forEach(tutor => {
-                        const option = document.createElement('option');
-                        option.value = tutor.id_tutor;
-                        option.textContent = `${tutor.nombre} ${tutor.apellidos}`;
-                        selectTutores.appendChild(option)
-                    });
-                } else {
-                    documen.getElementById("error-message").innerText = 'Error al cargar los tutores';
+        document.getElementById("alumno-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const datos = {
+                id_usuario: document.getElementById("id_usuario").value,
+                correo: document.getElementById("correo").value,
+                contrasenia: document.getElementById("contrasenia").value,
+                nombre: document.getElementById("nombre").value,
+                apellidos: document.getElementById("apellidos").value,
+                DNI: document.getElementById("DNI").value,
+                telefono: document.getElementById("telefono").value,
+                fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
+                rol: document.getElementById("rol").value,
+                tutores: Array.from(document.getElementById("tutor").selectedOptions).map(opt => parseInt(opt.value))
+            };
+
+            const reglas = {
+                correo: { validar: validarCorreo, errorId: "correo-error" },
+                contrasenia: { validar: validarContrasenia, errorId: "contrasenia-error" },
+                nombre: { validar: (valor) => validarTexto(valor, 2), errorId: "nombre-error" },
+                apellidos: { validar: (valor) => validarTexto(valor, 2), errorId: "apellidos-error" },
+                DNI: { validar: validarDNI, errorId: "dni-error" },
+                telefono: { validar: validarTelefono, errorId: "telefono-error" },
+                fecha_nacimiento: { 
+                    validar: (valor) => validarFechaNacimiento(valor, document.getElementById("rol").value),
+                    errorId: "fecha-nacimiento-error"
+                },
+                rol: { validar: validarRol, errorId: "rol-error" },
+                tutores: { validar: validarTutores, errorId: "tutor-error" },
+                duplicados: { 
+                    validar: () => validarDuplicadosAlumno(
+                        datos.correo, 
+                        datos.contrasenia, 
+                        datos.DNI, 
+                        datos.id_usuario || null
+                    ), 
+                    errorId: null
                 }
-            });
-        }
+            };
 
+            limpiarErrores();
 
-        //inicializar 
+            const validation = await validarCampos(datos, reglas);
+            let isValid = validation.isValid;
 
-        document.getElementById("alumno-form").addEventListener("submit", crearAlumno);
-        window.onload = function () {
+            if (validation.errors.duplicados && Object.keys(validation.errors.duplicados).length > 0) {
+                isValid = false;
+                if (validation.errors.duplicados.correo) {
+                    document.getElementById('correo-error').textContent = validation.errors.duplicados.correo;
+                    document.getElementById('correo-error').style.display = 'block';
+                }
+                if (validation.errors.duplicados.contrasenia) {
+                    document.getElementById('contrasenia-error').textContent = validation.errors.duplicados.contrasenia;
+                    document.getElementById('contrasenia-error').style.display = 'block';
+                }
+                if (validation.errors.duplicados.DNI) {
+                    document.getElementById('dni-error').textContent = validation.errors.duplicados.DNI;
+                    document.getElementById('dni-error').style.display = 'block';
+                }
+                if (validation.errors.duplicados.general) {
+                    document.getElementById('error-message').textContent = validation.errors.duplicados.general;
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            }
+
+            if (isValid) {
+                crearAlumno(event, datos);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    if (field !== 'duplicados' && reglas[field].errorId && validation.errors[field]) {
+                        document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                        document.getElementById(reglas[field].errorId).style.display = 'block';
+                    }
+                });
+            }
+        });
+
+        document.getElementById("alumno-form").addEventListener("reset", function () {
+            document.getElementById("id_usuario").value = '';
+            document.getElementById("form-title").innerText = "Nuevo Alumno";
+            document.querySelector("button[type='submit']").textContent = "Crear";
+            cargarTutores();
+            limpiarErrores();
+        });
+
+        window.onload = function() {
             cargarAlumnos();
             cargarTutores();
         };
-
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

@@ -84,7 +84,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             text-decoration: none;
         }
 
-        .breadcrumb-item .active {
+        .breadcrumb-item.active {
             color: #d3d6db;
         }
 
@@ -177,6 +177,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             display: none;
         }
 
+        .error-text {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
         .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
@@ -232,18 +239,22 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripción:</label>
                 <textarea class="form-control" id="descripcion" required></textarea>
+                <span id="descripcion-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="fecha_entrega" class="form-label">Fecha de Entrega:</label>
                 <input type="datetime-local" class="form-control" id="fecha_entrega" required>
+                <span id="fecha-entrega-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="asignatura" class="form-label">Asignatura:</label>
                 <select id="asignatura" class="form-select"></select>
+                <span id="asignatura-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="grupo" class="form-label">Grupo:</label>
                 <select id="grupo" class="form-select"></select>
+                <span id="grupo-error" class="error-text"></span>
             </div>
             <input type="hidden" id="id_tarea">
             <div class="d-grid gap-2 d-md-block">
@@ -276,7 +287,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     <footer class="footer">
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
-
+    
+    <script src="validacion.js"></script>
     <script>
         const tareasForm = document.getElementById('tareas-form');
         const tareasLista = document.getElementById('tareas-lista');
@@ -289,6 +301,14 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 3000);
+        }
+
+        function limpiarErrores() {
+            ['descripcion-error', 'fecha-entrega-error', 'asignatura-error', 'grupo-error', 'error-message'].forEach(id => {
+                const elemento = document.getElementById(id);
+                elemento.textContent = '';
+                elemento.style.display = 'none';
+            });
         }
 
         function hacerSolicitud(url, metodo, datos, callback) {
@@ -511,12 +531,48 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         }
 
         document.getElementById('asignatura').addEventListener('change', cargarGrupos);
-        tareasForm.addEventListener('submit', crearTarea);
+
+        tareasForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const datos = {
+                descripcion: document.getElementById('descripcion').value,
+                fecha_entrega: document.getElementById('fecha_entrega').value,
+                id_asignatura: document.getElementById('asignatura').value,
+                id_grupo: document.getElementById('grupo').value,
+                id_tarea: document.getElementById('id_tarea').value
+            };
+
+            const reglas = {
+                descripcion: { validar: validarTexto, errorId: 'descripcion-error' },
+                fecha_entrega: { validar: validarFechaEntrega, errorId: 'fecha-entrega-error' },
+                id_asignatura: { validar: validarSeleccion, errorId: 'asignatura-error' },
+                id_grupo: { validar: validarSeleccion, errorId: 'grupo-error' }
+            };
+
+            limpiarErrores();
+
+            const validation = await validarCampos(datos, reglas);
+            let isValid = validation.isValid;
+
+            if (isValid) {
+                crearTarea(event, datos);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    if (reglas[field] && reglas[field].errorId && validation.errors[field]) {
+                        document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                        document.getElementById(reglas[field].errorId).style.display = 'block';
+                    }
+                });
+            }
+        });
+
         tareasForm.addEventListener('reset', function () {
-            formTitle.textContent = 'Mis Tareas';
-            document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
+            formTitle.textContent = 'Nueva Tarea';
             document.getElementById('id_tarea').value = '';
+            document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
             cargarGrupos();
+            limpiarErrores();
         });
 
         window.onload = function () {

@@ -97,7 +97,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             text-decoration: none;
         }
 
-        .breadcrumb-item .active {
+        .breadcrumb-item.active {
             color: #d3d6db;
         }
 
@@ -199,6 +199,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             display: none;
         }
 
+        .error-text {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
         .form-title {
             align-items: center;
         }
@@ -258,34 +265,40 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
 
     <!--Contenido principal-->
     <main class="main-content">
-        <h2 class="text-center" id="form-title">Reservas</h2>
+        <h2 class="text-center" id="form-title">Reservar</h2>
         <!--Formulario para crear o editar una reserva-->
         <form id="reservas-form" class="row g-3">
             <div class="col-md-6">
                 <label for="fecha" class="form-label">Fecha:</label>
                 <input type="date" class="form-control" id="fecha" required>
+                <span id="fecha-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="hora_inicio" class="form-label">Hora de Inicio:</label>
                 <input type="time" class="form-control" id="hora_inicio" required>
+                <span id="hora-inicio-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="hora_fin" class="form-label">Hora de Finalización:</label>
                 <input type="time" class="form-control" id="hora_fin" required>
+                <span id="hora-inicio-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="aula" class="form-label">Aula:</label>
                 <select id="aula" class="form-select">
                     <!--Aquí serán listadas las aulas disponibles para elegir-->
                 </select>
+                <span id="aula-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="asignatura" class="form-label">Asignatura:</label>
                 <select id="asignatura" class="form-select"></select>
+                <span id="asignatura-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="grupo" class="form-label">Grupo:</label>
                 <select id="grupo" class="form-select"></select>
+                <span id="grupo-error" class="error-text"></span>
             </div>
             <input type="hidden" id="id_reserva">
             <div class="d-grid gap-2 d-md-block">
@@ -324,7 +337,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     <footer class="footer">
         <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
-
+    <script src="validacion.js"></script>
     <script>
         const reservasForm = document.getElementById('reservas-form');
         const reservasLista = document.getElementById('reservas-lista');
@@ -337,6 +350,14 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 3000);
+        }
+
+        function limpiarErrores() {
+            ['descripcion-error', 'fecha-entrega-error', 'asignatura-error', 'grupo-error', 'error-message'].forEach(id => {
+                const elemento = document.getElementById(id);
+                elemento.textContent = '';
+                elemento.style.display = 'none';
+            });
         }
 
         function hacerSolicitud(url, metodo, datos, callback) {
@@ -508,14 +529,55 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         });
 
-        reservasForm.addEventListener('submit', crearReserva);
+        reservasForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const datos = {
+                fecha: document.getElementById('fecha').value,
+                hora_inicio: document.getElementById('hora_inicio').value,
+                hora_fin: document.getElementById('hora_fin').value,
+                id_aula: document.getElementById('aula').value,
+                id_asignatura: document.getElementById('asignatura').value,
+                id_grupo: document.getElementById('grupo').value,
+                id_reserva: document.getElementById('id_reserva').value
+            };
+
+            const reglas = {
+                fecha: { validar: validarFecha, errorId: 'fecha-error' },
+                horario: { 
+                    validar: () => validarHorarioReserva(datos.hora_inicio, datos.hora_fin), 
+                    errorId: 'hora-inicio-error' 
+                },
+                id_aula: { validar: validarSeleccion, errorId: 'aula-error' },
+                id_asignatura: { validar: validarSeleccion, errorId: 'asignatura-error' },
+                id_grupo: { validar: validarSeleccion, errorId: 'grupo-error' }
+            };
+
+            limpiarErrores();
+
+            const validation = await validarCampos(datos, reglas);
+            let isValid = validation.isValid;
+
+            if (isValid) {
+                crearReserva(event, datos);
+            } else {
+                Object.keys(validation.errors).forEach(field => {
+                    if (reglas[field] && reglas[field].errorId && validation.errors[field]) {
+                        document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
+                        document.getElementById(reglas[field].errorId).style.display = 'block';
+                    }
+                });
+            }
+        });
 
         reservasForm.addEventListener('reset', function () {
-            formTitle.textContent = 'Reservas';
-            document.querySelector('#reservas-form button[type="submit"]').textContent = 'Crear';
+            formTitle.textContent = 'Nueva Reserva';
             document.getElementById('id_reserva').value = '';
+            document.querySelector("button[type='submit']").textContent = 'Crear';
             cargarAulas();
-        })
+            cargarGrupos();
+            limpiarErrores();
+        });
 
         window.onload = function () {
             cargarAulas();

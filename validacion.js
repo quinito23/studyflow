@@ -27,9 +27,9 @@ function validarDNI(dni) {
 function validarFechaNacimiento(fecha, rol) {
     if (!fecha) return "Fecha de nacimiento requerida";
     const fechaNac = new Date(fecha);
-    const hoy = new Date('2025-05-10');
+    const hoy = new Date('2025-05-11');
     const edad = hoy.getFullYear() - fechaNac.getFullYear() - (hoy.getMonth() < fechaNac.getMonth() || (hoy.getMonth() === fechaNac.getMonth() && hoy.getDate() < fechaNac.getDate()) ? 1 : 0);
-    const minEdad = rol === "profesor" ? 18 : 12;
+    const minEdad = rol === "alumno" ? 12 : 18;
     if (isNaN(fechaNac.getTime())) return "Fecha inválida";
     if (edad < minEdad) return `Edad mínima es ${minEdad} años para ${rol}`;
     return "";
@@ -51,9 +51,45 @@ function validarAsignaturas(asignaturas) {
     return "";
 }
 
-function validarTexto(texto, minLength = 1) {
-    if (!texto) return "Campo requerido";
-    if (texto.trim().length < minLength) return `Mínimo ${minLength} caracteres`;
+function validarSueldo(sueldo) {
+    if (!sueldo) return "Sueldo requerido";
+    const num = parseFloat(sueldo);
+    if (isNaN(num)) return "Debe ser un número";
+    if (num < 500) return "Sueldo mínimo es 500";
+    return "";
+}
+
+function validarFechaContratoInicio(fecha) {
+    if (!fecha) return "Fecha de inicio requerida";
+    const fechaInicio = new Date(fecha);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    if (isNaN(fechaInicio.getTime())) return "Fecha inválida";
+    if (fechaInicio < hoy) return "La fecha no puede ser anterior a hoy";
+    return "";
+}
+
+function validarFechaContratoFin(fechaFin, datos) {
+    if (!fechaFin) return "";
+    const fechaFinContrato = new Date(fechaFin);
+    const fechaInicioContrato = new Date(datos.fecha_inicio_contrato);
+    if (isNaN(fechaFinContrato.getTime())) return "Fecha inválida";
+    if (fechaFinContrato <= fechaInicioContrato) return "La fecha de fin debe ser posterior a la de inicio";
+    return "";
+}
+
+function validarJornada(jornada) {
+    if (!jornada) return "Jornada requerida";
+    return ['tiempo_completo', 'medio_tiempo', 'por_horas'].includes(jornada) ? "" : "Jornada inválida";
+}
+
+function validarRol(rol) {
+    if (!rol) return "Rol requerido";
+    return ['administrador', 'profesor', 'alumno'].includes(rol) ? "" : "Rol inválido";
+}
+
+function validarTutores(tutores) {
+    if (!tutores || tutores.length === 0) return "Seleccione al menos un tutor legal";
     return "";
 }
 
@@ -69,8 +105,8 @@ function validarCapacidad(capacidad) {
 function validarFecha(fecha) {
     if (!fecha) return "Fecha requerida";
     const fechaSeleccionada = new Date(fecha);
-    const hoy = new Date('2025-05-10');
-    hoy.setHours(0, 0, 0, 0); // Normalizar a medianoche
+    const hoy = new Date('2025-05-11');
+    hoy.setHours(0, 0, 0, 0);
     if (isNaN(fechaSeleccionada.getTime())) return "Fecha inválida";
     if (fechaSeleccionada < hoy) return "La fecha no puede ser anterior a hoy";
     return "";
@@ -78,16 +114,12 @@ function validarFecha(fecha) {
 
 function validarHorarioReserva(horaInicio, horaFin) {
     if (!horaInicio || !horaFin) return "Ambas horas son requeridas";
-    
     const [inicioHoras, inicioMinutos] = horaInicio.split(':').map(Number);
     const [finHoras, finMinutos] = horaFin.split(':').map(Number);
-    
     const inicioTotal = inicioHoras * 60 + inicioMinutos;
     const finTotal = finHoras * 60 + finMinutos;
-    
-    const minHora = 9 * 60; // 09:00 en minutos
-    const maxHora = 21 * 60; // 21:00 en minutos
-    
+    const minHora = 9 * 60;
+    const maxHora = 21 * 60;
     if (inicioTotal < minHora || inicioTotal > maxHora) {
         return "La hora de inicio debe estar entre las 09:00 AM y las 20:00 PM";
     }
@@ -102,26 +134,31 @@ function validarHorarioReserva(horaInicio, horaFin) {
 function validarFechaEntrega(fechaEntrega) {
     if (!fechaEntrega) return "Fecha de entrega requerida";
     const fechaSeleccionada = new Date(fechaEntrega);
-    const ahora = new Date('2025-05-10T00:00:00'); // Ajustar según la hora actual del cliente
+    const ahora = new Date('2025-05-11T00:00:00');
     if (isNaN(fechaSeleccionada.getTime())) return "Fecha inválida";
     if (fechaSeleccionada <= ahora) return "La fecha de entrega debe ser posterior al momento actual";
     return "";
 }
 
-async function validarDuplicados(correo, contrasenia, DNI){
-    try{
+function validarSeleccion(valor) {
+    if (!valor || valor === "") return "Seleccione una opción";
+    return "";
+}
+
+async function validarDuplicados(correo, contrasenia, DNI) {
+    try {
         const response = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             const params = new URLSearchParams();
-            if(correo) params.append('correo', correo);
-            if(contrasenia) params.append('contrasenia', contrasenia);
-            if(DNI) params.append('DNI', DNI);
+            if (correo) params.append('correo', correo);
+            if (contrasenia) params.append('contrasenia', contrasenia);
+            if (DNI) params.append('DNI', DNI);
             xhr.open('GET', `registro_api.php?${params.toString()}`, true);
-            xhr.onreadystatechange = function(){
-                if(xhr.readyState === 4){
-                    if(xhr.status === 200){
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
                         resolve(JSON.parse(xhr.responseText));
-                    }else{
+                    } else {
                         reject(new Error('Error en la solicitud'));
                     }
                 }
@@ -129,12 +166,88 @@ async function validarDuplicados(correo, contrasenia, DNI){
             xhr.send();
         });
 
-        if(response.duplicados && response.duplicados.length > 0){
+        if (response.duplicados && response.duplicados.length > 0) {
             return "Ya existe un usuario/solicitud con ese correo, contraseña o DNI";
         }
         return "";
-    }catch(e){
+    } catch (e) {
         return "Error al verificar duplicados";
+    }
+}
+
+async function validarDuplicadosProfesor(correo, contrasenia, DNI, id_usuario = null) {
+    try {
+        const response = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const params = new URLSearchParams();
+            params.append('check_duplicados', '1');
+            if (correo) params.append('correo', correo);
+            if (contrasenia) params.append('contrasenia', contrasenia);
+            if (DNI) params.append('DNI', DNI);
+            if (id_usuario) params.append('id_usuario', id_usuario);
+            xhr.open('GET', `profesor_api.php?${params.toString()}`, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        reject(new Error('Error en la solicitud'));
+                    }
+                }
+            };
+            xhr.send();
+        });
+
+        if (response.duplicados && response.duplicados.length > 0) {
+            const errores = {};
+            response.duplicados.forEach(campo => {
+                if (campo === 'correo') errores.correo = 'Correo ya registrado';
+                if (campo === 'contrasenia') errores.contrasenia = 'Contraseña ya registrada';
+                if (campo === 'DNI') errores.DNI = 'DNI ya registrado';
+            });
+            return errores;
+        }
+        return {};
+    } catch (e) {
+        return { general: "Error al verificar duplicados" };
+    }
+}
+
+async function validarDuplicadosAlumno(correo, contrasenia, DNI, id_usuario = null) {
+    try {
+        const response = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const params = new URLSearchParams();
+            params.append('check_duplicados', '1');
+            if (correo) params.append('correo', correo);
+            if (contrasenia) params.append('contrasenia', contrasenia);
+            if (DNI) params.append('DNI', DNI);
+            if (id_usuario) params.append('id_usuario', id_usuario);
+            xhr.open('GET', `alumno_api.php?${params.toString()}`, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        reject(new Error('Error en la solicitud'));
+                    }
+                }
+            };
+            xhr.send();
+        });
+
+        if (response.duplicados && response.duplicados.length > 0) {
+            const errores = {};
+            response.duplicados.forEach(campo => {
+                if (campo === 'correo') errores.correo = 'Correo ya registrado';
+                if (campo === 'contrasenia') errores.contrasenia = 'Contraseña ya registrada';
+                if (campo === 'DNI') errores.DNI = 'DNI ya registrado';
+            });
+            return errores;
+        }
+        return {};
+    } catch (e) {
+        return { general: "Error al verificar duplicados" };
     }
 }
 
@@ -142,9 +255,8 @@ async function validarCampos(datos, reglas) {
     const errors = {};
     let isValid = true;
 
-    //validaciones sincronas
     for (let campo in reglas) {
-        if(campo !== 'duplicados'){
+        if (campo !== 'duplicados') {
             const regla = reglas[campo];
             const valor = datos[campo];
             errors[campo] = regla.validar(valor, datos);
@@ -152,14 +264,14 @@ async function validarCampos(datos, reglas) {
         }
     }
 
-    //validacion de duplicados(asincrona)
-    if(reglas.duplicados){
+    if (reglas.duplicados) {
         errors.duplicados = await reglas.duplicados.validar(
             datos.correo,
             datos.contrasenia,
-            datos.DNI
+            datos.DNI,
+            datos.id_usuario || null
         );
-        if(errors.duplicados) isValid = false;
+        if (Object.keys(errors.duplicados).length > 0) isValid = false;
     }
 
     return { isValid, errors };

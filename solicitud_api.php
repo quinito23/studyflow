@@ -110,19 +110,9 @@ switch ($method) {
                     $alumno->DNI = $solicitudData['DNI'];
                     $alumno->fecha_nacimiento = $solicitudData['fecha_nacimiento'];
                     $tutores = []; // No asignamos tutores inicialmente
+                    $grupos = isset($data->grupos) ? $data->grupos : [];
 
-                    if(isset($data->grupos) && is_array($data->grupos) && !empty($data->grupos)){
-                        foreach($data->grupos as $id_grupo){
-                            $query = "INSERT INTO alumno_grupo(id_usuario, id_grupo) VALUES (:id_usuario, :id_grupo)";
-                            $stmt = $db->prepare($query);
-                            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
-                            $stmt->bindParam(':id_grupo', $id_grupo, PDO::PARAM_INT);
-                            $stmt->execute();
-
-                        }
-                    }
-
-                    if (!$alumno->crear($tutores)) {
+                    if (!$alumno->crear($tutores, $grupos)) {
                         throw new Exception("No se pudo crear el alumno");
                     }
                 } elseif ($solicitudData['rol_propuesto'] === 'profesor') {
@@ -139,23 +129,11 @@ switch ($method) {
                     $profesor->jornada = null;
                     $profesor->fecha_inicio_contrato = null;
                     $profesor->fecha_fin_contrato = null;
-                    if (!$profesor->crear()) {
+                    $asignaturas = $solicitud->obtenerAsignaturas($idSolicitud);
+                    if (!$profesor->crear($asignaturas)) {
                         throw new Exception("No se pudo crear el profesor");
                     }
 
-                    //asignar las asignaturas propuestas en la solicitud al profesor
-                    $asignaturas = $solicitud->obtenerAsignaturas($idSolicitud);
-                    if(!empty($asignaturas)){
-                        $query = "UPDATE asignatura SET id_usuario = :id_usuario WHERE id_asignatura = :id_asignatura";
-                        $stmt = $db->prepare($query);
-                        foreach($asignaturas as $asignatura){
-                            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
-                            $stmt->bindParam(':id_asignatura', $asignatura['id_asignatura'], PDO::PARAM_INT);
-                            if(!$stmt->execute()){
-                                throw new Exception("Error al asignar asignatura al profesor");
-                            }
-                        }
-                    }
                 }
                 
 

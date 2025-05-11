@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +13,11 @@
             background-color: #112a4a;
             color: #f8f9fa;
             font-size: 16px;
-            margin: 0px;
+            margin: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-
         .header {
             background-color: #0d1f38;
             padding: 1rem 2rem;
@@ -30,115 +28,94 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .header .d-flex {
             gap: 1rem;
             align-items: center;
         }
-
         .header h1 {
             margin: 0;
             font-size: clamp(1.5rem, 5vw, 2.5rem);
             margin-left: clamp(1rem, 3vw, 2rem);
         }
-
         .navbar-toggler {
             font-size: clamp(1rem, 3vw, 1.5rem);
             margin-right: 1rem;
             z-index: 1000;
         }
-
         .navbar-toggler-icon {
             color: white;
         }
-
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
             font-size: clamp(0.7rem, 2vw, 0.9rem);
         }
-
         .breadcrumb-item+.breadcrumb-item::before {
             color: #007bff;
         }
-
         .breadcrumb-item a {
             color: #f8f9fa;
             text-decoration: none;
         }
-
-        .breadcrumb-item .active {
+        .breadcrumb-item.active {
             color: #d3d6db;
         }
-
         .offcanvas {
             background-color: #0d1f38;
             color: white;
             width: 20vw !important;
             min-width: 200px !important;
         }
-
         .offcanvas-header {
             border-bottom: 1px solid #ffffff33;
         }
-
         .offcanvas-title {
             color: white;
             font-size: clamp(1rem, 3vw, 1.25rem);
         }
-
         .offcanvas-body .nav-link {
             color: #f8f9fa;
-            padding: 0.75rem, 1rem;
+            padding: 0.75rem 1rem;
             display: block;
             text-decoration: none;
             font-size: clamp(0.9rem, 2vw, 1rem);
         }
-
         .offcanvas-body .nav-link.active {
             background-color: #007bff;
             color: white;
         }
-
         .main-content {
             padding: 2rem;
             flex: 1;
         }
-
         h2 {
             font-size: clamp(1.5rem, 4vw, 2rem);
             color: #ffffff;
             margin-bottom: 1.5rem;
         }
-
         .table thead {
             background-color: #007bff;
             color: white;
         }
-
         .table {
             margin-top: 2rem;
             background-color: #e9ecef;
             color: #333;
             font-size: clamp(0.7rem, 1.5vw, 1rem);
         }
-
         .table tbody tr {
             background-color: #d3d6db;
         }
-
         .table th,
         .table td {
             text-align: center;
         }
-
         #notificacion {
             color: #dc3545;
             margin-bottom: 1rem;
             display: none;
         }
-
         #grupo-form {
             border: 2px solid #007bff;
             border-radius: 8px;
@@ -146,24 +123,19 @@
             background-color: #0d1f38;
             margin-bottom: 2rem;
         }
-
         .modal-content {
             background-color: #0d1f38;
             color: #f8f9fa;
         }
-
         .modal-header,
         .modal-footer {
             border-color: #ffffff33;
         }
-
         .error-message {
             color: #dc3545;
             font-size: 0.9rem;
             margin-top: 0.25rem;
         }
-
-                /*Footer*/
         .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
@@ -174,7 +146,6 @@
         }
     </style>
 </head>
-
 <body>
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
@@ -201,7 +172,7 @@
         <div class="offcanvas-body">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link " href="profesor.html">Profesores</a>
+                    <a class="nav-link" href="profesor.html">Profesores</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="alumno.html">Alumnos</a>
@@ -246,15 +217,16 @@
                     <div class="error-message" id="nombre-error"></div>
                 </div>
                 <div class="mb-3">
-                    <label for="capacidad_maxima" class="form-label">Capacidad Maxima</label>
+                    <label for="capacidad_maxima" class="form-label">Capacidad Máxima</label>
                     <input type="number" class="form-control" id="capacidad_maxima" name="capacidad_maxima" required>
                     <div class="error-message" id="capacidad-maxima-error"></div>
                 </div>
                 <div class="mb-3">
                     <label for="id_asignatura" class="form-label">Asignatura</label>
                     <select class="form-control" id="id_asignatura" name="id_asignatura" required>
-                        <option value="">-- Selecciona una asignatura--</option>
+                        <option value="">-- Selecciona una asignatura --</option>
                     </select>
+                    <div class="error-message" id="id-asignatura-error"></div>
                 </div>
                 <button type="submit" class="btn btn-primary">Crear Grupo</button>
                 <button type="reset" class="btn btn-light">Limpiar</button>
@@ -267,8 +239,8 @@
                 <thead>
                     <tr class="table-primary">
                         <th scope="col">Nombre</th>
-                        <th scope="col">Capacidad maxima</th>
-                        <th scope="col">Numero de Alumnos</th>
+                        <th scope="col">Capacidad Máxima</th>
+                        <th scope="col">Número de Alumnos</th>
                         <th scope="col">Asignatura</th>
                         <th scope="col">Acciones</th>
                     </tr>
@@ -278,9 +250,8 @@
         </div>
     </main>
 
-            <!--Footer-->
     <footer class="footer">
-        <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
+        <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
     <script src="validacion.js"></script>
@@ -295,7 +266,6 @@
             }, 3000);
         }
 
-
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -308,18 +278,36 @@
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
-        function cargarAsignaturas() {
-            hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
+        function cargarAsignaturas(id_asignatura = null) {
+            const selectAsignaturas = document.getElementById('id_asignatura');
+            selectAsignaturas.innerHTML = '<option value="">-- Selecciona una asignatura --</option>';
+
+            // Cargar asignaturas no asignadas a grupos
+            hacerSolicitud('asignatura_api.php?sin_grupo=1', 'GET', null, function (status, response) {
                 if (status === 200) {
                     const asignaturas = JSON.parse(response);
-                    const selectAsignaturas = document.getElementById('id_asignatura');
-                    selectAsignaturas.innerHTML = '<option value="">-- Selecciona una asignatura --</option>';
                     asignaturas.forEach(asignatura => {
                         const option = document.createElement('option');
                         option.value = asignatura.id_asignatura;
                         option.textContent = asignatura.nombre;
                         selectAsignaturas.appendChild(option);
                     });
+
+                    // Si se proporciona id_asignatura, cargar también la asignatura asignada
+                    if (id_asignatura) {
+                        hacerSolicitud(`asignatura_api.php?id=${id_asignatura}`, 'GET', null, function (status, response) {
+                            if (status === 200) {
+                                const asignatura = JSON.parse(response);
+                                const option = document.createElement('option');
+                                option.value = asignatura.id_asignatura;
+                                option.textContent = asignatura.nombre;
+                                option.selected = true; // Preseleccionar la asignatura asignada
+                                selectAsignaturas.appendChild(option);
+                            } else {
+                                mostrarNotificacion('Error al cargar la asignatura asignada');
+                            }
+                        });
+                    }
                 } else {
                     mostrarNotificacion('Error al cargar las asignaturas');
                 }
@@ -336,24 +324,23 @@
                     grupos.forEach(grupo => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                        <td>${grupo.nombre}</td>
-                        <td>${grupo.capacidad_maxima}</td>
-                        <td>${grupo.numero_alumnos}</td>
-                        <td>${grupo.nombre_asignatura}</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm" onclick="editarGrupo(${grupo.id_grupo})">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="eliminarGrupo(${grupo.id_grupo})">
-                                <i class="bi bi-trash3"></i> Eliminar
-                            </button> 
-                        </td>
-                    `;
+                            <td>${grupo.nombre}</td>
+                            <td>${grupo.capacidad_maxima}</td>
+                            <td>${grupo.numero_alumnos}</td>
+                            <td>${grupo.nombre_asignatura}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editarGrupo(${grupo.id_grupo})">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarGrupo(${grupo.id_grupo})">
+                                    <i class="bi bi-trash3"></i> Eliminar
+                                </button> 
+                            </td>
+                        `;
                         listaGrupos.appendChild(row);
-
                     });
                 } else {
-                    mostrarNotificacion('Error al cargar los grupos')
+                    mostrarNotificacion('Error al cargar los grupos');
                 }
             });
         }
@@ -372,9 +359,12 @@
                 hacerSolicitud('grupo_api.php', 'PUT', grupo, function (status, response) {
                     if (status === 200) {
                         document.getElementById("form-grupo").reset();
-                        document.getElementById("id_grupo").value = null;
-                        document.getElementById("form-title").innerText = "Editar Grupo";
+                        document.getElementById("id_grupo").value = '';
+                        document.getElementById("form-title").innerText = "Crear Grupo";
+                        document.querySelector("button[type='submit']").textContent = "Crear Grupo";
                         cargarGrupos();
+                        cargarAsignaturas(); // Volver a cargar solo asignaturas no asignadas
+                        mostrarNotificacion('Grupo actualizado exitosamente');
                     } else {
                         mostrarNotificacion('Error al actualizar el grupo');
                     }
@@ -384,6 +374,8 @@
                     if (status === 200) {
                         document.getElementById("form-grupo").reset();
                         cargarGrupos();
+                        cargarAsignaturas(); // Volver a cargar solo asignaturas no asignadas
+                        mostrarNotificacion('Grupo creado exitosamente');
                     } else {
                         mostrarNotificacion('Error al crear el grupo');
                     }
@@ -398,8 +390,9 @@
                     if (grupo) {
                         document.getElementById("nombre").value = grupo.nombre;
                         document.getElementById("capacidad_maxima").value = grupo.capacidad_maxima;
-                        document.getElementById("id_asignatura").value = grupo.id_asignatura;
                         document.getElementById("id_grupo").value = grupo.id_grupo;
+                        cargarAsignaturas(grupo.id_asignatura); // Cargar asignaturas con la asignatura asignada preseleccionada
+                        document.getElementById("form-title").innerText = "Editar Grupo";
                         document.querySelector("button[type='submit']").textContent = "Actualizar";
                     }
                 } else {
@@ -414,6 +407,8 @@
                 hacerSolicitud('grupo_api.php', 'DELETE', data, function (status, response) {
                     if (status === 200) {
                         cargarGrupos();
+                        cargarAsignaturas(); // Volver a cargar solo asignaturas no asignadas
+                        mostrarNotificacion('Grupo eliminado exitosamente');
                     } else {
                         mostrarNotificacion('Error al eliminar el grupo');
                     }
@@ -421,8 +416,8 @@
             }
         }
 
-        //inicializar
-                document.getElementById("form-grupo").addEventListener("submit", function (event) {
+        // Validación y envío del formulario
+        document.getElementById("form-grupo").addEventListener("submit", function (event) {
             event.preventDefault();
 
             const datos = {
@@ -456,17 +451,11 @@
             }
         });
 
-
-
-
-
-
         window.onload = function () {
             cargarAsignaturas();
             cargarGrupos();
-        }
+        };
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

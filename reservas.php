@@ -97,7 +97,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             text-decoration: none;
         }
 
-        .breadcrumb-item .active {
+        .breadcrumb-item.active {
             color: #d3d6db;
         }
 
