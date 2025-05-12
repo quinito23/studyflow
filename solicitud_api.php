@@ -1,12 +1,12 @@
 <?php
-
+//incluimos las clases necesarias para la conexión a la base de datos y manejar las solicitudes
 include_once 'DBConnection.php';
 include_once 'anonimo.php';
 include_once 'solicitud.php';
 include_once 'usuario.php';
 include_once 'profesor.php';
 include_once 'alumno.php';
-
+// Configuración de cabeceras para la API REST
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
@@ -17,48 +17,55 @@ header("Access-Control-Allow-Headers: Content-Type");
 $database = new DBConnection();
 $db = $database->getConnection();
 
+//creamos objetos de las clases que vamos a manejar
 $anonimo = new Anonimo($db);
 $solicitud = new Solicitud($db);
 $usuario = new Usuario($db);
 $profesor = new Profesor($db);
 $alumno = new Alumno($db);
 
+// Almacenamos el método HTTP de la petición
 $method = $_SERVER['REQUEST_METHOD'];
 
+//bloque para procesar la solicitud según el método HTTP
 switch ($method) {
     case 'GET':
-        if(isset($_GET['getAsignaturas'])){
+        //Para obtener las asignaturas asociadas a una solicitud 
+        if (isset($_GET['getAsignaturas'])) {
             $id_solicitud = intval($_GET['getAsignaturas']);
-            $asignaturas = $solicitud->obtenerAsignaturas($id_solicitud);
-            echo json_encode($asignaturas);
-        }else{
+            $asignaturas = $solicitud->obtenerAsignaturas($id_solicitud);//se llama al método para obtener las asignaturas asociadas a la solicitud de la clase solicitud
+            echo json_encode($asignaturas);// devolvemos las asignaturas en formato json
+        } else {
             //Listamos todas las solicitudes con los datos del anonimo
             try {
                 $query = "SELECT s.id_solicitud, s.id_anonimo, s.estado, s.fecha_realizacion, s.rol_propuesto, a.nombre, a.apellidos, a.correo, a.DNI FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo";
-    
+
                 $stmt = $db->prepare($query);
                 $stmt->execute();
                 $solicitudes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                echo json_encode($solicitudes);
+                echo json_encode($solicitudes);// DEvuelve las solicitudes en JSON
             } catch (Exception $e) {
                 error_log("Error al listar solicitudes: " . $e->getMessage());
                 echo json_encode(array("message" => "Error al listar solicitudes: " . $e->getMessage()));
             }
         }
         break;
+    //caso para aceptar o rechazar una solicitud
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
         if (!isset($data->accion) || !isset($data->id_solicitud)) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
             exit;
         }
-
+        // almadenamos la acción seleccionada , que será aceptar o rechazar
         $accion = $data->accion;
+        //almacenamos el id de la solicitud que manejamos
         $idSolicitud = $data->id_solicitud;
 
         try {
             $db->beginTransaction();
 
+            //para la acción de aceptar la solicitud
             if ($accion === 'aceptar') {
                 //obtener los datos de la solicitud y del anonimo que la ha hecho
                 $query = "SELECT s.id_anonimo, s.rol_propuesto, a.correo, a.contrasenia, a.nombre, a.apellidos, a.telefono, a.DNI, a.fecha_nacimiento FROM solicitud s JOIN anonimo a ON s.id_anonimo = a.id_anonimo WHERE s.id_solicitud = :id_solicitud";
@@ -135,7 +142,7 @@ switch ($method) {
                     }
 
                 }
-                
+
 
                 //actualizamos el estado de la solicitud a 'aceptado'
                 $query = "UPDATE solicitud SET estado = 'aceptado' WHERE id_solicitud = :id_solicitud";
@@ -161,7 +168,6 @@ switch ($method) {
             }
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("Error al procesar la solicitud: " . $e->getMessage());
             echo json_encode(array("message" => "Error al procesar la solicitud: " . $e->getMessage()));
         }
         break;

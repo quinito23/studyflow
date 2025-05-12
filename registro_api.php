@@ -1,9 +1,10 @@
 <?php
-
+//incluimos las clases necesarias
 include_once 'DBConnection.php';
 include_once 'anonimo.php';
 include_once 'solicitud.php';
 
+// Configuración de cabeceras para la API REST
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
@@ -15,14 +16,11 @@ ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
 
 // Obtenemos la conexión con la base de datos
-try {
-    $database = new DBConnection();
-    $db = $database->getConnection();
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (Exception $e) {
-    echo json_encode(array("message" => "Error de conexión con la base de datos"));
-    exit;
-}
+
+$database = new DBConnection();
+$db = $database->getConnection();
+
+
 
 // Creamos instancias de las clases Anonimo y Solicitud
 $anonimo = new Anonimo($db);
@@ -30,12 +28,12 @@ $solicitud = new Solicitud($db);
 
 // Almacenamos el método HTTP de la petición
 $method = $_SERVER['REQUEST_METHOD'];
-
+//bloque para procesar la solicitud según el método HTTP
 switch ($method) {
     case 'GET':
         // creamos el caso GET que usamos para verificar que al hacer un registro no hayan campos clave duplicdos
-        if(isset($_GET['correo']) || isset($_GET['contrasenia']) || isset($_GET['DNI'])){
-            try{
+        if (isset($_GET['correo']) || isset($_GET['contrasenia']) || isset($_GET['DNI'])) {
+            try {
                 $correo = isset($_GET['correo']) ? trim($_GET['correo']) : null;
                 $contrasenia = isset($_GET['contrasenia']) ? trim($_GET['contrasenia']) : null;
                 $DNI = isset($_GET['DNI']) ? trim($_GET['DNI']) : null;
@@ -43,7 +41,7 @@ switch ($method) {
                 $duplicados = [];
 
                 //verificar si el correo esta duplicado
-                if($correo){
+                if ($correo) {
                     $query = "SELECT COUNT(*) as count FROM usuario WHERE correo = :correo UNION ALL SELECT COUNT(*) as count FROM anonimo WHERE correo = :correo";
                     $stmt = $db->prepare($query);
                     $stmt->bindParam(':correo', $correo);
@@ -51,13 +49,13 @@ switch ($method) {
 
                     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     $total = array_sum(array_column($resultados, 'count'));
-                    if($total > 0){
+                    if ($total > 0) {
                         $duplicados[] = "correo";
                     }
                 }
 
                 //verificar si la contraseña ya existe
-                if($contrasenia){
+                if ($contrasenia) {
                     $query = "SELECT COUNT(*) as count FROM usuario WHERE contrasenia = :contrasenia UNION ALL SELECT COUNT(*) as count FROM anonimo WHERE contrasenia = :contrasenia";
                     $stmt = $db->prepare($query);
                     $stmt->bindParam(':contrasenia', $contrasenia);
@@ -65,13 +63,13 @@ switch ($method) {
 
                     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     $total = array_sum(array_column($resultados, 'count'));
-                    if($total > 0){
+                    if ($total > 0) {
                         $duplicados[] = "contrasenia";
                     }
                 }
 
                 //verificar si el DNI ya existe
-                if($DNI){
+                if ($DNI) {
                     $query = "SELECT COUNT(*) as count FROM usuario WHERE DNI = :DNI UNION ALL SELECT COUNT(*) as count FROM anonimo WHERE DNI = :DNI";
                     $stmt = $db->prepare($query);
                     $stmt->bindParam(':DNI', $DNI);
@@ -79,20 +77,20 @@ switch ($method) {
 
                     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     $total = array_sum(array_column($resultados, 'count'));
-                    if($total > 0){
+                    if ($total > 0) {
                         $duplicados[] = "DNI";
                     }
                 }
 
-                if(!empty($duplicados)){
+                if (!empty($duplicados)) {
                     echo json_encode(array("message" => "Datos duplicados encontrados", "duplicados" => $duplicados));
-                }else{
+                } else {
                     echo json_encode(array("message" => "No se encontraron duplicados"));
                 }
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 echo json_encode(array("message" => "Error al verificar duplicados"));
             }
-        }else{
+        } else {
             echo json_encode(array("message" => "Parámetros requeridos faltantes"));
         }
         break;
@@ -101,18 +99,21 @@ switch ($method) {
 
 
     case 'POST':
+        //manejamos la creación de un nuevo usuario anónimo y se crea una solicitud
         $data = json_decode(file_get_contents("php://input"));
 
         // Verificamos que todos los datos requeridos estén presentes
-        if (isset($data->correo) && isset($data->contrasenia) && isset($data->nombre) && 
-            isset($data->apellidos) && isset($data->telefono) && isset($data->rol_propuesto)) {
+        if (
+            isset($data->correo) && isset($data->contrasenia) && isset($data->nombre) &&
+            isset($data->apellidos) && isset($data->telefono) && isset($data->rol_propuesto)
+        ) {
 
             try {
 
                 $duplicados = [];
 
                 //verificar si el correo esta duplicado
-                
+
                 $query = "SELECT COUNT(*) as count FROM usuario WHERE correo = :correo UNION ALL SELECT COUNT(*) as count FROM anonimo WHERE correo = :correo";
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(':correo', $data->correo);
@@ -120,13 +121,13 @@ switch ($method) {
 
                 $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $total = array_sum(array_column($resultados, 'count'));
-                if($total > 0){
+                if ($total > 0) {
                     $duplicados[] = "correo";
                 }
-                
+
 
                 //verificar si la contraseña ya existe
-                
+
                 $query = "SELECT COUNT(*) as count FROM usuario WHERE contrasenia = :contrasenia UNION ALL SELECT COUNT(*) as count FROM anonimo WHERE contrasenia = :contrasenia";
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(':contrasenia', $data->contrasenia);
@@ -135,13 +136,13 @@ switch ($method) {
                 $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $total = array_sum(array_column($resultados, 'count'));
 
-                if($total > 0){
+                if ($total > 0) {
                     $duplicados[] = "contrasenia";
                 }
-                
+
 
                 //verificar si el DNI ya existe
-                if(!empty($data->DNI)){
+                if (!empty($data->DNI)) {
                     $query = "SELECT COUNT(*) as count FROM usuario WHERE DNI = :DNI UNION ALL SELECT COUNT(*) as count FROM anonimo WHERE DNI = :DNI";
                     $stmt = $db->prepare($query);
                     $stmt->bindParam(':DNI', $data->DNI);
@@ -149,12 +150,12 @@ switch ($method) {
 
                     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     $total = array_sum(array_column($resultados, 'count'));
-                    if($total > 0){
+                    if ($total > 0) {
                         $duplicados[] = "DNI";
                     }
                 }
 
-                if(!empty($duplicados)){
+                if (!empty($duplicados)) {
                     echo json_encode(array("message" => "Datos duplicados encontrados", "duplicados" => $duplicados));
                     exit;
                 }
@@ -172,7 +173,7 @@ switch ($method) {
                 $anonimo->DNI = $data->DNI;
                 $anonimo->fecha_nacimiento = $data->fecha_nacimiento;
 
-
+                //ejecutamos el metodo de la clase para crear el anonimo en  la base de datos
                 $id_anonimo = $anonimo->crear();
                 error_log("ID Anónimo creado: " . $id_anonimo);
 
@@ -186,6 +187,7 @@ switch ($method) {
                 $solicitud->fecha_realizacion = date('Y-m-d'); // Fecha actual
                 $solicitud->rol_propuesto = $data->rol_propuesto;
 
+                //ejecutamos el metodo de la clase crear 
                 $id_solicitud = $solicitud->crear();
                 error_log("ID Solicitud creada: " . ($id_solicitud ? $id_solicitud : "Fallo al crear solicitud"));
 
@@ -193,15 +195,15 @@ switch ($method) {
                     throw new Exception("No se pudo crear la solicitud");
                 }
 
-                //Asociamos las asignaturas a la solicitud
-                if(isset($data->asignaturas) && is_array($data->asignaturas) && !empty($data->asignaturas)){
+                //Asociamos las asignaturas seleccionadas a la solicitud creada
+                if (isset($data->asignaturas) && is_array($data->asignaturas) && !empty($data->asignaturas)) {
                     $query = "INSERT INTO solicitud_asignatura (id_solicitud, id_asignatura) VALUES (:id_solicitud, :id_asignatura)";
                     $stmt = $db->prepare($query);
 
-                    foreach($data->asignaturas as $id_asignatura){
+                    foreach ($data->asignaturas as $id_asignatura) {
                         $stmt->bindParam(':id_solicitud', $id_solicitud, PDO::PARAM_INT);
                         $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
-                        if(!$stmt->execute()){
+                        if (!$stmt->execute()) {
                             throw new Exception("Error al asociar asignatura a la solicitud");
                         }
                     }

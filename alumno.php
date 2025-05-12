@@ -2,13 +2,13 @@
 
 include_once 'usuario.php';
 
-class Alumno extends Usuario
+class Alumno extends Usuario //la clase alumno hereda de la clase usuario, ya que profesor es una especialización de usuario
 {
-    private $conn;
-    private $table_name = "alumno";
+    private $conn; //conexión a la base de datos
+    private $table_name = "alumno"; //nombre de la tabla en la base de datos
 
-    //creamos la propiedad tutores para almacenar los tutores asignados al alumno
-    // No corresponde a una columna en la tabla alumno sino que es simplemente un contenedor de los tutores para hacer su manejo más sencillo
+    //creamos las propiedades tutores y grupos para almacenar los tutores y grupos asignados al alumno
+    // No corresponde a una columna en la tabla alumno sino que es simplemente un contenedor de los tutores y grupos para hacer su manejo más sencillo
     public $tutores;
     public $grupos;
 
@@ -26,8 +26,8 @@ class Alumno extends Usuario
     {
 
         // si no hay id_usuario preexistente procedente de solicitud, primero se crea el usuario
-        if(empty($this->id_usuario)){
-            if(!$this->crearUsuario()){
+        if (empty($this->id_usuario)) {
+            if (!$this->crearUsuario()) {
                 throw new Exception("No se pudo crear el usuario para el alumno");
             }
         }
@@ -91,6 +91,7 @@ class Alumno extends Usuario
     }
 
 
+    //metodo para obtener todos los alumnos de la base de datos
     public function leer_todos()
     {
         //aqui deberiamos hacer un join con otra tabla prbabkemente , pero de momento cogeremos solo los datos del usuario
@@ -104,7 +105,7 @@ class Alumno extends Usuario
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             //obtenemos el id del usuario para luego obtener los tutores asignados
             $id_usuario = $row['id_usuario'];
-            //obtenemos los tutores asignados
+            //obtenemos los tutores y grupos asignados
             $tutores = $this->obtenerTutores($id_usuario);
             $grupos = $this->obtenerGrupos($id_usuario);
             $alumno = array(
@@ -124,7 +125,7 @@ class Alumno extends Usuario
 
     }
 
-    //leer un alumno
+    // método para leer un alumno específico
 
     public function leer()
     {
@@ -185,6 +186,7 @@ class Alumno extends Usuario
 
         $grupos = array();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            //por cada grupo lo agregamos como un array al final del array grupos
             $grupos[] = array(
                 "id_grupo" => $row['id_grupo'],
                 "nombre" => $row['nombre'],
@@ -202,7 +204,7 @@ class Alumno extends Usuario
     {
         $asignaturas = array();
         $grupos = $this->obtenerGrupos($id_usuario);
-
+        //por cada grupo al que pertenece el alumno , si tiene una asignatura asociada , se inserta en el array 
         foreach ($grupos as $grupo) {
             $query = "SELECT id_asignatura, nombre, descripcion, nivel FROM asignatura WHERE id_asignatura = :id_asignatura";
             $stmt = $this->conn->prepare($query);
@@ -213,6 +215,7 @@ class Alumno extends Usuario
                 $asignaturas[] = $asignatura;
             }
         }
+        //devolvemos la lista de asignaturas asociadas
         return $asignaturas;
     }
 
@@ -305,6 +308,7 @@ class Alumno extends Usuario
         return false;
     }
 
+    //metodo para eliminar al alumno de la base de datos
     public function eliminar()
     {
         // como en este caso hemos introducido la sentencia ON DELETE CASCADE en el codigo sql , no hace falta hacer una consulta para cada tabla

@@ -1,28 +1,31 @@
 <?php
 include_once 'usuario.php';
 
+//la clase profesor hereda de la clase usuario, ya que profesor es una especialización de usuario
 class Profesor extends Usuario
 {
-    private $conn;
-    private $table_name = "profesor";
+    private $conn; //conexion con la base de datos
+    private $table_name = "profesor"; //nombre de la tabla
 
     public $sueldo;
     public $jornada;
     public $fecha_inicio_contrato;
     public $fecha_fin_contrato;
-    public $asignaturas; // Contenedor para asignaturas, similar a tutores/grupos en Alumno
+    public $asignaturas; // Contenedor para las asignaturas que imparte el profesor, similar a tutores/grupos en Alumno
 
+    //constructor de la clase , que recibe la conexión con la base de datos
     public function __construct($db)
     {
         $this->conn = $db;
         parent::__construct($db);
     }
 
+    //metodo para crear un profesor, y recibe un parámetro(opcional) con las asignaturas que imparte
     public function crear($asignaturas = [])
     {
-        // Si no hay id_usuario preexistente, crear el usuario base
+        // Si no hay id_usuario preexistente, es decir, si no existe el usuario, crear el usuario base
         if (empty($this->id_usuario)) {
-            if (!$this->crearUsuario()) {
+            if (!$this->crearUsuario()) { //lamamos al metodo crear de la clase usuario
                 throw new Exception("No se pudo crear el usuario para el profesor");
             }
         }
@@ -32,7 +35,7 @@ class Profesor extends Usuario
             throw new Exception("Error en Profesor::crear: id_usuario está vacío");
         }
 
-        // Verificar si el usuario ya es profesor
+        // Verificar si el usuario que estamos creando ya es profesor
         $query = "SELECT id_usuario FROM " . $this->table_name . " WHERE id_usuario = :id_usuario";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_usuario', $this->id_usuario);
@@ -41,7 +44,7 @@ class Profesor extends Usuario
             throw new Exception("El usuario ya está registrado como profesor");
         }
 
-        // Insertar en tabla profesor
+        // Si no es profesor , lo Insertamos en tabla profesor
         $query = "INSERT INTO " . $this->table_name . " (id_usuario, sueldo, jornada, fecha_inicio_contrato, fecha_fin_contrato) 
                   VALUES (:id_usuario, :sueldo, :jornada, :fecha_inicio_contrato, :fecha_fin_contrato)";
         $stmt = $this->conn->prepare($query);
@@ -52,6 +55,7 @@ class Profesor extends Usuario
         $fecha_inicio_contrato = $this->fecha_inicio_contrato ?: null;
         $fecha_fin_contrato = $this->fecha_fin_contrato ?: null;
 
+        //asociamos los valores a los parámetros de la consulta
         $stmt->bindParam(':id_usuario', $this->id_usuario);
         $stmt->bindParam(':sueldo', $sueldo);
         $stmt->bindParam(':jornada', $this->jornada);
@@ -62,9 +66,9 @@ class Profesor extends Usuario
             return false;
         }
 
-        // Asignar asignaturas al profesor
+        // Asignar las asignaturas seleccionadas al profesor
         foreach ($asignaturas as $id_asignatura) {
-            // Verificar si la asignatura ya está asignada o no existe
+            // Primero Verificar si la asignatura ya está asignada o no existe
             $query = "SELECT id_asignatura FROM asignatura WHERE id_asignatura = :id_asignatura AND (id_usuario IS NULL OR id_usuario = 0)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
@@ -74,7 +78,7 @@ class Profesor extends Usuario
                 continue;
             }
 
-            // Asignar la asignatura
+            // Si no lo está, Asigna=mos la asignatura
             $query = "UPDATE asignatura SET id_usuario = :id_usuario WHERE id_asignatura = :id_asignatura";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id_usuario', $this->id_usuario, PDO::PARAM_INT);
@@ -83,10 +87,11 @@ class Profesor extends Usuario
                 return false;
             }
         }
-
+        //devolvemos el id del usuario
         return $this->id_usuario;
     }
 
+    //metodo para obtener todos los profesores de la base de datos
     public function leer_todos()
     {
         $query = "SELECT u.id_usuario, u.nombre, u.apellidos, u.DNI, u.telefono, u.correo, u.contrasenia, u.fecha_nacimiento, u.rol, 
@@ -121,6 +126,7 @@ class Profesor extends Usuario
         return $profesores;
     }
 
+    //método para obtener un profesor específico
     public function leer()
     {
         $query = "SELECT u.id_usuario, u.nombre, u.apellidos, u.DNI, u.telefono, u.correo, u.contrasenia, u.fecha_nacimiento, u.rol, 
@@ -157,8 +163,10 @@ class Profesor extends Usuario
         return false;
     }
 
+    //metodo para actualizar un profesor existente
     public function actualizar($asignaturas = [])
     {
+        //primero actualizamos el usuario base
         $query = "UPDATE usuario SET nombre = :nombre, apellidos = :apellidos, DNI = :DNI, telefono = :telefono, correo = :correo, 
                          contrasenia = :contrasenia, fecha_nacimiento = :fecha_nacimiento, rol = :rol 
                   WHERE id_usuario = :id_usuario";
@@ -184,6 +192,7 @@ class Profesor extends Usuario
         $stmt->bindParam(':id_usuario', $this->id_usuario);
 
         if ($stmt->execute()) {
+            //si se actualiza con exito , luego actualizamos en la tabla profesor
             $query = "UPDATE " . $this->table_name . " SET sueldo = :sueldo, jornada = :jornada, 
                             fecha_inicio_contrato = :fecha_inicio_contrato, fecha_fin_contrato = :fecha_fin_contrato 
                       WHERE id_usuario = :id_usuario";
@@ -201,13 +210,15 @@ class Profesor extends Usuario
             $stmt->bindParam(':id_usuario', $this->id_usuario);
 
             if ($stmt->execute()) {
-                // Eliminar asignaturas existentes
+                // y asignamos las asignaturas nuevas
+
+                // Primero eliminamos las asignaturas asignadas existentes
                 $query = "UPDATE asignatura SET id_usuario = NULL WHERE id_usuario = :id_usuario";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':id_usuario', $this->id_usuario);
                 $stmt->execute();
 
-                // Asignar nuevas asignaturas
+                // Asignar las nuevas asignaturas
                 foreach ($asignaturas as $id_asignatura) {
                     $query = "SELECT id_asignatura FROM asignatura WHERE id_asignatura = :id_asignatura AND (id_usuario IS NULL OR id_usuario = 0)";
                     $stmt = $this->conn->prepare($query);
@@ -230,8 +241,10 @@ class Profesor extends Usuario
         return false;
     }
 
+    //metodo para eliminar un profesor
     public function eliminar()
     {
+        //solo hace falta eliminarlo en el usuario base ya que tiene on delete cascade
         $query = "DELETE FROM usuario WHERE id_usuario = :id_usuario";
         $stmt = $this->conn->prepare($query);
 
@@ -241,6 +254,7 @@ class Profesor extends Usuario
         return $stmt->execute();
     }
 
+    //metodo para obtener las asignaturas asociadas al profesor
     private function obtenerAsignaturas($id_usuario)
     {
         $query = "SELECT id_asignatura, nombre, descripcion, nivel 

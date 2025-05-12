@@ -1,8 +1,9 @@
 <?php
 
-class Solicitud {
-    private $conn;
-    private $table_name = "solicitud";
+class Solicitud
+{
+    private $conn; //conexión con la base de datos
+    private $table_name = "solicitud"; //nombre de la tabla
 
     public $id_solicitud;
     public $id_anonimo;
@@ -10,11 +11,14 @@ class Solicitud {
     public $fecha_realizacion;
     public $rol_propuesto;
 
-    public function __construct($db) {
+    public function __construct($db)
+    { //constructor que recibe la conexión con la base de datos
         $this->conn = $db;
     }
 
-    public function crear() {
+    //metodo para crear una nueva solicitud en la base de datos, asociada al id del anonimo que la ha realiado al enviar el formulario de registro
+    public function crear()
+    {
         // Creamos la consulta
         $query = "INSERT INTO " . $this->table_name . " (id_anonimo, estado, fecha_realizacion, rol_propuesto) VALUES (:id_anonimo, :estado, :fecha_realizacion, :rol_propuesto)";
         $stmt = $this->conn->prepare($query);
@@ -42,12 +46,15 @@ class Solicitud {
         throw new Exception("Error al crear la solicitud");
     }
 
-    //funcion para obtener las asignaturas de la solicitud
-    public function obtenerAsignaturas($id_solicitud){
+    //metodo para obtener las asignaturas de la solicitud y mostrarlas en el modal al aceptar la solicitud
+    public function obtenerAsignaturas($id_solicitud)
+    {
+        //creamos la consulta para obtener las asignaturas asociadas a la solicitud
         $query = "SELECT a.id_asignatura, a.nombre FROM asignatura a JOIN solicitud_asignatura sa ON a.id_asignatura = sa.id_asignatura WHERE sa.id_solicitud = :id_solicitud";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_solicitud', $id_solicitud, PDO::PARAM_INT);
         $stmt->execute();
+        //devolvemos un array con las asignaturas
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+//incluimos la clase que establecen la conexión con la base de datos y la clase Usuario que contiene los metodos necesarios para manejar las operaciones de usuarios
+
 include_once 'DBConnection.php';
 include_once 'usuario.php';
 
@@ -17,9 +19,10 @@ $db = $database->getConnection();
 
 $usuario = new Usuario($db);
 
+// obtenemos el metodo HTTP de la solicitud que se realiza desde el frontend
 $method = $_SERVER['REQUEST_METHOD'];
 
-//RUTA DE LA API
+//bloque para procesar la solicitud según el método HTTP
 
 switch ($method) {
     case 'POST':
@@ -29,9 +32,10 @@ switch ($method) {
         if (isset($data->correo) && isset($data->contrasenia)) {
             $usuario->correo = $data->correo;
             $contrasenia = $data->contrasenia;
-
+            //Verificamos con la base de datos que las credenciales sean correctas, mediante el metodo de la clase
             if ($usuario->verificarLogin()) {
                 if ($usuario->contrasenia === $contrasenia) {
+                    //si son correctas emepzamos la sesión y alamacenamos los datos del usuario en la sesión
                     session_start();
                     $_SESSION['id_usuario'] = $usuario->id_usuario;
                     $_SESSION['correo'] = $usuario->correo;

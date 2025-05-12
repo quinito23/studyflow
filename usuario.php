@@ -2,6 +2,7 @@
 
 class Usuario
 {
+    //conexión con la base de datos
     private $conn;
     private $table_name = "usuario";
 
@@ -15,12 +16,12 @@ class Usuario
     public $fecha_nacimiento;
     public $rol;
 
-    public function __construct($db)
+    public function __construct($db) //definimos el constructor que recibe la conexión a la base de datos
     {
         $this->conn = $db;
     }
 
-
+    //función para crear un usuario en la base de datos
     public function crearUsuario()
     {
         //antes de crear el usuario , vamos a verificar que el correo no exista ya en la base de datos
@@ -34,11 +35,11 @@ class Usuario
             throw new Exception("El correo ya está registrado" . $correoExistente);
         }
 
-        //insertamos al usuario en la tabla usuario
+        // si no existe, insertamos al usuario en la tabla usuario
         $query = "INSERT INTO " . $this->table_name . " (nombre, apellidos, DNI, telefono, correo, contrasenia, fecha_nacimiento, rol) VALUES (:nombre, :apellidos, :DNI, :telefono, :correo, :contrasenia, :fecha_nacimiento, :rol)";
         $stmt = $this->conn->prepare($query);
 
-        //limoieza de datos
+        //limpieza de datos para prevenir inyeciones SQL
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->apellidos = htmlspecialchars(strip_tags($this->apellidos));
         $this->DNI = htmlspecialchars(strip_tags($this->DNI));
@@ -58,7 +59,7 @@ class Usuario
         $stmt->bindParam(':rol', $this->rol);
         $stmt->bindParam(':fecha_nacimiento', $fecha_nacimiento);
 
-
+        //ejecutamos la consulta y devolvemos el resultado
         if ($stmt->execute()) {
             $this->id_usuario = $this->conn->lastInsertId();
             return true;
@@ -66,8 +67,10 @@ class Usuario
         return false;
     }
 
+    //método para verificar las credenciales de un usuario en el inicio de sesión
     public function verificarLogin()
     {
+        //buscamos al usuario por el correo del login
         $query = "SELECT * FROM " . $this->table_name . " WHERE correo = ? LIMIT 0,1";
 
         $stmt = $this->conn->prepare($query);
@@ -75,7 +78,7 @@ class Usuario
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
+        // si se encuentra a algún usuario con dicho correo, asignamos sus datos a las propiedades de la clase(a las propiedades del objeto que realmente es lo que representa a dicho usuario)
         if ($row) {
             $this->id_usuario = $row['id_usuario'];
             $this->nombre = $row['nombre'];

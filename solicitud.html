@@ -281,7 +281,7 @@
                 </tbody>
             </table>
         </div>
-
+        <!--Tabla para ver las solicitudes rechazadas-->
         <h3>Solicitudes Rechazadas</h3>
         <div class="table-responsive">
             <table class="table" id="tabla-solicitudes-rechazadas">
@@ -301,7 +301,7 @@
                 </tbody>
             </table>
         </div>
-
+        <!--Modal que aparece al pulsar aceptar la solicitud para asignar grupos a un alumno.-->
         <div class="modal fade" id="asignarGruposModal" tabindex="-1" aria-labelledby="asignarGruposModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -311,6 +311,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="close"></button>
                     </div>
+                    <!--Cuerpo del modal-->
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Asignaturas propuestas:</label>
@@ -340,10 +341,10 @@
 
     <script>
 
-        // Cambio: Obtengo el elemento de notificación para mostrar mensajes
+        //Obtengo el elemento de notificación para mostrar mensajes
         const notification = document.getElementById('notification');
 
-        // Cambio: Añadí una función para mostrar notificaciones de éxito o error
+        //función para mostrar notificaciones de éxito o error
         function mostrarNotificacion(mensaje, tipo) {
             notification.textContent = mensaje;
             notification.className = `notification ${tipo}`;
@@ -371,6 +372,7 @@
             hacerSolicitud('solicitud_api.php', 'GET', null, function (status, response) {
                 try {
                     const solicitudes = JSON.parse(response);
+                    //obtenemos los elementos donde vamos a cargar los datos
                     const listaPendientes = document.getElementById("solicitudes-pendientes-lista");
                     const listaAceptadas = document.getElementById("solicitudes-aceptadas-lista");
                     const listaRechazadas = document.getElementById("solicitudes-rechazadas-lista");
@@ -380,7 +382,7 @@
                     listaAceptadas.innerHTML = '';
                     listaRechazadas.innerHTML = '';
 
-                    // Comenzamos creando las filas que vamos a introducir en las tablas
+                    // Comenzamos creando las filas que vamos a introducir en las tablas con los datos de la solicitud
                     solicitudes.forEach(solicitud => {
                         const row = `
                         <tr>
@@ -398,7 +400,7 @@
                                 ` : ''}
                             </tr>
                             `;
-
+                        //dependiendo del valor de la propiedad estado , se introduce la fila en una tabla u otra
                         if (solicitud.estado === 'pendiente') {
                             listaPendientes.innerHTML += row;
                         } else if (solicitud.estado === 'aceptado') {
@@ -425,7 +427,7 @@
             };
 
             if (rolPropuesto !== 'alumno') {
-                confirmarAceptar(datos, []); //los corchetes hacen referencia a la lista de grupos
+                confirmarAceptar(datos, []); //los corchetes hacen referencia a la lista de grupos, que no hacen falta para los profersores, por eso está vacio
                 return;
             }
 
@@ -438,7 +440,7 @@
                         return;
                     }
 
-                    //Mostrar las asignaturas propuestas
+                    //Mostrar las asignaturas propuestas en el modal
                     const asignaturasPropuestas = document.getElementById("asignaturasPropuestas");
                     asignaturasPropuestas.innerHTML = '';
                     asignaturas.forEach(asignatura => {
@@ -448,7 +450,7 @@
                     });
 
 
-                    //ontener los grupos disponibles
+                    //ontener los grupos disponibles haciendo una solicitud a la api
                     hacerSolicitud('grupo_api.php', 'GET', null, function (status, response) {
                         try {
                             const grupos = JSON.parse(response);
@@ -464,11 +466,11 @@
                                 option.textContent = `${grupo.nombre} (${grupo.nombre_asignatura}) - Capacidad: ${grupo.numero_alumnos}/${grupo.capacidad_maxima}`;
                                 gruposSeleccionados.appendChild(option);
                             });
-
+                            //definimos el modal que se abree al aceptar la solicitud para asignar los grupos o grupo al alumno
                             const modal = new bootstrap.Modal(document.getElementById("asignarGruposModal"));
-                            modal.show();
+                            modal.show(); //se muestra el modal
 
-                            //guardar datos en el botón de confirmación para usarlos después
+                            //guardar los grupos seleccionados en el botón de confirmación para enviarlos
                             const confirmarBtn = document.querySelector('#asignarGruposModal .btn-primary');
                             confirmarBtn.onclick = () => confirmarAceptar(datos, Array.from(gruposSeleccionados.selectedOptions).map(option => parseInt(option.value)));
                         } catch (e) {
