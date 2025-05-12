@@ -488,7 +488,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             }
         }
 
-        tareasForm.addEventListener('submit', function (event) {
+        tareasForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             const datos = {
@@ -499,25 +499,25 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             };
 
             const reglas = {
-                descripcion: { 
-                    validar: (valor) => validarTexto(valor, 2), 
-                    errorId: "descripcion-error" 
+                descripcion: {
+                    validar: (valor) => validarTexto(valor, 2),
+                    errorId: "descripcion-error"
                 },
-                fecha_entrega: { 
-                    validar: validarFechaEntrega, 
-                    errorId: "fecha-entrega-error" 
+                fecha_entrega: {
+                    validar: validarFechaEntrega,
+                    errorId: "fecha-entrega-error"
                 },
-                id_asignatura: { 
-                    validar: (valor) => valor ? "" : "Seleccione una asignatura", 
-                    errorId: "asignatura-error" 
+                id_asignatura: {
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura",
+                    errorId: "asignatura-error"
                 },
-                id_grupo: { 
-                    validar: (valor) => valor ? "" : "Seleccione un grupo", 
-                    errorId: "grupo-error" 
+                id_grupo: {
+                    validar: (valor) => valor ? "" : "Seleccione un grupo",
+                    errorId: "grupo-error"
                 }
             };
 
-            const validation = validarCampos(datos, reglas);
+            const validation = await validarCampos(datos, reglas);
             if (validation.isValid) {
                 crearTarea(event);
             } else {
@@ -528,7 +528,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         });
 
         document.getElementById('asignatura').addEventListener('change', cargarGrupos);
-        
+
         tareasForm.addEventListener('reset', function () {
             formTitle.textContent = 'Tareas';
             document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';

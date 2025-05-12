@@ -281,7 +281,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             <div class="col-md-6">
                 <label for="hora_fin" class="form-label">Hora de Finalización:</label>
                 <input type="time" class="form-control" id="hora_fin" required>
-                <span id="hora-inicio-error" class="error-text"></span>
+                <span id="hora-fin-error" class="error-text"></span>
             </div>
             <div class="col-md-6">
                 <label for="aula" class="form-label">Aula:</label>
@@ -353,7 +353,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         }
 
         function limpiarErrores() {
-            ['descripcion-error', 'fecha-entrega-error', 'asignatura-error', 'grupo-error', 'error-message'].forEach(id => {
+            ['fecha-error', 'hora-inicio-error', 'hora-fin-error', 'aula-error', 'asignatura-error', 'grupo-error', 'error-message'].forEach(id => {
                 const elemento = document.getElementById(id);
                 elemento.textContent = '';
                 elemento.style.display = 'none';
@@ -543,14 +543,27 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             };
 
             const reglas = {
-                fecha: { validar: validarFecha, errorId: 'fecha-error' },
-                horario: { 
-                    validar: () => validarHorarioReserva(datos.hora_inicio, datos.hora_fin), 
-                    errorId: 'hora-inicio-error' 
+                fecha: { validar: validarFecha, errorId: "fecha-error" },
+                hora_inicio: {
+                    validar: (valor, datos) => validarHorarioReserva(valor, datos.hora_fin),
+                    errorId: "hora-inicio-error"
                 },
-                id_aula: { validar: validarSeleccion, errorId: 'aula-error' },
-                id_asignatura: { validar: validarSeleccion, errorId: 'asignatura-error' },
-                id_grupo: { validar: validarSeleccion, errorId: 'grupo-error' }
+                hora_fin: {
+                    validar: (valor, datos) => validarHorarioReserva(datos.hora_inicio, valor),
+                    errorId: "hora-fin-error"
+                },
+                id_aula: {
+                    validar: (valor) => valor ? "" : "Seleccione un aula",
+                    errorId: "aula-error"
+                },
+                id_asignatura: {
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura",
+                    errorId: "asignatura-error"
+                },
+                id_grupo: {
+                    validar: (valor) => valor ? "" : "Seleccione un grupo",
+                    errorId: "grupo-error"
+                }
             };
 
             limpiarErrores();

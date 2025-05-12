@@ -64,14 +64,36 @@ class Grupo
     }
 
     //metodo para leer todos los grupos disponibles en una franja horaria , para evitar reservas solapadas
-    public function leerDisponibles($fecha, $hora_inicio, $hora_fin)
+
+    public function leerDisponibles($fecha, $hora_inicio, $hora_fin, $id_reserva = null)
     {
-        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre as nombre_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura LEFT JOIN reserva r ON r.id_grupo = g.id_grupo AND r.fecha = :fecha AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio) AND r.estado IN ('activa', 'pendiente') WHERE r.id_reserva IS NULL GROUP BY g.id_grupo ORDER BY g.nombre ASC";
+        $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre as nombre_asignatura, 
+              COUNT(ag.id_usuario) as numero_alumnos 
+              FROM " . $this->table_name . " g 
+              LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo 
+              LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura 
+              LEFT JOIN reserva r ON r.id_grupo = g.id_grupo 
+              AND r.fecha = :fecha 
+              AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio) 
+              AND r.estado IN ('activa', 'pendiente')";
+
+        // Excluir la reserva actual si id_reserva está presente
+        if ($id_reserva) {
+            $query .= " AND (r.id_reserva != :id_reserva OR r.id_reserva IS NULL)";
+        } else {
+            $query .= " WHERE r.id_reserva IS NULL";
+        }
+
+        $query .= " GROUP BY g.id_grupo ORDER BY g.nombre ASC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':fecha', $fecha);
         $stmt->bindParam(':hora_inicio', $hora_inicio);
         $stmt->bindParam(':hora_fin', $hora_fin);
+        if ($id_reserva) {
+            $stmt->bindParam(':id_reserva', $id_reserva, PDO::PARAM_INT);
+        }
+
         $stmt->execute();
 
         $grupos = array();

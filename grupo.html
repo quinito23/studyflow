@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,7 @@
             display: flex;
             flex-direction: column;
         }
+
         .header {
             background-color: #0d1f38;
             padding: 1rem 2rem;
@@ -28,52 +30,64 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .header .d-flex {
             gap: 1rem;
             align-items: center;
         }
+
         .header h1 {
             margin: 0;
             font-size: clamp(1.5rem, 5vw, 2.5rem);
             margin-left: clamp(1rem, 3vw, 2rem);
         }
+
         .navbar-toggler {
             font-size: clamp(1rem, 3vw, 1.5rem);
             margin-right: 1rem;
             z-index: 1000;
         }
+
         .navbar-toggler-icon {
             color: white;
         }
+
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
             font-size: clamp(0.7rem, 2vw, 0.9rem);
         }
+
         .breadcrumb-item+.breadcrumb-item::before {
             color: #007bff;
         }
+
         .breadcrumb-item a {
             color: #f8f9fa;
             text-decoration: none;
         }
+
         .breadcrumb-item.active {
             color: #d3d6db;
         }
+
         .offcanvas {
             background-color: #0d1f38;
             color: white;
             width: 20vw !important;
             min-width: 200px !important;
         }
+
         .offcanvas-header {
             border-bottom: 1px solid #ffffff33;
         }
+
         .offcanvas-title {
             color: white;
             font-size: clamp(1rem, 3vw, 1.25rem);
         }
+
         .offcanvas-body .nav-link {
             color: #f8f9fa;
             padding: 0.75rem 1rem;
@@ -81,41 +95,50 @@
             text-decoration: none;
             font-size: clamp(0.9rem, 2vw, 1rem);
         }
+
         .offcanvas-body .nav-link.active {
             background-color: #007bff;
             color: white;
         }
+
         .main-content {
             padding: 2rem;
             flex: 1;
         }
+
         h2 {
             font-size: clamp(1.5rem, 4vw, 2rem);
             color: #ffffff;
             margin-bottom: 1.5rem;
         }
+
         .table thead {
             background-color: #007bff;
             color: white;
         }
+
         .table {
             margin-top: 2rem;
             background-color: #e9ecef;
             color: #333;
             font-size: clamp(0.7rem, 1.5vw, 1rem);
         }
+
         .table tbody tr {
             background-color: #d3d6db;
         }
+
         .table th,
         .table td {
             text-align: center;
         }
+
         #notificacion {
             color: #dc3545;
             margin-bottom: 1rem;
             display: none;
         }
+
         #grupo-form {
             border: 2px solid #007bff;
             border-radius: 8px;
@@ -123,19 +146,23 @@
             background-color: #0d1f38;
             margin-bottom: 2rem;
         }
+
         .modal-content {
             background-color: #0d1f38;
             color: #f8f9fa;
         }
+
         .modal-header,
         .modal-footer {
             border-color: #ffffff33;
         }
+
         .error-message {
             color: #dc3545;
             font-size: 0.9rem;
             margin-top: 0.25rem;
         }
+
         .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
@@ -146,6 +173,7 @@
         }
     </style>
 </head>
+
 <body>
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
@@ -417,7 +445,7 @@
         }
 
         // Validación y envío del formulario
-        document.getElementById("form-grupo").addEventListener("submit", function (event) {
+        document.getElementById("form-grupo").addEventListener("submit", async function (event) {
             event.preventDefault();
 
             const datos = {
@@ -427,21 +455,21 @@
             };
 
             const reglas = {
-                nombre: { 
-                    validar: (valor) => validarTexto(valor, 2), 
-                    errorId: "nombre-error" 
+                nombre: {
+                    validar: (valor) => validarTexto(valor, 2),
+                    errorId: "nombre-error"
                 },
-                capacidad_maxima: { 
-                    validar: validarCapacidad, 
-                    errorId: "capacidad-maxima-error" 
+                capacidad_maxima: {
+                    validar: validarCapacidad,
+                    errorId: "capacidad-maxima-error"
                 },
-                id_asignatura: { 
-                    validar: (valor) => valor ? "" : "Seleccione una asignatura", 
-                    errorId: "id-asignatura-error" 
+                id_asignatura: {
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura",
+                    errorId: "id-asignatura-error"
                 }
             };
 
-            const validation = validarCampos(datos, reglas);
+            const validation = await validarCampos(datos, reglas);
             if (validation.isValid) {
                 crearGrupo(event);
             } else {
@@ -458,4 +486,5 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

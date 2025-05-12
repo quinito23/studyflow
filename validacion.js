@@ -105,7 +105,7 @@ function validarCapacidad(capacidad) {
 function validarFecha(fecha) {
     if (!fecha) return "Fecha requerida";
     const fechaSeleccionada = new Date(fecha);
-    const hoy = new Date('2025-05-11');
+    const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     if (isNaN(fechaSeleccionada.getTime())) return "Fecha inválida";
     if (fechaSeleccionada < hoy) return "La fecha no puede ser anterior a hoy";
@@ -114,21 +114,32 @@ function validarFecha(fecha) {
 
 function validarHorarioReserva(horaInicio, horaFin) {
     if (!horaInicio || !horaFin) return "Ambas horas son requeridas";
+
+
+
     const [inicioHoras, inicioMinutos] = horaInicio.split(':').map(Number);
     const [finHoras, finMinutos] = horaFin.split(':').map(Number);
+
+    if (isNaN(inicioHoras) || isNaN(inicioMinutos) || isNaN(finHoras) || isNaN(finMinutos)) {
+        return "Horas inválidas";
+    }
+
     const inicioTotal = inicioHoras * 60 + inicioMinutos;
     const finTotal = finHoras * 60 + finMinutos;
-    const minHora = 9 * 60;
-    const maxHora = 21 * 60;
+    const minHora = 9 * 60; // 09:00
+    const maxHora = 21 * 60; // 21:00
+
     if (inicioTotal < minHora || inicioTotal > maxHora) {
-        return "La hora de inicio debe estar entre las 09:00 AM y las 20:00 PM";
+        return "La hora de inicio debe estar entre las 09:00 y las 20:00";
     }
     if (finTotal < minHora || finTotal > maxHora) {
-        return "La hora de finalización debe estar desde a partir de las 09:00 AM hasta las 21:00";
+        return "La hora de finalización debe estar entre las 09:00 y las 21:00";
     }
     if (finTotal <= inicioTotal) {
         return "La hora de finalización debe ser posterior a la de inicio";
     }
+
+    return "";
 }
 
 function validarFechaEntrega(fechaEntrega) {

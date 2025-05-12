@@ -10,7 +10,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 // Verificar acceso de administrador
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'administrador') {
+if (!isset($_SESSION['rol']) || ($_SESSION['rol'] !== 'alumno' && $_SESSION['rol'] !== 'administrador')) {
     echo json_encode(array("message" => "Acceso denegado"));
     exit;
 }
@@ -22,7 +22,8 @@ $alumno = new Alumno($db);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = null) {
+function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = null)
+{
     $duplicados = [];
 
     // Verificar correo
@@ -199,7 +200,7 @@ switch ($method) {
 
                 // Verificar duplicados
                 $duplicados = verificarDuplicados($db, $data->correo, $data->contrasenia, $data->DNI, $data->id_usuario);
-                if (!empty($duplicados)) { 
+                if (!empty($duplicados)) {
                     echo json_encode(array("message" => "Datos duplicados", "duplicados" => $duplicados));
                     exit;
                 }

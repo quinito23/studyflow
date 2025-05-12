@@ -251,10 +251,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         <div class="offcanvas-body">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="vista_reservas.php">Reservar</a>
+                    <a class="nav-link" href="vista_reservas.php">Reservar</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="mis_reservas.php">Mis Reservas</a>
+                    <a class="nav-link active" href="mis_reservas.php">Mis Reservas</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="mis_tareas.php">Tareas</a>
@@ -618,14 +618,27 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             };
 
             const reglas = {
-                fecha: { validar: validarFecha, errorId: 'fecha-error' },
-                horario: { 
-                    validar: () => validarHorarioReserva(datos.hora_inicio, datos.hora_fin), 
-                    errorId: 'hora-inicio-error' 
+                fecha: { validar: validarFecha, errorId: "fecha-error" },
+                hora_inicio: {
+                    validar: (valor, datos) => validarHorarioReserva(valor, datos.hora_fin),
+                    errorId: "hora-inicio-error"
                 },
-                id_aula: { validar: validarSeleccion, errorId: 'aula-error' },
-                id_asignatura: { validar: validarSeleccion, errorId: 'asignatura-error' },
-                id_grupo: { validar: validarSeleccion, errorId: 'grupo-error' }
+                hora_fin: {
+                    validar: (valor, datos) => validarHorarioReserva(datos.hora_inicio, valor),
+                    errorId: "hora-fin-error"
+                },
+                id_aula: {
+                    validar: (valor) => valor ? "" : "Seleccione un aula",
+                    errorId: "aula-error"
+                },
+                id_asignatura: {
+                    validar: (valor) => valor ? "" : "Seleccione una asignatura",
+                    errorId: "asignatura-error"
+                },
+                id_grupo: {
+                    validar: (valor) => valor ? "" : "Seleccione un grupo",
+                    errorId: "grupo-error"
+                }
             };
 
             limpiarErrores();
