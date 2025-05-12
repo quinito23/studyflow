@@ -3,7 +3,7 @@
 class Aula
 {
     private $conn;
-    private $table_name;
+    private $table_name = "aula";
     public $id_aula;
     public $nombre;
     public $capacidad;
