@@ -1,6 +1,6 @@
 <?php
-session_start();
-
+session_start(); //inicio de sesión para poder acceder a los datos del usuario que se ha logeado
+// Verifica si el usuario está autenticado y tiene el rol de alumno o administrador
 if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSION['rol'] != 'administrador')) {
     header("Location: login.php");
     exit();
@@ -249,6 +249,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
 </head>
 
 <body>
+    <!--Header de bootsraps-->
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
@@ -257,6 +258,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
+        <!--Aquí ponemos los elementos del breadcrumb-->
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboardAlumno.php">Home</a></li>
@@ -264,7 +266,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             </ol>
         </nav>
     </header>
-
+    <!--Barra lateral de bootsraps-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
@@ -273,20 +275,22 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
         </div>
         <div class="offcanvas-body">
             <ul class="nav flex-column">
+                <!--Elementos en la barra lateral-->
                 <li class="nav-item">
                     <a class="nav-link active" href="alumnos.php">Mis Asignaturas</a>
                 </li>
             </ul>
         </div>
     </div>
-
+    <!--Contenido principal-->
     <main class="main-content">
         <h2>Mis Asignaturas</h2>
         <div class="content-container">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="asignaturas-container"></div>
         </div>
     </main>
-
+    
+    <!--Modal que se abre al pulsar sobre las tarjetas de las asignaturas para ver las tareas y reservas que tenga el alumno-->
     <div class="modal fade" id="reservasModal" tabindex="-1" aria-labelledby="reservasModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -307,17 +311,20 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             </div>
         </div>
     </div>
-
+    
+    <!--footer-->
     <footer class="footer">
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        //Obtenemos los elemetos del frontend con los que vamos a trabajar
         const asignaturasContainer = document.getElementById('asignaturas-container');
         const reservasList = document.getElementById('reservas-list');
         const tareasList = document.getElementById('tareas-list');
         const reservasModal = new bootstrap.Modal(document.getElementById('reservasModal'));
 
+        //función para hacer solicitudes AJAX
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -330,12 +337,15 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
+        //función para cargar las asignaturas que tiene asociadas el alumno que haya inciado sesión
         function cargarAsignaturas() {
+            //obtenemos el id del alumno desde la sesion
             const id_usuario = <?php echo json_encode($_SESSION['id_usuario']); ?>;
             hacerSolicitud(`alumno_api.php?asignaturas=1&id_usuario=${id_usuario}`, 'GET', null, function (status, response) {
                 try {
                     const asignaturas = JSON.parse(response);
                     asignaturasContainer.innerHTML = '';
+                    //por cada asignatura , se crea una carta
                     if (asignaturas.length > 0) {
                         asignaturas.forEach(asignatura => {
                             const card = document.createElement('div');
@@ -359,7 +369,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                 }
             });
         }
-
+        //funcion para mostrar en el modal las reservas y las tareas que tiene el alumno para la asignatura
         function mostrarReservasYTareas(id_asignatura) {
             const id_usuario = <?php echo json_encode($_SESSION['id_usuario']); ?>;
             if (!id_usuario) {
@@ -369,7 +379,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                 return;
             }
 
-            // Cargar reservas
+            // Cargar reservas del usuario para la asignatura
             const urlReservas = `reserva_api.php?asignatura=${id_asignatura}&id_usuario=${id_usuario}`;
             hacerSolicitud(urlReservas, 'GET', null, function (status, response) {
                 try {
@@ -393,7 +403,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                 }
             });
 
-            // Cargar tareas
+            // Cargar tareas del alumno para la asignatura
             const urlTareas = `tarea_api.php?asignatura=${id_asignatura}&id_usuario=${id_usuario}`;
             hacerSolicitud(urlTareas, 'GET', null, function (status, response) {
                 try {

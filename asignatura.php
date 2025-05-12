@@ -2,16 +2,17 @@
 
 class Asignatura
 {
-    private $conn;
-    private $table_name = "asignatura";
+    private $conn; //conexión con la base de datos
+    private $table_name = "asignatura"; //nombre de la tabla en la base de datos
 
     public $id_asignatura;
     public $nombre;
     public $descripcion;
     public $nivel;
 
-    public $id_usuario;
+    public $id_usuario; //id del usuario que imparte la asignatura(profesor)
 
+    //constructor que recibe la conexion a la base de datos
     public function __construct($db)
     {
         $this->conn = $db;
@@ -28,6 +29,7 @@ class Asignatura
         $this->nombre = htmlspecialchars(strip_tags($this->nombre));
         $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
         $this->nivel = htmlspecialchars(strip_tags($this->nivel));
+        //si se le ha asignado un profesor, guardamos su id
         $this->id_usuario = $this->id_usuario ? htmlspecialchars(strip_tags($this->id_usuario)) : null;
 
         //pasamos los datos a la consulta

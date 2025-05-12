@@ -205,6 +205,7 @@
     </style>
 </head>
 <body>
+    <!--Header de bootstraps-->
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle navigation">
@@ -212,6 +213,7 @@
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
+        <!--Breadcrumbs de bootstraps-->
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
@@ -220,12 +222,14 @@
         </nav>
     </header>
 
+    <!--Barra lateral de bootstraps-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+            <!--Elementos de la barra lateral , es decir, las paginas-->
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link active" href="profesor.html">Profesores</a>
@@ -257,7 +261,7 @@
             </ul>
         </div>
     </div>
-
+    <!--Contenido principal-->
     <main class="main-content">
         <h2 class="text-center" id="form-title">Nuevo Profesor</h2>
         <form id="profesor-form" class="row g-3">
@@ -342,6 +346,7 @@
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </div>
         </form>
+        <!--Contenedores para los mensajes de error y exito-->
         <div id="success-message" class="success-message"></div>
         <div id="error-message" class="error-message"></div>
 
@@ -357,10 +362,12 @@
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="table-group-divider" id="profesores-lista"></tbody>
+                <tbody class="table-group-divider" id="profesores-lista">
+                    <!--Aqui se cargan dinamicamente los profesores-->
+                </tbody>
             </table>
         </div>
-
+        <!--Modal para mostrar la información de un profesor-->
         <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -390,13 +397,14 @@
             </div>
         </div>
     </main>
-
+    <!--FOOTER-->
     <footer class="footer">
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
-    <script src="validacion.js"></script>
+    <script src="validacion.js"></script><!--Script para validaciones-->
     <script>
+        //Función para hacer solicitudes AJAX
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -408,14 +416,14 @@
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
-
+        //Funcion para mostrar mensajes
         function mostrarMensaje(tipo, mensaje) {
             const elemento = document.getElementById(`${tipo}-message`);
             elemento.innerText = mensaje;
             elemento.style.display = 'block';
             setTimeout(() => elemento.style.display = 'none', 5000);
         }
-
+        //funcion para limpiar los errores de la validación para evitar confusiones
         function limpiarErrores() {
             ['correo-error', 'contrasenia-error', 'nombre-error', 'apellidos-error', 'dni-error', 
              'telefono-error', 'fecha-nacimiento-error', 'rol-error', 'sueldo-error', 
@@ -426,11 +434,11 @@
                 elemento.style.display = 'none';
             });
         }
-
+        //funcion para cargar las asignaturas a asignar al prfesor en el select.
         function cargarAsignaturas(id_usuario = null) {
             const selectAsignaturas = document.getElementById("asignaturas");
             selectAsignaturas.innerHTML = '';
-            
+            // Solo se cargarán las no asignadas, pasandole el parametro no_asignadas a la api en la url de la solicitud
             hacerSolicitud('asignatura_api.php?no_asignadas=1', 'GET', null, function (status, response) {
                 if (status === 200) {
                     let asignaturasNoAsignadas;
@@ -446,7 +454,7 @@
                         option.textContent = asignatura.nombre;
                         selectAsignaturas.appendChild(option);
                     });
-                    
+                    // si hay valor para id_usuario , se filtra también por las asignaturas asignadas al profesor
                     if (id_usuario) {
                         hacerSolicitud(`asignatura_api.php?id_usuario=${id_usuario}`, 'GET', null, function (status, response) {
                             if (status === 200) {
@@ -474,7 +482,7 @@
                 }
             });
         }
-
+        // funcion para crear un profesor
         function crearProfesor(event, datos) {
             event.preventDefault();
             const profesor = { 
@@ -533,7 +541,7 @@
                 }
             });
         }
-
+        //funcion para cargar los profesores, para cargarlos en la tabla
         function cargarProfesores() {
             hacerSolicitud('profesor_api.php', 'GET', null, function (status, response) {
                 let profesores;
@@ -573,7 +581,7 @@
                 }
             });
         }
-
+        //funcion para cargar los datos de un profesor especifico en el modal
         function mostrarInfo(id_usuario) {
             hacerSolicitud(`profesor_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
                 let res;
@@ -609,7 +617,7 @@
                 }
             });
         }
-
+        // funcion para eliminar un profesor
         function eliminarProfesor(id_usuario) {
             if (confirm('¿Estás seguro de que quieres eliminar este profesor?')) {
                 const data = { id_usuario };
@@ -631,7 +639,7 @@
                 });
             }
         }
-
+        //funcion para editar un profesor
         function editarProfesor(id_usuario) {
             hacerSolicitud(`profesor_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
                 let res;
@@ -668,9 +676,10 @@
                 }
             });
         }
-
+        //Hacemos la validación y despues si es correcta , la creación del profesor
         document.getElementById("profesor-form").addEventListener("submit", async function (event) {
             event.preventDefault();
+            //obtenemos los datos del formulario
             const datos = {
                 id_usuario: document.getElementById("id_usuario").value,
                 correo: document.getElementById("correo").value,
@@ -687,7 +696,7 @@
                 fecha_fin_contrato: document.getElementById("fecha_fin_contrato").value,
                 asignaturas: Array.from(document.getElementById("asignaturas").selectedOptions).map(opt => parseInt(opt.value))
             };
-
+            //usamos las reglas definidas en validacion.js para validar los datos introducidos
             const reglas = {
                 correo: { validar: validarCorreo, errorId: "correo-error" },
                 contrasenia: { validar: validarContrasenia, errorId: "contrasenia-error" },
@@ -720,7 +729,7 @@
 
             const validation = await validarCampos(datos, reglas);
             let isValid = validation.isValid;
-
+            //validacion de duplicados
             if (validation.errors.duplicados && Object.keys(validation.errors.duplicados).length > 0) {
                 isValid = false;
                 if (validation.errors.duplicados.correo) {
@@ -742,8 +751,10 @@
             }
 
             if (isValid) {
+                //si todo va bien , se crea el profesor
                 crearProfesor(event, datos);
             } else {
+                //sino, se muestran los mensajes de error en los campos
                 Object.keys(validation.errors).forEach(field => {
                     if (field !== 'duplicados' && reglas[field].errorId && validation.errors[field]) {
                         document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
@@ -752,7 +763,7 @@
                 });
             }
         });
-
+        //resetear el formualrio
         document.getElementById("profesor-form").addEventListener("reset", function () {
             document.getElementById("id_usuario").value = '';
             document.getElementById("form-title").innerText = "Nuevo Profesor";
@@ -760,7 +771,7 @@
             cargarAsignaturas();
             limpiarErrores();
         });
-
+        //evento al iniciar la página
         window.onload = function() {
             cargarProfesores();
             cargarAsignaturas();

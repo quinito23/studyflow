@@ -141,6 +141,7 @@
         <p>© 2025 Academia StudyFlow - Todos los derechos reservados</p>
     </footer>
     <script>
+        // funvion para solicitudes AJAX
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -152,7 +153,7 @@
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
-
+        //Funcion para cargar las asignaturas de la base de datos
         function cargarAsignaturas() {
             hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
                 try {
@@ -160,6 +161,7 @@
                         const asignaturas = JSON.parse(response);
                         const listaAsignaturas = document.getElementById('asignaturas-list');
                         listaAsignaturas.innerHTML = '';
+                        //por cada asignatura se crea una carta con el nombre y descripcion de la asignatura
                         asignaturas.forEach(asignatura => {
                             const card = document.createElement('div');
                             card.className = 'col-md-4';

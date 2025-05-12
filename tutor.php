@@ -3,14 +3,15 @@
 
 
     class Tutor {
-        private $conn;
-        private $table_name = "tutor_legal";
+        private $conn; //conexión a la base de datos
+        private $table_name = "tutor_legal"; //nombre de la tabla
 
         public $id_tutor;
         public $nombre;
         public $apellidos;
         public $telefono;
         
+        //constructor de la clase , que recibe la conexión a la base de datos
         public function __construct($db){
             $this->conn = $db; 
         }
@@ -39,6 +40,7 @@
             return false;
         }
 
+        //metodo para obtener todos los tutores en la base de datos
         public function leer_todos(){
             $query = "SELECT id_tutor, nombre, apellidos, telefono FROM " . $this->table_name . " ORDER BY id_tutor DESC";
 
@@ -60,7 +62,7 @@
 
         }
 
-        //leer un tutor
+        //metodo para leer un tutor específico
 
         public function leer(){
 
@@ -85,7 +87,7 @@
             return false;
         }
 
-        //funcion para actualizar un tutor
+        //metodo para actualizar un tutor
 
         public function actualizar(){
 
@@ -113,6 +115,7 @@
 
 
         }
+        //metodo para eliminar un tutor de la base de datos
         public function eliminar(){
             $query = "DELETE FROM " . $this->table_name . " WHERE id_tutor = :id_tutor";
 

@@ -1,27 +1,33 @@
 <?php
-session_start();
+session_start();//iniciamos la sesión para acceder a los datos almacenados del usuario y verificar su rol
 
+//incluimos las clases necesarias
 include_once 'DBConnection.php';
 include_once 'alumno.php';
 
+// Configuración de cabeceras para la API REST
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
-// Verificar acceso de administrador
+// Verificar acceso de administrador y alumno
 if (!isset($_SESSION['rol']) || ($_SESSION['rol'] !== 'alumno' && $_SESSION['rol'] !== 'administrador')) {
     echo json_encode(array("message" => "Acceso denegado"));
     exit;
 }
 
+// Obtenemos la conexión con la base de datos
 $database = new DBConnection();
 $db = $database->getConnection();
 
+//Creamos un objeto de la clase alumno
 $alumno = new Alumno($db);
 
+// Almacenamos el método HTTP de la petición
 $method = $_SERVER['REQUEST_METHOD'];
 
+//función que verifica si existen valores duplicados para los campos correo, contraseña y DNI a la hora de crear un nuevo alumno
 function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = null)
 {
     $duplicados = [];
@@ -82,12 +88,16 @@ function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = nul
             $duplicados[] = "DNI";
         }
     }
-
+    //devolver el array de duplicados
     return $duplicados;
 }
 
+//bloque para procesar la solicitud según el método HTTP
 switch ($method) {
+
+    //Caso para obtener los alumnos
     case 'GET':
+        // Primero verifica si hay duplicados
         if (isset($_GET['check_duplicados'])) {
             try {
                 $correo = isset($_GET['correo']) ? trim($_GET['correo']) : null;
@@ -107,6 +117,8 @@ switch ($method) {
             }
             exit;
         }
+
+        //obtiene las asignaturas asociadas a un alumno
         if (isset($_GET['asignaturas']) && $_GET['asignaturas'] == 1) {
             if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSION['rol'] != 'administrador')) {
                 echo json_encode(array("message" => "Acceso denegado"));
@@ -118,10 +130,11 @@ switch ($method) {
                 echo json_encode(array("message" => "ID de usuario no válido"));
                 exit;
             }
-
+            //llama al metodo de la clase
             $asignaturas = $alumno->obtenerAsignaturas($id_usuario);
             echo json_encode($asignaturas);
         } else {
+            // obtenemos un alumno específico
             if (isset($_GET['id'])) {
                 $alumno->id_usuario = $_GET['id'];
                 if ($alumno->leer()) {
@@ -142,18 +155,22 @@ switch ($method) {
                     echo json_encode(array("message" => "Alumno no encontrado"));
                 }
             } else {
+                // si no esta asignado el parametro id_usuario , se obtienen todos los alumnos llamando al metodo leer todos
                 $result = $alumno->leer_todos();
                 echo json_encode($result);
             }
         }
         break;
 
+    //caso para crear un alumno 
     case 'POST':
+        //obtenemos los datos en JSON
         $data = json_decode(file_get_contents("php://input"));
 
         if (isset($data->correo) && isset($data->contrasenia) && isset($data->nombre) && isset($data->apellidos)) {
             try {
                 $db->beginTransaction();
+
 
                 // Verificar duplicados
                 $duplicados = verificarDuplicados($db, $data->correo, $data->contrasenia, $data->DNI, null);
@@ -172,7 +189,7 @@ switch ($method) {
                 $alumno->rol = $data->rol ?? 'alumno';
                 $tutores = isset($data->tutores) ? $data->tutores : [];
                 $grupos = isset($data->grupos) ? $data->grupos : [];
-
+                //creamos el alumno llamando al metodo de la clase
                 $id_alumno = $alumno->crear($tutores, $grupos);
 
                 if ($id_alumno) {
@@ -190,7 +207,8 @@ switch ($method) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
-
+    
+    //caso para actualizar un profesor
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -217,6 +235,7 @@ switch ($method) {
                 $tutores = isset($data->tutores) ? $data->tutores : [];
                 $grupos = isset($data->grupos) ? $data->grupos : [];
 
+                //ejecutamos el metodo actualizar
                 if ($alumno->actualizar($tutores, $grupos)) {
                     $db->commit();
                     echo json_encode(array("message" => "Alumno actualizado exitosamente"));
@@ -233,6 +252,7 @@ switch ($method) {
         }
         break;
 
+    //caso para eliminar un alumno
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 

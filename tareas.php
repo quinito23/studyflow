@@ -1,6 +1,7 @@
 <?php
+// es la página para crear, leer, editar y eliminar tareas
 session_start();
-
+//verificar el rol del usuario que ha iniciado sesión para permitir el acceso al archivo o no
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     header("Location: login.php");
     exit;
@@ -189,6 +190,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 </head>
 
 <body>
+    <!--Header de bootstrap-->
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
@@ -197,6 +199,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
+        <!--Elementos del breadcrumb-->
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboardAdmin.php">Home</a></li>
@@ -205,6 +208,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         </nav>
     </header>
 
+    <!--Barra lateral desplegable-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
@@ -212,6 +216,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 aria-label="close"></button>
         </div>
         <div class="offcanvas-body">
+            <!--Lista de las diferentes pestañas de la barra lateral (las diferetesd páginas a las que se puede acceder)-->
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link " href="profesor.html">Profesores</a>
@@ -243,9 +248,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </ul>
         </div>
     </div>
-
+    
+    <!--Contenido principal-->
     <main class="main-content">
         <h2 class="text-center" id="form-title">Tareas</h2>
+        <!--Formulario para crear la tarea-->
         <form id="tareas-form" class="row g-3">
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripción:</label>
@@ -294,18 +301,20 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         </div>
         <div id="error-message"></div>
     </main>
-
+    <!--Footer-->
     <footer class="footer">
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
-    <script src="validacion.js"></script>
+    <script src="validacion.js"></script><!--Integración del script con las funciones para validar los campos-->
     <script>
+        //obtenemos los diferentes elementos del fontend que vamos a manejar
         const tareasForm = document.getElementById('tareas-form');
         const tareasLista = document.getElementById('tareas-lista');
         const errorMessage = document.getElementById('error-message');
         const formTitle = document.getElementById('form-title');
 
+        //funcion para mostrar errores
         function mostrarError(mensaje) {
             errorMessage.textContent = mensaje;
             errorMessage.style.display = 'block';
@@ -314,6 +323,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             }, 3000);
         }
 
+        //función para  hacer solicitudes AJAX
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -326,6 +336,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
+        //función para cargar las asignaturas en el select
         function cargarAsignaturas() {
             hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
                 try {
@@ -343,7 +354,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 }
             });
         }
-
+        //función para cargar los grupos en el select
         function cargarGrupos() {
             const id_asignatura = document.getElementById('asignatura').value;
             let url = 'grupo_api.php';
@@ -376,6 +387,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             });
         }
 
+        //función para cargar las todas las tareas (se le pasa el parametro todas a la api mediante la url)
         function cargarTareas() {
             hacerSolicitud('tarea_api.php?todas=1', 'GET', null, function (status, response) {
                 try {
@@ -409,6 +421,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             });
         }
 
+        //función para editar una tarea
         function editarTarea(id_tarea) {
             hacerSolicitud(`tarea_api.php?id=${id_tarea}`, 'GET', null, function (status, response) {
                 try {
@@ -427,6 +440,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             });
         }
 
+        //funcion para eliminar una tarea
         function eliminarTarea(id_tarea) {
             if (!confirm('¿Estás seguro de eliminar esta tarea?')) return;
             hacerSolicitud('tarea_api.php', 'DELETE', { id_tarea: id_tarea }, function (status, response) {
@@ -443,6 +457,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             });
         }
 
+        //funcio para crear una tarea
         function crearTarea(event) {
             event.preventDefault();
 
@@ -451,9 +466,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             const fecha_entrega = document.getElementById("fecha_entrega").value;
             const id_asignatura = parseInt(document.getElementById("asignatura").value);
             const id_grupo = parseInt(document.getElementById("grupo").value);
-
+            //almacenamos los datos del formulario para pasarselos a la API en la solicitud
             const tarea = { id_tarea, descripcion, fecha_entrega, id_asignatura, id_grupo };
 
+            //si el parametro id_tarea está asignado ,entonces se hace la solicitud al metodo PUT para actualizar
             if (id_tarea) {
                 hacerSolicitud('tarea_api.php', 'PUT', tarea, function (status, response) {
                     try {
@@ -472,6 +488,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     }
                 });
             } else {
+                //Si no se hace al metodo POST para crearla
                 hacerSolicitud('tarea_api.php', 'POST', tarea, function (status, response) {
                     try {
                         const result = JSON.parse(response);
@@ -487,17 +504,17 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 });
             }
         }
-
+        // Validación y envío del formulario
         tareasForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-
+            //obtener los datos del formulario
             const datos = {
                 descripcion: document.getElementById("descripcion").value,
                 fecha_entrega: document.getElementById("fecha_entrega").value,
                 id_asignatura: document.getElementById("asignatura").value,
                 id_grupo: document.getElementById("grupo").value
             };
-
+            //definimos las reglas de validación para cada campo, usndo las funciones definidas en validacion.js
             const reglas = {
                 descripcion: {
                     validar: (valor) => validarTexto(valor, 2),
@@ -519,8 +536,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
             const validation = await validarCampos(datos, reglas);
             if (validation.isValid) {
+                // si todo está correcto, entonces se ejecuta la función que hace la solicitud para crear
                 crearTarea(event);
             } else {
+                //sino mostramos los errores de validación en los campos que han fallado
                 Object.keys(validation.errors).forEach(field => {
                     document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
                 });
@@ -529,16 +548,19 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
         document.getElementById('asignatura').addEventListener('change', cargarGrupos);
 
+        //evento para resetear el formulario y los campos al pulsar el boton de limpiar
         tareasForm.addEventListener('reset', function () {
             formTitle.textContent = 'Tareas';
             document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
             document.getElementById('id_tarea').value = '';
             cargarGrupos();
+            // Limpiar mensajes de error
             ['descripcion-error', 'fecha-entrega-error', 'asignatura-error', 'grupo-error'].forEach(id => {
                 document.getElementById(id).textContent = '';
             });
         });
 
+        // al iniciar la página , se cargan las asignaturas, grupos y tareas existentes
         window.onload = function () {
             cargarAsignaturas();
             cargarGrupos();

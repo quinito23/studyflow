@@ -2,18 +2,19 @@
 
 class Aula
 {
-    private $conn;
-    private $table_name = "aula";
+    private $conn; //conexión a la base de datos
+    private $table_name = "aula"; //nombre de la tabla en la base de datos
     public $id_aula;
     public $nombre;
     public $capacidad;
     public $equipamiento;
 
-    public function __construct($db)
+    public function __construct($db) //constructor de la clase que recibe la conexión a la base de datos
     {
         $this->conn = $db;
     }
 
+    //Metodo para crear el aula
     public function crear()
     {
         $query = "INSERT INTO " . $this->table_name . " (nombre, capacidad, equipamiento) VALUES (:nombre, :capacidad, :equipamiento)";
@@ -35,6 +36,7 @@ class Aula
         return false;
     }
 
+    //metodo para obtener todas las aulas
     public function leer_todos()
     {
         $query = "SELECT id_aula, nombre, capacidad, equipamiento FROM " . $this->table_name . " ORDER BY nombre ASC";
@@ -53,6 +55,7 @@ class Aula
         return $aulas;
     }
 
+    //metodo para obtener un aula específica
     public function leer()
     {
         $query = "SELECT id_aula, nombre, capacidad, equipamiento FROM " . $this->table_name . " WHERE id_aula = :id_aula LIMIT 0,1";
@@ -77,6 +80,7 @@ class Aula
 
     }
 
+    //metodo para actualizar un aula
     public function actualizar()
     {
         $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, capacidad = :capacidad, equipamiento = :equipamiento WHERE id_aula = :id_aula";
@@ -98,6 +102,7 @@ class Aula
 
     }
 
+    //metodo para actualiza un aura
     public function eliminar()
     {
         $query = "DELETE FROM " . $this->table_name . " WHERE id_aula = :id_aula";

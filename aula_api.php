@@ -1,9 +1,11 @@
 <?php
-session_start();
+session_start();//iniciamos la sesión para acceder a los datos almacenados del usuario y verificar su rol
 
+//incluimos las clases necesarias
 include_once 'DBConnection.php';
 include_once 'aula.php';
 
+// Configuración de cabeceras para la API REST
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
@@ -20,10 +22,14 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'profesor' && $_SESS
 $database = new DBConnection();
 $db = $database->getConnection();
 
+//crear un objeto de la clase Aula y le pasamos al constructor la conexión a la base de datos
 $aula = new Aula($db);
+// Almacenamos el método HTTP de la petición
 $method = $_SERVER['REQUEST_METHOD'];
 
+//función que verifica si existen valores duplicados para los campos correo, contraseña y DNI a la hora de crear un nuevo alumno
 switch ($method) {
+    //caso para obtener las aulas
     case 'GET':
         // Obtener parámetros de horario y grupo para reservas
         $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : null;
@@ -41,7 +47,7 @@ switch ($method) {
                 exit;
             }
 
-            // Consulta para obtener aulas disponibles
+            // Consulta para obtener aulas disponibles filtrandolas por las reservas que tengas asociadas y la hora de estas
             $currentTime = date('Y-m-d H:i:s');
             $query = "SELECT a.id_aula, a.nombre 
                       FROM aula a 
@@ -50,12 +56,13 @@ switch ($method) {
                       AND (CONCAT(r.fecha, ' ', r.hora_fin) > :currentTime) 
                       AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio)";
 
+            //filtra por reservas que tenga
             if ($id_reserva) {
                 $query .= " AND (r.id_reserva != :id_reserva OR r.id_reserva IS NULL)";
             } else {
                 $query .= " AND r.id_aula IS NULL";
             }
-
+            //si la tiene , pues filtra por la hora y fecha de esas reservas
             $query .= " WHERE a.id_aula NOT IN (
                           SELECT id_aula FROM reserva WHERE fecha = :fecha 
                           AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio)";

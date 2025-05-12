@@ -3,14 +3,14 @@
 
 class Reserva
 {
-    private $conn;
-    private $table_name = "reserva";
+    private $conn; //conexión a la base de datos
+    private $table_name = "reserva"; //nombre de la tabla
 
     public $id_reserva;
-    public $id_usuario;
-    public $id_aula;
-    public $id_asignatura;
-    public $id_grupo;
+    public $id_usuario; //id del profesor que realiza la reserva
+    public $id_aula; //id del aula asociada a la reserva
+    public $id_asignatura; //id de la asignatura asociada a la reserva
+    public $id_grupo; //id del grupo asociado a la reserva
     public $fecha;
     public $hora_inicio;
     public $hora_fin;
@@ -25,9 +25,11 @@ class Reserva
     {
         //calcularemos de mamera dinamica que reservas estan activas basandonos en la fecha y hora actual
         $currentTime = date('Y-m-d H:i:s');
+        // esta consulta cuenta las reservas activas que se solapen con el horario solicitado
         $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE id_aula = :id_aula AND fecha = :fecha AND (CONCAT(fecha, ' ', hora_fin) > :currentTime) AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio) AND id_reserva != :id_reserva";
         $stmt = $this->conn->prepare($query);
 
+        //pasamos los valores a los parametros de la consulta
         $stmt->bindParam(':id_aula', $this->id_aula, PDO::PARAM_INT);
         $stmt->bindParam(':fecha', $this->fecha);
         $stmt->bindParam(':hora_inicio', $this->hora_inicio);
@@ -36,17 +38,20 @@ class Reserva
         $stmt->bindParam(':id_reserva', $this->id_reserva, PDO::PARAM_INT);
 
         $stmt->execute();
+        //devuelve true si no hay solapamientos
         return $stmt->fetchColumn() == 0;
     }
 
-    //Metodo para verificar que no se puedan solapar las reservas
+    //Metodo para verificar que no se puedan solapar las reservas para un grupo en el mismo horario
     public function verificarSolapamiento()
     {
         if (!$this->id_grupo || !$this->fecha || !$this->hora_inicio || !$this->hora_fin) {
             return true;
         }
+        
         $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE id_grupo = :id_grupo AND fecha = :fecha AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio)";
 
+        //excluir la reserva actual si se esta editando
         if ($this->id_reserva) {
             $query .= " AND id_reserva != :id_reserva";
         }
@@ -61,6 +66,7 @@ class Reserva
         }
 
         $stmt->execute();
+        //devuelve true si no hay solapamientos
         return $stmt->fetchColumn() == 0;
     }
 
@@ -87,6 +93,7 @@ class Reserva
                      WHERE r.id_asignatura = :id_asignatura 
                      AND CONCAT(r.fecha, ' ', r.hora_fin) >= :currentTime";
 
+            // si existe id_usuario , se cargan las reservas por asignatura para un alumno específico
             if ($id_usuario) {
                 $query .= " AND ag.id_usuario = :id_usuario";
             }
@@ -182,7 +189,7 @@ class Reserva
 
 
 
-    //metodo para leer las reservas de un usuario
+    //metodo para leer todas las reservas o las de un usuario específico si se le pasa id_usuario al metodo
     public function leer_todos($id_usuario = null)
     {
 
@@ -196,6 +203,7 @@ class Reserva
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':currentTime', $currentTime);
+        // si se pasa id_usuario se devuelven las reservas de un usuario especifico
         if ($id_usuario !== null) {
             $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
         }

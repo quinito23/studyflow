@@ -205,6 +205,7 @@
     </style>
 </head>
 <body>
+    <!--Header de bootstraps-->
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-label="Toggle navigation">
@@ -212,6 +213,7 @@
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
+        <!--Breadcrumb-->
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
@@ -220,12 +222,14 @@
         </nav>
     </header>
 
+    <!--Barra lateral de bootstraps-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+            <!--Listamos las diferentes páginas que aparecerán en la barra lateral-->
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" href="profesor.html">Profesores</a>
@@ -258,6 +262,7 @@
         </div>
     </div>
 
+    <!--Contenido principal-->
     <main class="main-content">
         <h2 class="text-center" id="form-title">Nuevo Alumno</h2>
         <form id="alumno-form" class="row g-3">
@@ -333,10 +338,13 @@
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="alumnos-lista"></tbody>
+                <tbody id="alumnos-lista">
+                    <!--Aquí se cargan dinamicamente los alumnos-->
+                </tbody>
             </table>
         </div>
 
+        <!--Modal que se abre con la información del alumno-->
         <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -362,13 +370,14 @@
             </div>
         </div>
     </main>
-
+    <!--Footer-->
     <footer class="footer">
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
-    <script src="validacion.js"></script>
+    <script src="validacion.js"></script> <!--Script para la validación-->
     <script>
+        //Función para hacer solicitudes AJAX
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -380,14 +389,14 @@
             };
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
-
+        //función para mostrar mensajes
         function mostrarMensaje(tipo, mensaje) {
             const elemento = document.getElementById(`${tipo}-message`);
             elemento.innerText = mensaje;
             elemento.style.display = 'block';
             setTimeout(() => elemento.style.display = 'none', 5000);
         }
-
+        //funcion para limpiar errores
         function limpiarErrores() {
             ['correo-error', 'contrasenia-error', 'nombre-error', 'apellidos-error', 'dni-error', 
              'telefono-error', 'fecha-nacimiento-error', 'rol-error', 'tutor-error', 'error-message'].forEach(id => {
@@ -397,6 +406,7 @@
             });
         }
 
+        //función para cargar los autores de la base de datos y mostrarlos en el select
         function cargarTutores(id_usuario = null) {
             const selectTutores = document.getElementById("tutor");
             selectTutores.innerHTML = '';
@@ -445,7 +455,7 @@
                 }
             });
         }
-
+        //funcion para crear un alumno con validacion de duplicados
         function crearAlumno(event, datos) {
             event.preventDefault();
             const alumno = { 
@@ -500,7 +510,7 @@
                 }
             });
         }
-
+        //funcion para cargar alumnos en la tabla
         function cargarAlumnos() {
             hacerSolicitud('alumno_api.php', 'GET', null, function (status, response) {
                 let alumnos;
@@ -540,7 +550,7 @@
                 }
             });
         }
-
+        //funcion para mostrar la informacion de un alumno en el modal
         function mostrarInfo(id_usuario) {
             hacerSolicitud(`alumno_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
                 let res;
@@ -573,7 +583,7 @@
                 }
             });
         }
-
+        //funcion para eliminar un alumno
         function eliminarAlumno(id_usuario) {
             if (confirm('¿Estás seguro de que quieres eliminar este alumno?')) {
                 const data = { id_usuario };
@@ -595,7 +605,7 @@
                 });
             }
         }
-
+        //funcion para editar un alumno
         function editarAlumno(id_usuario) {
             hacerSolicitud(`alumno_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
                 let res;
@@ -629,8 +639,10 @@
             });
         }
 
+        //validacion de campos y de duplicados y posteriormente ejecución de la creación del alumno
         document.getElementById("alumno-form").addEventListener("submit", async function (event) {
             event.preventDefault();
+            //obtenemos los datos del formulario
             const datos = {
                 id_usuario: document.getElementById("id_usuario").value,
                 correo: document.getElementById("correo").value,
@@ -643,7 +655,7 @@
                 rol: document.getElementById("rol").value,
                 tutores: Array.from(document.getElementById("tutor").selectedOptions).map(opt => parseInt(opt.value))
             };
-
+            //usamos las reglas definidas en validacion.js para validar los datos introducidos
             const reglas = {
                 correo: { validar: validarCorreo, errorId: "correo-error" },
                 contrasenia: { validar: validarContrasenia, errorId: "contrasenia-error" },
@@ -673,6 +685,7 @@
             const validation = await validarCampos(datos, reglas);
             let isValid = validation.isValid;
 
+            //validacion de duplicados
             if (validation.errors.duplicados && Object.keys(validation.errors.duplicados).length > 0) {
                 isValid = false;
                 if (validation.errors.duplicados.correo) {
@@ -695,7 +708,9 @@
 
             if (isValid) {
                 crearAlumno(event, datos);
+                //si todo va bien , se crea el profesor
             } else {
+                //sino, se muestran los mensajes de error en los campos
                 Object.keys(validation.errors).forEach(field => {
                     if (field !== 'duplicados' && reglas[field].errorId && validation.errors[field]) {
                         document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
@@ -704,7 +719,7 @@
                 });
             }
         });
-
+        //evento para resetear el formulario
         document.getElementById("alumno-form").addEventListener("reset", function () {
             document.getElementById("id_usuario").value = '';
             document.getElementById("form-title").innerText = "Nuevo Alumno";

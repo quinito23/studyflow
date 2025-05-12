@@ -1,9 +1,11 @@
 <?php
-session_start();
+session_start();//inicio de la sesión
 
+//incluimos las clases necesarias para la conexión a la base de datos y manejar las solicitudes
 include_once 'DBConnection.php';
 include_once 'tarea.php';
 
+// Configuración de cabeceras para la API REST
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
@@ -19,22 +21,29 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'profesor' && $_SESS
 $database = new DBConnection();
 $db = $database->getConnection();
 
+//creamos un objeto de la clase reserva
 $tarea = new Tarea($db);
 
+//obtenemos el método
 $method = $_SERVER['REQUEST_METHOD'];
 
+//bloque para procesar la solicitud según el método HTTP
 switch ($method) {
+    //caso para obtener las tareas
     case 'GET':
         if (isset($_GET['asignatura'])) {
+            //filtradas por asignatura y opcionalmente también por usuario
             if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSION['rol'] != 'administrador')) {
                 echo json_encode(array('message' => 'Acceso denegado'));
                 exit;
             }
             $id_asignatura = $_GET['asignatura'];
+            //asignar id usuario y si no hay valor , null
             $id_usuario = isset($_GET['id_usuario']) ? $_GET['id_usuario'] : null;
             $tareas = $tarea->obtenerPorAsignatura($id_asignatura, $id_usuario);
             echo json_encode($tareas);
         } else {
+            //obtener una tarea específica si se pasa el id en la url
             if (isset($_GET['id'])) {
                 $tarea->id_tarea = $_GET['id'];
                 if ($tarea->leer()) {
@@ -53,6 +62,7 @@ switch ($method) {
                     echo json_encode(array("message" => "Tarea no encontrada"));
                 }
             } else {
+                //si se pasa el parámetro todas en la solicitud entonces se obtienen  todas las tareas
                 if (isset($_GET['todas']) && $_GET['todas'] == 1) {
                     $result = $tarea->leer_todos(null);
                 } else {
@@ -63,8 +73,9 @@ switch ($method) {
             }
         }
         break;
-
+    //caso para crear una tarea
     case 'POST':
+        //obtener los datos en formato JSON
         $data = json_decode(file_get_contents("php://input"));
         if (isset($data->descripcion) && isset($data->fecha_entrega) && isset($data->id_asignatura) && isset($data->id_grupo)) {
             try {
@@ -73,7 +84,7 @@ switch ($method) {
                 $tarea->fecha_entrega = $data->fecha_entrega;
                 $tarea->id_asignatura = $data->id_asignatura;
                 $tarea->id_grupo = $data->id_grupo;
-
+                //llamamos al metodo crear de la clase
                 $id_tarea = $tarea->crear();
                 if ($id_tarea) {
                     echo json_encode(array("message" => "Tarea creada exitosamente"));
@@ -88,6 +99,7 @@ switch ($method) {
         }
         break;
 
+    //caso para actualizar una tarea
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
         if (isset($data->id_tarea) && isset($data->descripcion) && isset($data->fecha_entrega) && isset($data->id_asignatura) && isset($data->id_grupo)) {
@@ -110,7 +122,7 @@ switch ($method) {
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
-
+    //caso para eliminar una tarea
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
         if (isset($data->id_tarea)) {

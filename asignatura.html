@@ -170,7 +170,7 @@
 </head>
 
 <body>
-
+    <!--Header de bootstraps-->
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
@@ -179,6 +179,7 @@
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
+        <!--Elementos del breadcrumb-->
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
@@ -187,6 +188,7 @@
         </nav>
     </header>
 
+    <!--Barra lateral desplegable-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
@@ -194,6 +196,7 @@
                 aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+            <!--Lista con las pestañas de la barra lateral-->
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link " href="profesor.html">Profesores</a>
@@ -230,9 +233,9 @@
 
     <main class="main-content">
         <h2 class="text-center">Gestión de Asignaturas</h2>
-
+        <!--Contenedor para mostrar notificaciones-->
         <div id="notificacion" class="notificacion"></div>
-
+        <!--formulario-->
         <div id="asignatura-form" class="container">
             <h3 id="form-title">Crear Asignatura</h3>
             <form id="form-asignatura">
@@ -285,7 +288,7 @@
 
     <script>
         const notificacion = document.getElementById("notificacion");
-
+        //función para mostrar las notificaciones
         function mostrarNotificacion(mensaje) {
             notificacion.textContent = mensaje;
             notificacion.style.display = 'block';
@@ -294,7 +297,7 @@
             }, 3000);
         }
 
-        //Función para hacer soliictudes AJAX
+        //Función para hacer solicitues AJAX
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -307,6 +310,7 @@
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
+        // función para cargar los profesores en el select
         function cargarProfesores() {
             hacerSolicitud('profesor_api.php', 'GET', null, function (status, response) {
                 if (status === 200) {
@@ -329,6 +333,7 @@
             });
         }
 
+        //función para cargar las asignaturas de la base de datos
         function cargarAsignaturas() {
             hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
                 if (status === 200) {
@@ -369,16 +374,20 @@
             });
         }
 
+        //función para crear una asignatura nueva
         function crearAsignatura(event) {
             event.preventDefault();
+            //obtenemos los datos  del formulario
             const id_asignatura = document.getElementById("id_asignatura").value;
             const nombre = document.getElementById("nombre").value;
             const descripcion = document.getElementById("descripcion").value;
             const nivel = document.getElementById("nivel").value;
             const id_usuario = document.getElementById("id_usuario").value || null;
 
+            //guardamos los datos obtenidos del formulario para pasarselos a la solicitud
             const asignatura = { id_asignatura, nombre, descripcion, nivel, id_usuario };
 
+            //si el id_asignatura tiene valor ,entonces la solicitud se le hace a PUT para actualizarla
             if (id_asignatura) {
                 hacerSolicitud('asignatura_api.php', 'PUT', asignatura, function (status, response) {
                     if (status === 200) {
@@ -391,6 +400,7 @@
                     }
                 });
             } else {
+                //sino se le hace  a POST para crear la asignatura
                 hacerSolicitud('asignatura_api.php', 'POST', asignatura, function (status, response) {
                     if (status === 200) {
                         document.getElementById("form-asignatura").reset();
@@ -406,6 +416,7 @@
             }
         }
 
+        //función para editar una asignatura
         function editarAsignatura(id_asignatura) {
             hacerSolicitud(`asignatura_api.php?id=${id_asignatura}`, 'GET', null, function (status, response) {
                 if (status === 200) {
@@ -426,7 +437,7 @@
                 }
             });
         }
-
+        // funcion para eliminar una asignatura
         function eliminarAsignatura(id_asignatura) {
             if (confirm('¿Estás seguro de que quieres eliminar esta asignatura?')) {
                 const data = { "id_asignatura": id_asignatura };

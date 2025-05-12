@@ -1,24 +1,26 @@
 <?php
 class Tarea
 {
-    private $conn;
-    private $table_name = "tarea";
+    private $conn; //conexión a la base de datos
+    private $table_name = "tarea"; //nombre de la tabla en la base de datos
 
     public $id_tarea;
-    public $id_usuario;
+    public $id_usuario; //id del usuario que crea la tarea
     public $descripcion;
     public $fecha_creacion;
     public $fecha_entrega;
-    public $id_asignatura;
-    public $id_grupo;
-    public $estado; // Added to store the computed estado
+    public $id_asignatura; //id de la asignatura a la que se le asigna la tarea
+    public $id_grupo; //id del grupo al que se le asigna la tarea
+    public $estado; //estado de la tarea
 
+
+    //constructor de la clase que recibe la conexión a la base de datos
     public function __construct($db)
     {
         $this->conn = $db;
     }
 
-    // Método para obtener tareas por asignatura
+    // Método para obtener tareas por asignatura y si se pasa el id_usuario, tambien por usuario
     public function obtenerPorAsignatura($id_asignatura, $id_usuario = null)
     {
         if (!is_numeric($id_asignatura) || (int) $id_asignatura <= 0) {
@@ -39,7 +41,7 @@ class Tarea
                       JOIN alumno_grupo ag ON tg.id_grupo = ag.id_grupo 
                       JOIN alumno al ON ag.id_usuario = al.id_usuario 
                       WHERE ta.id_asignatura = :id_asignatura";
-
+            // si se asigna un valor a id_usuario también se filtran por usuario
             if ($id_usuario) {
                 $query .= " AND ag.id_usuario = :id_usuario";
             }
@@ -103,14 +105,14 @@ class Tarea
             if ($stmt->execute()) {
                 $id_tarea = $this->conn->lastInsertId();
 
-                // Insertar en tarea_asignatura
+                // Insertar en tarea_asignatura para asociar la tarea a una asignatura
                 $query_asig = "INSERT INTO tarea_asignatura (id_tarea, id_asignatura) VALUES (:id_tarea, :id_asignatura)";
                 $stmt_asig = $this->conn->prepare($query_asig);
                 $stmt_asig->bindParam(':id_tarea', $id_tarea, PDO::PARAM_INT);
                 $stmt_asig->bindParam(':id_asignatura', $this->id_asignatura, PDO::PARAM_INT);
                 $stmt_asig->execute();
 
-                // Insertar en tarea_grupo
+                // Insertar en tarea_grupo para asignar la tarea a un grupo
                 $query_grupo = "INSERT INTO tarea_grupo (id_tarea, id_grupo) VALUES (:id_tarea, :id_grupo)";
                 $stmt_grupo = $this->conn->prepare($query_grupo);
                 $stmt_grupo->bindParam(':id_tarea', $id_tarea, PDO::PARAM_INT);
@@ -222,14 +224,14 @@ class Tarea
             $stmt->bindParam(':fecha_entrega', $this->fecha_entrega);
 
             if ($stmt->execute()) {
-                // Actualizar tarea_asignatura
+                // Actualizar la asignación tarea_asignatura
                 $query_asig = "UPDATE tarea_asignatura SET id_asignatura = :id_asignatura WHERE id_tarea = :id_tarea";
                 $stmt_asig = $this->conn->prepare($query_asig);
                 $stmt_asig->bindParam(':id_tarea', $this->id_tarea, PDO::PARAM_INT);
                 $stmt_asig->bindParam(':id_asignatura', $this->id_asignatura, PDO::PARAM_INT);
                 $stmt_asig->execute();
 
-                // Actualizar tarea_grupo
+                // Actualizar la asignación tarea_grupo
                 $query_grupo = "UPDATE tarea_grupo SET id_grupo = :id_grupo WHERE id_tarea = :id_tarea";
                 $stmt_grupo = $this->conn->prepare($query_grupo);
                 $stmt_grupo->bindParam(':id_tarea', $this->id_tarea, PDO::PARAM_INT);

@@ -272,7 +272,7 @@ session_start();
                         if (result.rol === "administrador") {
                             window.location.href = 'dashboard.php';
                         } else if (result.rol === "alumno") {
-                            window.location.href = 'PanelAlumno.php';
+                            window.location.href = 'alumnos.php';
                         } else if (result.rol === "profesor") {
                             window.location.href = 'vista_reservas.php';
                         }

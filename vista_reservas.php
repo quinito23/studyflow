@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(); //inicio de sesión para acceder a los datos guardados del usuario que ha iniciado sesión
 
 //verificar autenticacion y rol
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
@@ -33,7 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             flex-direction: column;
         }
 
-        #alumno-form {
+        #reservas-form {
             border: 2px solid #007bff;
             /* Borde azul */
             border-radius: 8px;
@@ -249,6 +249,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                 aria-label="close"></button>
         </div>
         <div class="offcanvas-body">
+            <!--Pestañas de la barra lateral-->
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link active" href="vista_reservas.php">Reservar</a>
@@ -337,13 +338,15 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     <footer class="footer">
         <p>&copy; 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
-    <script src="validacion.js"></script>
+    <script src="validacion.js"></script> <!--Incluir el script para las validaciones-->
     <script>
+        //obtenemos los elemenos con los que vamos a trabajar , de los que vamos a obtener datos y en los que vamos a cargar datos
         const reservasForm = document.getElementById('reservas-form');
         const reservasLista = document.getElementById('reservas-lista');
         const errorMessage = document.getElementById('error-message');
         const formTitle = document.getElementById('form-title');
 
+        //funcion para mostrar errores
         function mostrarError(mensaje) {
             errorMessage.textContent = mensaje;
             errorMessage.style.display = 'block';
@@ -352,6 +355,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             }, 3000);
         }
 
+        //funcion para limpiar los errores que de la validación, para evitar confusiones
         function limpiarErrores() {
             ['fecha-error', 'hora-inicio-error', 'hora-fin-error', 'aula-error', 'asignatura-error', 'grupo-error', 'error-message'].forEach(id => {
                 const elemento = document.getElementById(id);
@@ -360,6 +364,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         }
 
+        //función para realizar una solicitud AJAX a la API
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -372,6 +377,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
+        //Funcion para cargar las aulas disponibles , dependiendo de los parámetros que se le pasen en la url a la api
         function cargarAulas() {
             const fecha = document.getElementById('fecha').value;
             const hora_inicio = document.getElementById('hora_inicio').value;
@@ -379,14 +385,14 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             const id_grupo = document.getElementById('grupo').value;
             const id_asignatura = document.getElementById('asignatura').value;
 
-            //dependiendo de si se sekecciona hora inicio y fin y grupo o no, la url será de una manera u otra , por lo que manejamos eso
+            //dependiendo de si se seLecciona hora inicio y fin y grupo o no, la url será de una manera u otra , por lo que manejamos eso. Aqui se seleccionan las disponibles en esa hora
             let url = 'aula_api.php';
             if (fecha && hora_inicio && hora_fin) {
                 url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
                 if (id_grupo) url += `&id_grupo=${id_grupo}`;
                 if (id_asignatura) url += `&id_asignatura=${id_asignatura}`;
             }
-
+            // si no se seleccionan esos campos, se obtienen todas las aulas.
             hacerSolicitud(url, 'GET', null, function (status, response) {
                 try {
                     const aulas = JSON.parse(response);
@@ -412,6 +418,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         }
 
+        //función para cargar las asignaturas en el select
         function cargarAsignaturas() {
             hacerSolicitud('asignatura_api.php', 'GET', null, function (status, response) {
                 try {
@@ -430,16 +437,19 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         }
 
+        //función para cargar los grupos disponibles en el select
         function cargarGrupos() {
             const fecha = document.getElementById('fecha').value;
             const hora_inicio = document.getElementById('hora_inicio').value;
             const hora_fin = document.getElementById('hora_fin').value;
 
+            //si se ha seleccionado fecha y horario se le pasan los parametros a la api por la url de la solicitud, y se muestran solo los disponibles en ese horario
             let url = 'grupo_api.php';
             if (fecha && hora_inicio && hora_fin) {
                 url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
             }
 
+            //sino , se muestran todos
             hacerSolicitud(url, 'GET', null, function (status, response) {
                 try {
                     const grupos = JSON.parse(response);
@@ -466,7 +476,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         }
 
+        //función para cargar todas las reservas
         function cargarReservas() {
+            //se le pasa el parametro todas=1 en la solicitud a la API para que las cargue todas
             hacerSolicitud('reserva_api.php?todas=1', 'GET', null, function (status, response) {
                 try {
                     const reservas = JSON.parse(response);
@@ -491,9 +503,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         }
 
+        // función para crear una reserva
         function crearReserva(event) {
             event.preventDefault();
 
+            //obtenemos los datos introducimos en el formulario
             const id_reserva = document.getElementById("id_reserva").value;
             const fecha = document.getElementById("fecha").value;
             const hora_inicio = document.getElementById("hora_inicio").value;
@@ -502,6 +516,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             const id_asignatura = parseInt(document.getElementById("asignatura").value);
             const id_grupo = parseInt(document.getElementById("grupo").value);
 
+            //guardamos los datos introducidos en el formulario
             const reserva = { id_reserva, fecha, hora_inicio, hora_fin, id_aula, id_asignatura, id_grupo };
 
             hacerSolicitud('reserva_api.php', 'POST', reserva, function (status, response) {
@@ -529,9 +544,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             });
         });
 
+        // comenzamos la validación de los datos introducidos en el formulario antes de hacer la solicitud
         reservasForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-
+            //recogemos los datos del formulario
             const datos = {
                 fecha: document.getElementById('fecha').value,
                 hora_inicio: document.getElementById('hora_inicio').value,
@@ -541,7 +557,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                 id_grupo: document.getElementById('grupo').value,
                 id_reserva: document.getElementById('id_reserva').value
             };
-
+            //definimos las reglas de validación para cada campo, usndo las funciones definidas en validacion.js
             const reglas = {
                 fecha: { validar: validarFecha, errorId: "fecha-error" },
                 hora_inicio: {
@@ -572,8 +588,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             let isValid = validation.isValid;
 
             if (isValid) {
+                // si todo está correcto, entonces se ejecuta la función que hace la solicitud para crear
                 crearReserva(event, datos);
             } else {
+                //sino mostramos los errores de validación en los campos que han fallado
                 Object.keys(validation.errors).forEach(field => {
                     if (reglas[field] && reglas[field].errorId && validation.errors[field]) {
                         document.getElementById(reglas[field].errorId).textContent = validation.errors[field];
@@ -583,6 +601,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             }
         });
 
+        //evento para resetear el formulario y los campos al pulsar el boton de limpiar
         reservasForm.addEventListener('reset', function () {
             formTitle.textContent = 'Nueva Reserva';
             document.getElementById('id_reserva').value = '';
@@ -592,6 +611,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             limpiarErrores();
         });
 
+        // al iniciar la página , se cargan las asignaturas, aulas, grupos y resveras existentes
         window.onload = function () {
             cargarAulas();
             cargarAsignaturas();

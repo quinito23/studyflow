@@ -191,6 +191,7 @@
     </style>
 </head>
 <body>
+    <!--Header de bootsraps-->
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
@@ -200,6 +201,7 @@
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <!--Definimos los elementos del breadcrumb-->
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="dashboardProfesor.php">Home</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Aulas</li>
@@ -207,6 +209,7 @@
         </nav>
     </header>
 
+    <!--Barra lateral desplegable con offcanvas de bootstraps-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
@@ -227,8 +230,10 @@
         </div>
     </div>
 
+    <!--Contenido principal-->
     <main class="main-content">
         <h2 class="text-center" id="form-title">Gestionar Aulas</h2>
+        <!--Formulario para crear o editar un aula-->
         <form id="aula-form" class="row g-3">
             <div class="col-md-6">
                 <label for="nombre" class="form-label">Nombre:</label>
@@ -265,22 +270,26 @@
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="aulas-lista"></tbody>
+                <tbody id="aulas-lista">
+                    <!--En esta lista se cargarán dinamicamente las aulas-->
+                </tbody>
             </table>
         </div>
     </main>
-
+    <!--FOOTER-->
     <footer class="footer">
         <p>© 2025 StudyFlow - Todos los derechos reservados</p>
     </footer>
 
     <script>
+        //obtenemos los elemenos con los que vamos a trabajar , de los que vamos a obtener datos y en los que vamos a cargar datos
         const aulaForm = document.getElementById('aula-form');
         const aulasLista = document.getElementById('aulas-lista');
         const errorMessage = document.getElementById('error-message');
         const successMessage = document.getElementById('success-message');
         const formTitle = document.getElementById('form-title');
 
+        //funcion para mostrar errores
         function mostrarMensaje(tipo, mensaje) {
             const elemento = document.getElementById(`${tipo}-message`);
             elemento.textContent = mensaje;
@@ -288,6 +297,7 @@
             setTimeout(() => elemento.style.display = 'none', 5000);
         }
 
+        //funcion para limpiar los errores de validacion, para evitar confusiones
         function limpiarErrores() {
             ['nombre-error', 'capacidad-error', 'equipamiento-error', 'error-message'].forEach(id => {
                 const elemento = document.getElementById(id);
@@ -296,6 +306,7 @@
             });
         }
 
+        //función para realizar una solicitud AJAX a la API
         function hacerSolicitud(url, metodo, datos, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(metodo, url, true);
@@ -308,6 +319,7 @@
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
+        //Funcion para cargar las aulas 
         function cargarAulas() {
             hacerSolicitud('aula_api.php', 'GET', null, function (status, response) {
                 try {
@@ -336,6 +348,7 @@
             });
         }
 
+        //función para editar un aula
         function editarAula(id_aula) {
             hacerSolicitud(`aula_api.php?id=${id_aula}`, 'GET', null, function (status, response) {
                 try {
@@ -352,6 +365,7 @@
             });
         }
 
+        //funcion para eliminar un aula
         function eliminarAula(id_aula) {
             if (!confirm('¿Estás seguro de eliminar esta aula?')) return;
             hacerSolicitud('aula_api.php', 'DELETE', { id_aula: id_aula }, function (status, response) {
@@ -368,6 +382,7 @@
                 }
             });
         }
+
 
         aulaForm.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -390,9 +405,10 @@
                 });
                 return;
             }
-
+            //guardamos los datos introducidos en el formulario
             const aula = { id_aula, nombre, capacidad, equipamiento };
 
+            //si hay un valor asignado para id_aula , entonces se envia solicitud PUT para actualizar el aula
             if (id_aula) {
                 hacerSolicitud('aula_api.php', 'PUT', aula, function (status, response) {
                     try {
@@ -412,6 +428,7 @@
                     }
                 });
             } else {
+                //Si no , se manda una solicitud POST y se crea
                 hacerSolicitud('aula_api.php', 'POST', aula, function (status, response) {
                     try {
                         const result = JSON.parse(response);
@@ -429,13 +446,14 @@
             }
         });
 
+        //evento para resetear el formulario al pulsar el botón de limpiar
         aulaForm.addEventListener('reset', function () {
             document.getElementById('id_aula').value = '';
             formTitle.textContent = 'Gestionar Aulas';
             document.querySelector('#aula-form button[type="submit"]').textContent = 'Crear';
             limpiarErrores();
         });
-
+        //cargar las aulas en el select al iniciar la página
         window.onload = cargarAulas;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

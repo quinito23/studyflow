@@ -2,16 +2,17 @@
 
 class Grupo
 {
-    private $conn;
-    private $table_name = "grupo";
+    private $conn; //conexión a la base de datos
+    private $table_name = "grupo"; //nombre de la tabla
 
     public $id_grupo;
     public $nombre;
     public $capacidad_maxima;
-    public $id_asignatura;
-    public $nombre_asignatura;
-    public $numero_alumnos;
+    public $id_asignatura; //identificador de la asignatura asociada al grupo
+    public $nombre_asignatura; //nombre de la asignatura asociada al grupo
+    public $numero_alumnos; 
 
+    //constructor de la clase que recibe la conexión a la base de datos
     public function __construct($db)
     {
         $this->conn = $db;
@@ -44,6 +45,7 @@ class Grupo
     //metodo para leer todos los grupos y mostrarlos en la tabla
     public function leer_todos()
     {
+        // consulta que obtiene todos los grupos y el nombre de la asignatura asociada al grupo, además del numero de alumnos que hay en el grupo
         $query = "SELECT g.id_grupo, g.nombre, g.capacidad_maxima, g.id_asignatura, a.nombre as nombre_asignatura, COUNT(ag.id_usuario) as numero_alumnos FROM " . $this->table_name . " g LEFT JOIN alumno_grupo ag ON g.id_grupo = ag.id_grupo LEFT JOIN asignatura a ON g.id_asignatura = a.id_asignatura GROUP BY g.id_grupo ORDER BY g.nombre ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -78,6 +80,7 @@ class Grupo
               AND r.estado IN ('activa', 'pendiente')";
 
         // Excluir la reserva actual si id_reserva está presente
+        //esto se hace para que a la hora de actualizar una reserva , pueda aparecer el grupo que estsá seleccionado y no de error de solapamiento
         if ($id_reserva) {
             $query .= " AND (r.id_reserva != :id_reserva OR r.id_reserva IS NULL)";
         } else {
@@ -95,7 +98,7 @@ class Grupo
         }
 
         $stmt->execute();
-
+        //almacenamos todos esos grupos en un array que mandamos
         $grupos = array();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $grupos[] = array(

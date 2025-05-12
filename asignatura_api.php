@@ -14,7 +14,6 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 
 // Verificar acceso de administrador para operaciones de escritura
 if ($_SERVER['REQUEST_METHOD'] !== 'GET' && (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'administrador')) {
-    http_response_code(403);
     echo json_encode(array("message" => "Acceso denegado"));
     exit;
 }
@@ -120,6 +119,7 @@ switch ($method) {
             $asignatura->nombre = htmlspecialchars(strip_tags($data->nombre));
             $asignatura->descripcion = htmlspecialchars(strip_tags($data->descripcion));
             $asignatura->nivel = htmlspecialchars(strip_tags($data->nivel));
+            // le asignamos el valor del id del profesor si existe
             $asignatura->id_usuario = isset($data->id_usuario) && $data->id_usuario != '' ? $data->id_usuario : null;
 
             //se ejecuta el metodo crear de la clase , para crear la asignatura en la base de datos
