@@ -32,7 +32,7 @@ switch ($method) {
     //caso para obtener las tareas
     case 'GET':
         if (isset($_GET['asignatura'])) {
-            //filtradas por asignatura y opcionalmente también por usuario
+            //filtradas por asignatura y opcionalmente también por usuario(para la pagina de los alumnos)
             if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSION['rol'] != 'administrador')) {
                 echo json_encode(array('message' => 'Acceso denegado'));
                 exit;

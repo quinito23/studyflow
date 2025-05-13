@@ -41,7 +41,7 @@ class Tarea
                       JOIN alumno_grupo ag ON tg.id_grupo = ag.id_grupo 
                       JOIN alumno al ON ag.id_usuario = al.id_usuario 
                       WHERE ta.id_asignatura = :id_asignatura";
-            // si se asigna un valor a id_usuario también se filtran por usuario
+            // si se asigna un valor a id_usuario también se filtran por usuario, para mostrarlas en la pagina de los alumnos
             if ($id_usuario) {
                 $query .= " AND ag.id_usuario = :id_usuario";
             }
