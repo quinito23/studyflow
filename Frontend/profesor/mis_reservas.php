@@ -397,6 +397,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             const hora_fin = document.getElementById('hora_fin').value;
             const id_grupo = document.getElementById('grupo').value;
             const id_asignatura = document.getElementById('asignatura').value;
+            const id_reserva = document.getElementById('id_reserva').value;
 
             //dependiendo de si se seLecciona hora inicio y fin y grupo o no, la url será de una manera u otra , por lo que manejamos eso. Aqui se seleccionan las disponibles en esa hora
             let url = '../../APIs/aula_api.php';
@@ -404,6 +405,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                 url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
                 if (id_grupo) url += `&id_grupo=${id_grupo}`;
                 if (id_asignatura) url += `&id_asignatura=${id_asignatura}`;
+                // si hay id reserva , se lo pasamos para que al editar se muestre en el select el aula que tenia asignada la reserva
+                if (id_reserva) url += `&id_reserva=${id_reserva}`;
             }
 
             // si no se seleccionan esos campos, se obtienen todas las aulas.
@@ -456,10 +459,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             const fecha = document.getElementById('fecha').value;
             const hora_inicio = document.getElementById('hora_inicio').value;
             const hora_fin = document.getElementById('hora_fin').value;
+            const id_reserva = document.getElementById('id_reserva').value;
 
             let url = '../../APIs/grupo_api.php';
             if (fecha && hora_inicio && hora_fin) {
                 url += `?fecha=${fecha}&hora_inicio=${hora_inicio}&hora_fin=${hora_fin}`;
+                // si hay un valor para el id de la reserva , se lo pasamos para que al editar se muestre en el select el grupo que tenia asignada la reserva, aunque se filtre con solapamiento
+                if (id_reserva) url += `&id_reserva=${id_reserva}`;
             }
 
             //si se ha seleccionado fecha y horario se le pasan los parametros a la api por la url de la solicitud, y se muestran solo los disponibles en ese horario
@@ -533,12 +539,27 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                     document.getElementById('fecha').value = reserva.fecha;
                     document.getElementById('hora_inicio').value = reserva.hora_inicio;
                     document.getElementById('hora_fin').value = reserva.hora_fin;
-                    document.getElementById('aula').value = reserva.id_aula;
-                    document.getElementById('asignatura').value = reserva.id_asignatura;
-                    document.getElementById('grupo').value = reserva.id_grupo;
+
+                    // Guardar los valores que queremos seleccionar
+                    const id_aula = reserva.id_aula;
+                    const id_grupo = reserva.id_grupo;
+                    const id_asignatura = reserva.id_asignatura;
+
                     formTitle.textContent = 'Editar Reserva';
-                    cargarAulas(); //recargamos las aulas disponibles con el nuevo horario y grupo
-                    cargarGrupos();//recargamos los grupos disponibles con el nuevo horario 
+                    document.querySelector('#reservas-form button[type="submit"]').textContent = 'Actualizar';
+
+                    // recargar las aulas, grupos y asignaturas disponibles con el  horario y fecha seleccionados
+                    cargarAulas();
+                    cargarGrupos();
+                    cargarAsignaturas();
+
+                    // Asegurarse de que los valores correctos estén seleccionados(los que teniamos asociados)
+                    //esto es para que en los campos se carguen el aula , grupo y asignatura que teniamos asignados a la reserva antes de pulsar para editar
+                    setTimeout(() => {
+                        document.getElementById('aula').value = id_aula;
+                        document.getElementById('grupo').value = id_grupo;
+                        document.getElementById('asignatura').value = id_asignatura;
+                    }, 100); // Pequeño retraso para esperar a que las listas se carguen
                 } catch (e) {
                     mostrarError("Error al cargar la reserva para editar: " + e.message);
                 }

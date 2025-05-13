@@ -532,7 +532,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     formTitle.textContent = 'Editar Reserva';
                     document.querySelector('#reservas-form button[type="submit"]').textContent = 'Actualizar';
 
-                    // Cargar aulas, grupos y asignaturas
+                    // recargar las aulas, grupos y asignaturas disponibles con el  horario y fecha seleccionados
                     cargarAulas();
                     cargarGrupos();
                     cargarAsignaturas();

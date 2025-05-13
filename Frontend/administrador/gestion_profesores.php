@@ -751,6 +751,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 fecha_fin_contrato: document.getElementById("fecha_fin_contrato").value,
                 asignaturas: Array.from(document.getElementById("asignaturas").selectedOptions).map(opt => parseInt(opt.value))
             };
+            console.log('ID Usuario:', datos.id_usuario);
             //usamos las reglas definidas en validacion.js para validar los datos introducidos
             const reglas = {
                 correo: { validar: validarCorreo, errorId: "correo-error" },
