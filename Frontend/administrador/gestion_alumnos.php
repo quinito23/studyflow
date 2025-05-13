@@ -372,6 +372,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 </select>
                 <span id="tutor-error" class="error-text"></span>
             </div>
+          <div class="col-md-6">
+                <label for="grupo" class="form-label">Grupos</label>
+                <select id="grupo" class="form-select" multiple>
+                    <!-- grupos cargados dinámicamente -->
+                </select>
+                <span id="grupo-error" class="error-text"></span>
+            </div>
             <input type="hidden" id="id_usuario">
             <div class="d-grid gap-2 d-md-block">
                 <button class="btn btn-primary" type="submit">Crear</button>
@@ -418,6 +425,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         <p><strong>Fecha de Nacimiento:</strong><span id="modal-fecha_nacimiento"></span></p>
                         <p><strong>Rol:</strong><span id="modal-rol"></span></p>
                         <p><strong>Tutor Legal:</strong><span id="modal-tutores"></span></p>
+                        <p><strong>Grupos:</strong><span id="modal-grupo"></span></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -511,6 +519,60 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 }
             });
         }
+
+        //funcion para cargar los grupos en el select
+                function cargarGrupos(id_usuario = null) {
+            const selectGrupos = document.getElementById("grupo");
+            selectGrupos.innerHTML = ''; // Limpiar opciones existentes
+
+            hacerSolicitud('../../APIs/grupo_api.php', 'GET', null, function (status, response) {
+                if (status === 200) {
+                    let grupos;
+                    try {
+                        grupos = JSON.parse(response);
+                    } catch (e) {
+                        mostrarMensaje('error', 'Error al procesar los grupos');
+                        return;
+                    }
+                    grupos.forEach(grupo => {
+                        const option = document.createElement('option');
+                        option.value = grupo.id_grupo;
+                        option.textContent = grupo.nombre;
+                        selectGrupos.appendChild(option);
+                    });
+
+                    // Si se está editando un alumno, preseleccionar todos los grupos asociados
+                    if (id_usuario) {
+                        hacerSolicitud(`../../APIs/alumno_api.php?id=${id_usuario}`, 'GET', null, function (status, response) {
+                            if (status === 200) {
+                                let alumno;
+                                try {
+                                    alumno = JSON.parse(response);
+                                } catch (e) {
+                                    mostrarMensaje('error', 'Error al procesar los datos del alumno');
+                                    return;
+                                }
+                                // Marcar como seleccionados todos los grupos asociados
+                                if (alumno.grupos && alumno.grupos.length > 0) {
+                                    const options = selectGrupos.options;
+                                    for (let option of options) {
+                                        if (alumno.grupos.some(grupo => parseInt(grupo.id_grupo) == parseInt(option.value))) {
+                                            option.selected = true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                mostrarMensaje('error', 'Error al cargar los grupos asignados');
+                            }
+                        });
+                    }
+                } else {
+                    mostrarMensaje('error', 'Error al cargar los grupos');
+                }
+            });
+        }
+
+
         //funcion para crear un alumno con validacion de duplicados
         function crearAlumno(event, datos) {
             event.preventDefault();
@@ -524,6 +586,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 fecha_nacimiento: datos.fecha_nacimiento || null,
                 rol: datos.rol,
                 tutores: datos.tutores,
+                grupos: datos.grupos,
                 id_usuario: datos.id_usuario
             };
 
@@ -547,6 +610,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     document.querySelector("button[type='submit']").textContent = "Crear";
                     cargarAlumnos();
                     cargarTutores();
+                    cargarGrupos();
                     mostrarMensaje('success', res.message || (metodo === 'PUT' ? 'Alumno actualizado exitosamente' : 'Alumno creado exitosamente'));
                 } else if (status === 400 && res.duplicados) {
                     res.duplicados.forEach(campo => {
@@ -630,6 +694,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.getElementById("modal-rol").textContent = alumno.rol || 'N/A';
                         document.getElementById("modal-tutores").textContent = alumno.tutores && alumno.tutores.length > 0 ?
                             alumno.tutores.map(tutor => `${tutor.nombre} ${tutor.apellidos}`).join(', ') : 'N/A';
+                        document.getElementById("modal-grupo").textContent = alumno.grupos && alumno.grupos.length > 0 ?
+                            alumno.grupos.map(grupo => grupo.nombre).join(', ') : 'N/A';
 
                         const modal = new bootstrap.Modal(document.getElementById("infoModal"));
                         modal.show();
@@ -654,6 +720,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     if (status === 200) {
                         cargarAlumnos();
                         cargarTutores();
+                        cargarGrupos();
                         mostrarMensaje('success', res.message || 'Alumno eliminado exitosamente');
                     } else {
                         mostrarMensaje('error', res.message || 'Error al eliminar el alumno');
@@ -683,8 +750,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.getElementById("fecha_nacimiento").value = alumno.fecha_nacimiento || '';
                         document.getElementById("rol").value = alumno.rol || 'alumno';
                         document.getElementById("id_usuario").value = alumno.id_usuario;
-
+                        // Cargar tutores y grupos, pasando el id_usuario para preseleccionar los valores
                         cargarTutores(alumno.id_usuario);
+                        cargarGrupos(alumno.id_usuario);
 
                         document.getElementById("form-title").innerText = "Editar Alumno";
                         document.querySelector("button[type='submit']").textContent = "Actualizar";
@@ -709,7 +777,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 telefono: document.getElementById("telefono").value,
                 fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
                 rol: document.getElementById("rol").value,
-                tutores: Array.from(document.getElementById("tutor").selectedOptions).map(opt => parseInt(opt.value))
+                tutores: Array.from(document.getElementById("tutor").selectedOptions).map(opt => parseInt(opt.value)),
+                grupos: Array.from(document.getElementById("grupo").selectedOptions).map(opt => parseInt(opt.value))
             };
             //usamos las reglas definidas en validacion.js para validar los datos introducidos
             const reglas = {
@@ -781,12 +850,14 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             document.getElementById("form-title").innerText = "Nuevo Alumno";
             document.querySelector("button[type='submit']").textContent = "Crear";
             cargarTutores();
+            cargarGrupos();
             limpiarErrores();
         });
 
         window.onload = function () {
             cargarAlumnos();
             cargarTutores();
+            cargarGrupos();
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>

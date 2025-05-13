@@ -269,12 +269,15 @@ class Alumno extends Usuario //la clase alumno hereda de la clase usuario, ya qu
                 $stmt->execute();
             }
 
-            //Eliminamos las relaciones exitentes entre grupo y alumno
-            $query = "DELETE FROM alumno_grupo WHERE id_usuario = :id_usuario";
-            $stmt = $this->conn->prepare($query);
-            //le pasamos los parametros
-            $stmt->bindParam('id_usuario', $this->id_usuario);
-            $stmt->execute();
+            //Eliminamos las relaciones exitentes entre grupo y alumno si se proporcionaron nuevos grupos
+            if(!empty($grupos)){
+                $query = "DELETE FROM alumno_grupo WHERE id_usuario = :id_usuario";
+                $stmt = $this->conn->prepare($query);
+                //le pasamos los parametros
+                $stmt->bindParam('id_usuario', $this->id_usuario);
+                $stmt->execute();
+            }
+
 
             //hacemos lo mismo para grupos
             foreach ($grupos as $id_grupo) {

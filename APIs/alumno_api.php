@@ -148,7 +148,8 @@ switch ($method) {
                         "telefono" => $alumno->telefono,
                         "fecha_nacimiento" => $alumno->fecha_nacimiento,
                         "rol" => $alumno->rol,
-                        "tutores" => $alumno->tutores
+                        "tutores" => $alumno->tutores,
+                        "grupos" => $alumno->grupos
                     );
                     echo json_encode($alumno_data);
                 } else {
