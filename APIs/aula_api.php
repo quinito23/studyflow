@@ -56,17 +56,21 @@ switch ($method) {
                       AND (CONCAT(r.fecha, ' ', r.hora_fin) > :currentTime) 
                       AND NOT (r.hora_fin <= :hora_inicio OR :hora_fin <= r.hora_inicio)";
 
-            //filtra por reservas que tenga
+            // Si se proporciona un id_reserva (por ejemplo, al editar una reserva), 
+            // se excluye esa reserva del chequeo de solapamiento para que el aula asociada esté disponible
             if ($id_reserva) {
                 $query .= " AND (r.id_reserva != :id_reserva OR r.id_reserva IS NULL)";
             } else {
+                // Si no hay id_reserva, se asegura que solo se consideren aulas sin reservas en el horario
+                // (r.id_aula IS NULL indica que no hay reserva para esa aula en el horario)
                 $query .= " AND r.id_aula IS NULL";
             }
-            //si la tiene , pues filtra por la hora y fecha de esas reservas
+            // Añadir una subconsulta para excluir aulas que ya están reservadas en el horario solicitado
+            // Esto refuerza la lógica de disponibilidad, asegurando que no se devuelvan aulas con conflictos
             $query .= " WHERE a.id_aula NOT IN (
                           SELECT id_aula FROM reserva WHERE fecha = :fecha 
                           AND NOT (hora_fin <= :hora_inicio OR :hora_fin <= hora_inicio)";
-
+            //Si se le pasa el id de una reserva (alguna que se esté editando), se excluye esa reserva de la consulta para que se le cargue en el formualrio el aula que  tiene seleccionada
             if ($id_reserva) {
                 $query .= " AND id_reserva != :id_reserva";
             }
