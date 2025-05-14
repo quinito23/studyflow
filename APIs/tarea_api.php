@@ -68,16 +68,9 @@ switch ($method) {
                 //si se pasa el parámetro todas en la solicitud entonces se obtienen  todas las tareas
                 if (isset($_GET['todas']) && $_GET['todas'] == 1) {
                     $result = $tarea->leer_todos(null);
-                    if (!empty($result)) {
-                        http_response_code(200);
-                    }
 
                 } else {
                     $id_usuario = $_SESSION['id_usuario'];
-                    $result = $tarea->leer_todos($id_usuario);
-                    if (!empty($result)) {
-                        http_response_code(200);
-                    }
 
                 }
                 echo json_encode($result);

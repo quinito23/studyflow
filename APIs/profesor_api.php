@@ -107,11 +107,7 @@ switch ($method) {
 
                 $duplicados = verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario);
 
-                if (!empty($duplicados)) {
-                    echo json_encode(array("message" => "Datos duplicados encontrados", "duplicados" => $duplicados));
-                } else {
-                    echo json_encode(array("message" => "No se encontraron duplicados"));
-                }
+                
             } catch (Exception $e) {
                 http_response_code(500);
                 echo json_encode(array("message" => "Error al verificar duplicados: " . $e->getMessage()));

@@ -30,7 +30,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
 
         .header {
             background-color: #0d1f38;
-            padding: 1rem 2rem;
+            padding: clamp(0.7rem, 2vw, 1.2rem) clamp(1.2rem, 2.8vw, 2rem);
             color: white;
             border-bottom: 1px solid #ffffff33;
             display: flex;
@@ -40,19 +40,19 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
         }
 
         .header .d-flex {
-            gap: 1rem;
+            gap: clamp(0.5rem, 2vw, 1rem);
             align-items: center;
         }
 
         .header h1 {
             margin: 0;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            margin-left: clamp(1rem, 3vw, 2rem);
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            margin-left: clamp(0.5rem, 2vw, 1rem);
         }
 
         .navbar-toggler {
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            margin-right: 1rem;
+            font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+            margin-right: clamp(0.5rem, 2vw, 1rem);
             z-index: 1000;
         }
 
@@ -63,14 +63,14 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
         .breadcrumb-container {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: clamp(0.5rem, 1.5vw, 0.8rem);
         }
 
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
-            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            font-size: clamp(0.75rem, 2.2vw, 1.1rem);
         }
 
         .breadcrumb-item+.breadcrumb-item::before {
@@ -86,33 +86,25 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
             color: #d3d6db;
         }
 
-        .separador {
+        .separator {
             color: #f8f9fa;
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
-            margin: 0 0.75rem;
+            font-size: clamp(0.85rem, 2.2vw, 1.2rem);
+            margin: 0 clamp(0.5rem, 1.5vw, 0.8rem);
         }
 
         .logout-btn {
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-size: clamp(1rem, 2.5vw, 1.8rem);
+            color: #f8f9fa;
+            border: none;
+            background: transparent;
+            padding: 0;
+            line-height: 1;
         }
 
-        @media (max-width: 576px) {
-            .header {
-                padding: 0.75rem 1rem;
-                flex-wrap: nowrap;
-            }
-
-            .header .d-flex {
-                gap: 0.5rem;
-            }
-
-            .breadcrumb-container {
-                gap: 0.5rem;
-            }
-
-            .separador {
-                margin: 0 0.5rem;
-            }
+        .logout-btn:hover {
+            color: #007bff;
+            transform: scale(1.1);
+            transition: color 0.2s, transform 0.2s;
         }
 
         .offcanvas {
