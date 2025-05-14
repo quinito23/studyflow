@@ -191,9 +191,21 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         }
 
         .error-message {
+            background-color: #f8d7da;
             color: #dc3545;
-            font-size: 0.9rem;
-            margin-top: 0.25rem;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
         }
 
         .form-title {
@@ -315,6 +327,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </div>
         </form>
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
 
         <h2 class="text-center">Reservas</h2>
 
@@ -339,7 +353,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </table>
         </div>
 
-        <div id="error-message"></div>
+
 
     </main>
 
@@ -356,14 +370,16 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         const errorMessage = document.getElementById('error-message');
         const formTitle = document.getElementById('form-title');
 
-        //funcion para mostrar errores
-        function mostrarError(mensaje) {
-            errorMessage.textContent = mensaje;
-            errorMessage.style.display = 'block';
+        //funcion para mostrar mensajes de exito y error
+        function mostrarMensaje(tipo, mensaje) {
+            const elemento = document.getElementById(`${tipo}-message`);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
             setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 3000);
+                elemento.style.display = 'none';
+            }, 5000);
         }
+
 
         //función para realizar una solicitud AJAX a la API
         function hacerSolicitud(url, metodo, datos, callback) {
@@ -416,7 +432,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         aulaSelect.appendChild(option);
                     }
                 } catch (e) {
-                    mostrarError("Error al cargar las aulas: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar las aulas: ' + e.message);
                 }
             });
         }
@@ -435,7 +451,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         asignaturaSelect.appendChild(option);
                     });
                 } catch (e) {
-                    mostrarError("Error al cargar las asignaturas: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar las aulas: ' + e.message);
                 }
             });
         }
@@ -475,7 +491,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         grupoSelect.appendChild(option);
                     }
                 } catch (e) {
-                    mostrarError("Error al cargar los grupos: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar los grupos: ' + e.message);
                 }
             });
         }
@@ -509,7 +525,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         reservasLista.innerHTML += row;
                     });
                 } catch (e) {
-                    mostrarError("Error al cargar las reservas: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar las reservas: ' + e.message);
                 }
             });
         }
@@ -544,7 +560,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.getElementById('asignatura').value = id_asignatura;
                     }, 100); // Pequeño retraso para esperar a que las listas se carguen
                 } catch (e) {
-                    mostrarError("Error al cargar la reserva para editar: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar la reserva para editar: ' + e.message);
                 }
             });
         }
@@ -557,11 +573,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     const result = JSON.parse(response);
                     if (status === 200 && result.message === "Reserva eliminada exitosamente") {
                         cargarReservas();
+                        mostrarMensaje('success', result.message || 'Reserva eliminada exitosamente');
                     } else {
-                        mostrarError(result.message || "Error al eliminar la reserva");
+                        mostrarMensaje('error', result.message || "Error al eliminar la reserva");
                     }
                 } catch (e) {
-                    mostrarError("Error al eliminar la reserva: " + e.message);
+                    mostrarMensaje('error', 'Error al eliminar la reserva: ' + e.message);
                 }
             });
         }
@@ -592,11 +609,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             formTitle.textContent = "Reservas";
                             document.querySelector('#reservas-form button[type="submit"]').textContent = 'Crear';
                             cargarReservas();
+                            mostrarMensaje('success', result.message || 'Reserva actualizada exitosamente');
                         } else {
-                            mostrarError("Error al actualizar la reserva");
+                            mostrarMensaje('error', result.message || 'Error al actualizar la reserva');
                         }
                     } catch (e) {
-                        mostrarError("Error al actualizar la reserva: " + e.message);
+                        mostrarMensaje('error', 'Error al actualizar la reserva: ' + e.message);
                     }
                 });
             } else {
@@ -607,11 +625,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         if (status === 200 && result.message === "Reserva creada exitosamente") {
                             document.getElementById("reservas-form").reset();
                             cargarReservas();
+                            mostrarMensaje('success', result.message || 'Reserva creada exitosamente');
                         } else {
-                            mostrarError("Error al crear la reserva");
+                            mostrarMensaje('error', result.message || 'Error al crear la reserva');
                         }
                     } catch (e) {
-                        mostrarError('Error al crear la reserva: ' + e.message);
+                        mostrarMensaje('error', 'Error al crear la reserva: ' + e.message);
                     }
                 });
             }

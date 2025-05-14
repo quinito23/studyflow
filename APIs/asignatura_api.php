@@ -41,8 +41,10 @@ switch ($method) {
                 $stmt = $db->prepare($query);
                 $stmt->execute();
                 $asignaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                http_response_code(200);
                 echo json_encode($asignaturas); //devolvemos la lista de asingaturas en formato JSON
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al listar asignaturas sin grupo: " . $e->getMessage()));
             }
         } elseif (isset($_GET['no_asignadas'])) {
@@ -56,14 +58,17 @@ switch ($method) {
                 $stmt->execute();
                 $asignaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 //devolvemos la lista de asignaturas
+                http_response_code(200);
                 echo json_encode($asignaturas);
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al listar asignaturas no asignadas: " . $e->getMessage()));
             }
             //Para obtener una asignatura específica por su id , se usapara editar una asigntura o para ver su información
         } elseif (isset($_GET['id'])) {
             $asignatura->id_asignatura = $_GET['id'];
             if ($asignatura->leer()) {
+                http_response_code(200);
                 //devolvemos una lista con todos los datos de la asignatura
                 echo json_encode(array(
                     "id_asignatura" => $asignatura->id_asignatura,
@@ -73,6 +78,7 @@ switch ($method) {
                     "id_usuario" => $asignatura->id_usuario
                 ));
             } else {
+                http_response_code(404);
                 echo json_encode(array("message" => "Asignatura no encontrada"));
             }
 
@@ -88,16 +94,20 @@ switch ($method) {
                 $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
                 $stmt->execute();
                 $asignaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                http_response_code(200);
                 echo json_encode($asignaturas);
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al listar asignaturas: " . $e->getMessage()));
             }
         } else {
             // obtener todas las asignaturas de la base de datos
             try {
                 $asignaturas = $asignatura->leer_todos();
+                http_response_code(200);
                 echo json_encode($asignaturas);
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al listar las asignaturas: " . $e->getMessage()));
             }
         }
@@ -125,13 +135,16 @@ switch ($method) {
             //se ejecuta el metodo crear de la clase , para crear la asignatura en la base de datos
             if ($asignatura->crear()) {
                 $db->commit();
+                http_response_code(200);
                 echo json_encode(array("message" => "Asignatura creada exitosamente", "id_asignatura" => $db->lastInsertId()));
             } else {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo crear la asignatura"));
             }
         } catch (Exception $e) {
             $db->rollBack();
+            http_response_code(500);
             echo json_encode(array("message" => "Error al crear la asignatura: " . $e->getMessage()));
         }
         break;
@@ -155,13 +168,16 @@ switch ($method) {
             //ejecutamos el metodo actualiza de la clase asignatura, para actualizar la asignatura con los nuevos datos
             if ($asignatura->actualizar()) {
                 $db->commit();
+                http_response_code(200);
                 echo json_encode(array("message" => "Asignatura actualizada exitosamente"));
             } else {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo actualizar la asignatura"));
             }
         } catch (Exception $e) {
             $db->rollBack();
+            http_response_code(500);
             echo json_encode(array("message" => "Error al actualizar la asignatura: " . $e->getMessage()));
         }
         break;
@@ -181,18 +197,22 @@ switch ($method) {
             //ejecutamos el método para eliminar la asignatura
             if ($asignatura->eliminar()) {
                 $db->commit();
+                http_response_code(200);
                 echo json_encode(array("message" => "Asignatura eliminada exitosamente"));
             } else {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo eliminar la asignatura"));
             }
         } catch (Exception $e) {
             $db->rollBack();
+            http_response_code(500);
             echo json_encode(array("message" => "Error al eliminar la asignatura: " . $e->getMessage()));
         }
         break;
 
     default:
+        http_response_code(405);
         echo json_encode(array("message" => "Método no permitido"));
         break;
 }

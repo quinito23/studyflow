@@ -3,7 +3,7 @@
 class DBConnection
 {
     private $host = 'localhost';
-    private $dbname = 'studyflow';
+    private $dbname = 'studyflow3';
     private $username = 'root';
     private $passwd = '';
     private $conn;

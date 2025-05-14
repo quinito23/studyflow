@@ -244,6 +244,24 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             color: #d3d6db;
         }
 
+        .error-message {
+            background-color: #f8d7da;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
         /*Footer*/
         .footer {
             background-color: #0d1f38;
@@ -339,6 +357,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </div>
 
         </form>
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
 
         <h2 class="text-center">Tutores</h2>
 
@@ -405,6 +425,16 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             xhr.send(datos ? JSON.stringify(datos) : null);
         }
 
+        //funcion para mostrar mensajes de exito y error
+        function mostrarMensaje(tipo, mensaje) {
+            const elemento = document.getElementById(`${tipo}-message`);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
+            setTimeout(() => {
+                elemento.style.display = 'none';
+            }, 5000);
+        }
+
         //creamos la funcion para crear un nuevo tutor
         function crearTutor(event) {
             event.preventDefault();
@@ -420,6 +450,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 //si existe el id del tutor , significa que estamos actualizando el tutor , por lo que hacemos una solicitud PUT
 
                 hacerSolicitud('../../APIs/tutor_api.php', 'PUT', tutor, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         document.getElementById("tutor-form").reset();
                         cargarTutores();
@@ -427,18 +458,21 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.getElementById("id_tutor").value = null;
                         document.getElementById("form-title").innerText = "Nuevo tutor";
                         document.querySelector("button[type='submit']").textContent = "Crear tutor";
+                        mostrarMensaje('success', result.message || 'Tutor actualizad exitosamente');
                     } else {
-                        document.getElementById("error-message").innerText = 'Error al actualizar el tutor';
+                        mostrarMensaje('error', result.message || 'Error al actualizar el tutor');
                     }
                 });
             } else {
                 hacerSolicitud('../../APIs/tutor_api.php', 'POST', tutor, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         // limpiamos el formulario y recargamos la lista de tutores
                         document.getElementById("tutor-form").reset();
                         cargarTutores();
+                        mostrarMensaje('success', result.message || 'Tutor creado exitosamente');
                     } else {
-                        document.getElementById("error-message").innerText = 'Error al crear el tutor';
+                        mostrarMensaje('error', result.message || 'Error al crear el Tutor');
                     }
                 });
             }
@@ -448,6 +482,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
         function cargarTutores() {
             hacerSolicitud('../../APIs/tutor_api.php', 'GET', null, function (status, response) {
+                const result = JSON.parse(response);
                 if (status === 200) {
                     const tutores = JSON.parse(response);
                     const listaTutores = document.getElementById("tutores-lista");
@@ -473,7 +508,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         listaTutores.appendChild(row);
                     });
                 } else {
-                    document.getElementById("error-message").innerText = 'Error al cargar tutores'
+                    mostrarMensaje('error', result.message || 'Error al cargar los tutores');
                 }
             });
         }
@@ -495,8 +530,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
                     }
                 } else {
-                    document.getElementById("error-message").innerHTML = 'Error al cargar los datos del tutor';
-                    document.getElementById("error-message").style.display = 'block';
+                    mostrarMensaje('error', 'Error al cargar la información del tutor');
                 }
             });
         }
@@ -510,10 +544,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
                 //hacemos la solicitud
                 hacerSolicitud('../../APIs/tutor_api.php', 'DELETE', data, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         cargarTutores();
+                        mostrarMensaje('success', 'Tutor eliminado exitosamente');
                     } else {
-                        document.getElementById("error-message").innerText = 'Error al eliminar el tutor';
+                        mostrarMensaje('error', 'Error al eliminar el tutor');
                     }
                 });
             }
@@ -531,11 +567,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.getElementById("apellidos").value = tutor.apellidos;
                         document.getElementById("telefono").value = tutor.telefono;
                         document.getElementById("id_tutor").value = tutor.id_tutor;
-
+                        document.getElementById("form-title").innerText = "Actualizar tutor";
                         document.querySelector("button[type='submit']").textContent = "Actualizar"
                     }
                 } else {
-                    document.getElementById("error-message").innerText = 'Error al cargar los datos del tutor';
+                    mostrarMensaje('error', 'Error al cargar los datos del tutor');
                 }
             });
         }

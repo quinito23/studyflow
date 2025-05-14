@@ -173,9 +173,21 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         }
 
         .error-message {
+            background-color: #f8d7da;
             color: #dc3545;
-            font-size: 0.9rem;
-            margin-top: 0.25rem;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
         }
 
         .footer {
@@ -275,8 +287,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </form>
         </div>
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
 
-        <h3>Lista de Grupos</h3>
+        <h3 class="text-center">Lista de Grupos</h3>
         <div class="table-responsive">
             <table class="table" id="tabla-grupos">
                 <thead>
@@ -299,14 +313,14 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
     <script src="../validacion.js"></script>
     <script>
-        const notificacion = document.getElementById("notificacion");
 
-        function mostrarNotificacion(mensaje) {
-            notificacion.textContent = mensaje;
-            notificacion.style.display = 'block';
+        function mostrarMensaje(tipo, mensaje) {
+            const elemento = document.getElementById(`${tipo}-message`);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
             setTimeout(() => {
-                notificacion.style.display = 'none';
-            }, 3000);
+                elemento.style.display = 'none';
+            }, 5000);
         }
 
         function hacerSolicitud(url, metodo, datos, callback) {
@@ -347,12 +361,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                                 option.selected = true; // Preseleccionar la asignatura asignada
                                 selectAsignaturas.appendChild(option);
                             } else {
-                                mostrarNotificacion('Error al cargar la asignatura asignada');
+                                mostrarMensaje('error', 'Error al cargar la asignatura asignada');
                             }
                         });
                     }
                 } else {
-                    mostrarNotificacion('Error al cargar las asignaturas');
+                    mostrarMensaje('error', 'Error al cargar las asignaturas');
                 }
             });
         }
@@ -383,7 +397,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         listaGrupos.appendChild(row);
                     });
                 } else {
-                    mostrarNotificacion('Error al cargar los grupos');
+                    mostrarMensaje('error', 'Error al cargar los grupos');
                 }
             });
         }
@@ -400,6 +414,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
             if (id_grupo) {
                 hacerSolicitud('../../APIs/grupo_api.php', 'PUT', grupo, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         document.getElementById("form-grupo").reset();
                         document.getElementById("id_grupo").value = '';
@@ -407,20 +422,21 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.querySelector("button[type='submit']").textContent = "Crear Grupo";
                         cargarGrupos();
                         cargarAsignaturas(); // Volver a cargar solo asignaturas no asignadas
-                        mostrarNotificacion('Grupo actualizado exitosamente');
+                        mostrarMensaje('success', result.message || 'Grupo actualizado exitosamente');
                     } else {
-                        mostrarNotificacion('Error al actualizar el grupo');
+                        mostrarMensaje('error', result.message || 'Error al actualizar el grupo');
                     }
                 });
             } else {
                 hacerSolicitud('../../APIs/grupo_api.php', 'POST', grupo, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         document.getElementById("form-grupo").reset();
                         cargarGrupos();
                         cargarAsignaturas(); // Volver a cargar solo asignaturas no asignadas
-                        mostrarNotificacion('Grupo creado exitosamente');
+                        mostrarMensaje('success', result.message || 'Grupo creado exitosamente');
                     } else {
-                        mostrarNotificacion('Error al crear el grupo');
+                        mostrarMensaje('error', result.message || 'Error al crear el grupo');
                     }
                 });
             }
@@ -439,7 +455,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.querySelector("button[type='submit']").textContent = "Actualizar";
                     }
                 } else {
-                    mostrarNotificacion('Error al cargar los datos del grupo');
+                    mostrarMensaje('error', 'Error al cargar los datos del grupo');
                 }
             });
         }
@@ -448,12 +464,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             if (confirm('¿Estás seguro de que quieres eliminar este grupo?')) {
                 const data = { "id_grupo": id_grupo };
                 hacerSolicitud('../../APIs/grupo_api.php', 'DELETE', data, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         cargarGrupos();
                         cargarAsignaturas(); // Volver a cargar solo asignaturas no asignadas
-                        mostrarNotificacion('Grupo eliminado exitosamente');
+                        mostrarMensaje('success', result.message || 'Grupo eliminado exitosamente');
                     } else {
-                        mostrarNotificacion('Error al eliminar el grupo');
+                        mostrarMensaje('error', result.message || 'Error al eliminar el grupo');
                     }
                 });
             }

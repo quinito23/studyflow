@@ -38,7 +38,9 @@ switch ($method) {
                     "nombre_asignatura" => $grupo->nombre_asignatura,
                     "numero_alumnos" => $grupo->numero_alumnos
                 ));
+                http_response_code(200);
             } else {
+                http_response_code(404);
                 echo json_encode(array("message" => "Grupo no encontrado"));
             }
         } else if (isset($_GET['id_asignatura'])) {
@@ -55,8 +57,10 @@ switch ($method) {
                 $stmt->bindParam(':id_asignatura', $id_asignatura, PDO::PARAM_INT);
                 $stmt->execute();
                 $grupos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                http_response_code(200);
                 echo json_encode($grupos);// devolvemos un array con los grupos filtrados por asignatura en JSON
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al listar grupos: " . $e->getMessage()));
             }
         } else {
@@ -74,8 +78,10 @@ switch ($method) {
                     //si no se pasan parametros ejecutamos el metodo para obtener todos los grupos en la base de datos
                     $grupos = $grupo->leer_todos();
                 }
+                http_response_code(200);
                 echo json_encode($grupos);//devolvemos el array en JSON
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al listar grupos: " . $e->getMessage()));
             }
         }
@@ -94,11 +100,14 @@ switch ($method) {
         try {
             //ejecutamos el metodo crear de la clase grupo 
             if ($grupo->crear()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Grupo creado exitosamente"));
             } else {
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo crear el grupo"));
             }
         } catch (Exception $e) {
+            http_response_code(500);
             echo json_encode(array("message" => "Error al crear grupo: " . $e->getMessage()));
         }
         break;
@@ -116,11 +125,14 @@ switch ($method) {
         $grupo->id_asignatura = $data->id_asignatura;
         try {
             if ($grupo->actualizar()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Grupo actualizado exitosamente"));
             } else {
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo actualizar el grupo"));
             }
         } catch (Exception $e) {
+            http_response_code(500);
             echo json_encode(array("message" => "Error al actualizar grupo: " . $e->getMessage()));
         }
         break;
@@ -134,16 +146,20 @@ switch ($method) {
         $grupo->id_grupo = $data->id_grupo;
         try {
             if ($grupo->eliminar()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Grupo eliminado exitosamente"));
             } else {
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo eliminar el grupo"));
             }
         } catch (Exception $e) {
+            http_response_code(500);
             echo json_encode(array("message" => "Error al eliminar el grupo: " . $e->getMessage()));
         }
         break;
 
     default:
+        http_response_code(405);
         echo json_encode(array("message" => "Método no permitido"));
         break;
 }

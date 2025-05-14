@@ -170,6 +170,24 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             border-color: #ffffff33;
         }
 
+        .error-message {
+            background-color: #f8d7da;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
         /*Footer*/
         .footer {
             background-color: #0d1f38;
@@ -276,8 +294,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </form>
         </div>
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
 
-        <h3>Lista de Asignaturas</h3>
+        <h3 class="text-center">Lista de Asignaturas</h3>
         <div class="table-responsive">
             <table class="table" id="tabla-asignaturas">
                 <thead>
@@ -300,14 +320,15 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     </footer>
 
     <script>
-        const notificacion = document.getElementById("notificacion");
-        //función para mostrar las notificaciones
-        function mostrarNotificacion(mensaje) {
-            notificacion.textContent = mensaje;
-            notificacion.style.display = 'block';
+
+        //función para mostrar los mensajes
+        function mostrarMensaje(tipo, mensaje) {
+            const elemento = document.getElementById(`${tipo}-message`);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
             setTimeout(() => {
-                notificacion.style.display = 'none';
-            }, 3000);
+                elemento.style.display = 'none';
+            }, 5000);
         }
 
         //Función para hacer solicitues AJAX
@@ -338,10 +359,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             selectProfesor.appendChild(option);
                         });
                     } catch (e) {
-                        mostrarNotificacion("Error al cargar los profesores");
+                        mostrarMensaje('error', 'Error al cargar los profesores');
                     }
                 } else {
-                    mostrarNotificacion("Error al cargar los profesores");
+                    mostrarMensaje('error', 'Error al cargar los profesores');
                 }
             });
         }
@@ -381,8 +402,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         });
 
                     } catch (e) {
-                        mostrarNotificacion("Error al cargar las asignaturas");
+                        mostrarNotificacion('error', 'Error al cargar las asignaturas : ' + e.message);
                     }
+                } else {
+                    mostrarNotificacion('error', 'Error al cargar las asignaturas');
                 }
             });
         }
@@ -403,27 +426,31 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             //si el id_asignatura tiene valor ,entonces la solicitud se le hace a PUT para actualizarla
             if (id_asignatura) {
                 hacerSolicitud('../../APIs/asignatura_api.php', 'PUT', asignatura, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         document.getElementById("form-asignatura").reset();
                         document.getElementById("id_asignatura").value = null;
                         document.getElementById("form-title").innerText = "Editar Asignatura";
                         cargarAsignaturas();
+                        mostrarMensaje('success', result.message || 'Asignatura actualizada exitosamente');
                     } else {
-                        mostrarNotificacion('Error al actualizar la asignatura');
+                        mostrarMensaje('error', result.message || 'Error al actualizar la asignatura');
                     }
                 });
             } else {
                 //sino se le hace  a POST para crear la asignatura
                 hacerSolicitud('../../APIs/asignatura_api.php', 'POST', asignatura, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         document.getElementById("form-asignatura").reset();
                         document.getElementById("id_asignatura").value = null;
                         document.getElementById("form-title").innerText = "Crear Asignatura";
                         document.querySelector("button[type='submit']").textContent = "Crear";
+                        mostrarMensaje('success', result.message || 'Asignatura creada exitosamente')
 
                         cargarAsignaturas();
                     } else {
-                        mostrarNotificacion('Error al crear la asignatura');
+                        mostrarMensaje('error', result.message || 'Error al crear la asignatura');
                     }
                 })
             }
@@ -442,11 +469,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         document.getElementById("id_usuario").value = asignatura.id_usuario || '';
                         document.getElementById("form-title").innerText = "Editar Asignatura";
                         document.querySelector("button[type='submit']").textContent = "Actualizar";
+
                     } else {
-                        mostrarNotificacion('Error al cargar los datos de la asignatura');
+                        mostrarMensaje('error', 'Error al cargar los datos de la asignatura');
                     }
                 } else {
-                    mostrarNotificacion('error al cargar los datos de la asignatura');
+                    mostrarMensaje('error', 'error al cargar los datos de la asignatura');
                 }
             });
         }
@@ -455,10 +483,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             if (confirm('¿Estás seguro de que quieres eliminar esta asignatura?')) {
                 const data = { "id_asignatura": id_asignatura };
                 hacerSolicitud('../../APIs/asignatura_api.php', 'DELETE', data, function (status, response) {
+                    const result = JSON.parse(response);
                     if (status === 200) {
                         cargarAsignaturas();
+                        mostrarMensaje('success', result.message || 'Asignatura creada exitosamente');
                     } else {
-                        mostrarNotificacion('Error al eliminar la asignatura');
+                        mostrarMensaje('error', result.message || 'Error al eliminar la asignatura');
                     }
                 });
             }

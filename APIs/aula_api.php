@@ -144,7 +144,7 @@ switch ($method) {
 
             if ($aula->crear()) {
                 echo json_encode(array("message" => "Aula creada exitosamente", "id_aula" => $aula->id_aula));
-                http_response_code(201);
+                http_response_code(200);
             } else {
                 echo json_encode(array("message" => "No se pudo crear el aula", "error" => "Creation failed"));
                 http_response_code(500);
@@ -165,6 +165,7 @@ switch ($method) {
             $aula->equipamiento = $data->equipamiento;
 
             if ($aula->actualizar()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Aula actualizada exitosamente"));
             } else {
                 echo json_encode(array("message" => "No se pudo actualizar el aula", "error" => "Update failed"));
@@ -182,6 +183,7 @@ switch ($method) {
         if (isset($data->id_aula)) {
             $aula->id_aula = $data->id_aula;
             if ($aula->eliminar()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Aula eliminada exitosamente"));
             } else {
                 echo json_encode(array("message" => "No se pudo eliminar el aula", "error" => "Deletion failed"));

@@ -59,19 +59,32 @@ switch ($method) {
                         "hora_fin" => $reserva->hora_fin,
                         "estado" => $reserva->estado
                     );
+                    http_response_code(200);
                     echo json_encode($reserva_data);
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "Reserva no encontrada"));
                 }
             } else {
                 //sino se obtienen todas las reservas si la solicitud tiene el parametro todas
                 if (isset($_GET['todas']) && $_GET['todas'] == 1) {
                     $result = $reserva->leer_todos(null); // le pasamos null para obtener todas las reservas
+                    if ($result) {
+                        http_response_code(200);
+                    } else {
+                        http_response_code(500);
+                    }
                 } else {
                     //sino todas las de un usuario
                     //tenemos que obtener el id_usuario de la sesion
                     $id_usuario = $_SESSION['id_usuario'];
                     $result = $reserva->leer_todos($id_usuario);
+                    if ($result) {
+                        http_response_code(200);
+                    } else {
+                        http_response_code(500);
+                    }
+
                 }
 
                 echo json_encode($result);
@@ -103,14 +116,18 @@ switch ($method) {
                 //ejecutamos el metodo para crear la reserva
                 $id_reserva = $reserva->crear();
                 if ($id_reserva) {
+                    http_response_code(200);
                     echo json_encode(array("message" => "Reserva creada exitosamente"));
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo crear la reserva"));
                 }
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -138,14 +155,18 @@ switch ($method) {
                 }
                 //ejecutamos el metodo de actualizar
                 if ($reserva->actualizar()) {
+                    http_response_code(200);
                     echo json_encode(array("message" => "Reserva actualizada exitosamente"));
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo actualizar la reserva"));
                 }
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error :" . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -157,16 +178,20 @@ switch ($method) {
         if (isset($data->id_reserva)) {
             $reserva->id_reserva = $data->id_reserva;
             if ($reserva->eliminar()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Reserva eliminada exitosamente"));
             } else {
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo eliminar la reserva"));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
 
     default:
+        http_response_code(405);
         echo json_encode(array("message" => "Metodo no permitido"));
         break;
 }
