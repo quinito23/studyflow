@@ -21,6 +21,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     <title>Solicitudes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
         body {
@@ -52,7 +53,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             border-bottom: 1px solid #ffffff33;
             display: flex;
             flex-wrap: wrap;
-            /*Para permitir que los elementos se apilen si no caben*/
             justify-content: space-between;
             align-items: center;
         }
@@ -65,13 +65,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         .header h1 {
             margin: 0;
             font-size: clamp(1.5rem, 5vw, 2.5rem);
-            /*Hacemos que el tamaño sea dinamico*/
             margin-left: clamp(1rem, 3vw, 2rem);
         }
 
         .navbar-toggler {
             font-size: clamp(1rem, 3vw, 1.5rem);
-            /*Hacemos que el tamaño sea dinamico*/
             margin-right: 1rem;
             z-index: 1000;
         }
@@ -80,15 +78,19 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             color: white;
         }
 
+        .breadcrumb-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
-            font-size: clamp(0.7rem, 2vw, 0.9rem);
-            /*Hacemos que el tamaño sea dinamico*/
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
         }
 
-        /*Para cambiar el color del elemento que separa los elementos del breadcrumb ">"*/
         .breadcrumb-item+.breadcrumb-item::before {
             color: #007bff;
         }
@@ -100,6 +102,35 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
         .breadcrumb-item.active {
             color: #d3d6db;
+        }
+
+        .separador {
+            color: #f8f9fa;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            margin: 0 0.75rem;
+        }
+
+        .logout-btn {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+        }
+
+        @media (max-width: 576px) {
+            .header {
+                padding: 0.75rem 1rem;
+                flex-wrap: nowrap;
+            }
+
+            .header .d-flex {
+                gap: 0.5rem;
+            }
+
+            .breadcrumb-container {
+                gap: 0.5rem;
+            }
+
+            .separador {
+                margin: 0 0.5rem;
+            }
         }
 
         /*sidebar*/
@@ -202,12 +233,18 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Solicitudes</li>
-            </ol>
-        </nav>
+        <div class="breadcrumb-container">
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Solicitudes</li>
+                </ol>
+            </nav>
+            <span class="separador">|</span>
+            <a href="../logout.php" class="btn btn-outline-light btn-sm logout-btn" title="Cerrar sesión">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
     </header>
 
     <!--Barra lateral dedsplegable con offcanvas de bootsraps-->

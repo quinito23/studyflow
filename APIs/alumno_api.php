@@ -108,11 +108,14 @@ switch ($method) {
                 $duplicados = verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario);
 
                 if (!empty($duplicados)) {
+                    http_response_code(200);
                     echo json_encode(array("message" => "Datos duplicados encontrados", "duplicados" => $duplicados));
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se encontraron duplicados"));
                 }
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al verificar duplicados: " . $e->getMessage()));
             }
             exit;
@@ -132,6 +135,7 @@ switch ($method) {
             }
             //llama al metodo de la clase
             $asignaturas = $alumno->obtenerAsignaturas($id_usuario);
+            http_response_code(200);
             echo json_encode($asignaturas);
         } else {
             // obtenemos un alumno específico
@@ -151,13 +155,16 @@ switch ($method) {
                         "tutores" => $alumno->tutores,
                         "grupos" => $alumno->grupos
                     );
+                    http_response_code(200);
                     echo json_encode($alumno_data);
                 } else {
+                    http_response_code(404);
                     echo json_encode(array("message" => "Alumno no encontrado"));
                 }
             } else {
                 // si no esta asignado el parametro id_usuario , se obtienen todos los alumnos llamando al metodo leer todos
                 $result = $alumno->leer_todos();
+                http_response_code(200);
                 echo json_encode($result);
             }
         }
@@ -193,18 +200,23 @@ switch ($method) {
                 //creamos el alumno llamando al metodo de la clase
                 $id_alumno = $alumno->crear($tutores, $grupos);
 
+
                 if ($id_alumno) {
                     $db->commit();
+                    http_response_code(200);
                     echo json_encode(array("message" => "Alumno creado exitosamente", "id_usuario" => $id_alumno));
                 } else {
                     $db->rollBack();
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo crear el alumno"));
                 }
             } catch (Exception $e) {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al crear el alumno: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -239,16 +251,20 @@ switch ($method) {
                 //ejecutamos el metodo actualizar
                 if ($alumno->actualizar($tutores, $grupos)) {
                     $db->commit();
+                    http_response_code(200);
                     echo json_encode(array("message" => "Alumno actualizado exitosamente"));
                 } else {
                     $db->rollBack();
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo actualizar el alumno"));
                 }
             } catch (Exception $e) {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al actualizar el alumno: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -265,21 +281,26 @@ switch ($method) {
 
                 if ($alumno->eliminar()) {
                     $db->commit();
+                    http_response_code(200);
                     echo json_encode(array("message" => "Alumno eliminado exitosamente"));
                 } else {
                     $db->rollBack();
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo eliminar el alumno"));
                 }
             } catch (Exception $e) {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al eliminar el alumno: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
 
     default:
+        http_response_code(405);
         echo json_encode(array("message" => "Método no permitido"));
         break;
 }

@@ -69,11 +69,17 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             color: white;
         }
 
+        .breadcrumb-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
         .breadcrumb {
             background-color: transparent;
             padding: 0.5rem 0;
             margin-bottom: 0;
-            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
         }
 
         .breadcrumb-item+.breadcrumb-item::before {
@@ -87,6 +93,35 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
         .breadcrumb-item.active {
             color: #d3d6db;
+        }
+
+        .separador {
+            color: #f8f9fa;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            margin: 0 0.75rem;
+        }
+
+        .logout-btn {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+        }
+
+        @media (max-width: 576px) {
+            .header {
+                padding: 0.75rem 1rem;
+                flex-wrap: nowrap;
+            }
+
+            .header .d-flex {
+                gap: 0.5rem;
+            }
+
+            .breadcrumb-container {
+                gap: 0.5rem;
+            }
+
+            .separador {
+                margin: 0 0.5rem;
+            }
         }
 
         .offcanvas {
@@ -209,12 +244,18 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
         <!--Elementos del breadcrumb-->
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="dashboardAdmin.php">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Tareas</li>
-            </ol>
-        </nav>
+        <div class="breadcrumb-container">
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="dashboardAdmin.php">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tareas</li>
+                </ol>
+            </nav>
+            <span class="separador">|</span>
+            <a href="../logout.php" class="btn btn-outline-light btn-sm logout-btn" title="Cerrar Sesión">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
     </header>
 
     <!--Barra lateral desplegable-->
@@ -393,7 +434,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         grupoSelect.appendChild(option);
                     }
                 } catch (e) {
-                    mostrarMensaje('error', 'Error al cargar los grupos:'  + e.message);
+                    mostrarMensaje('error', 'Error al cargar los grupos:' + e.message);
                 }
             });
         }
@@ -464,7 +505,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         mostrarMensaje('error', result.message || 'Error al eliminar la tarea');
                     }
                 } catch (e) {
-                    mostrarMensaje('error',  'Error al eliminar la tarea: ' + e.message)
+                    mostrarMensaje('error', 'Error al eliminar la tarea: ' + e.message)
                 }
             });
         }
@@ -513,7 +554,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             mostrarMensaje('error', result.message || 'Error al crear la tarea');
                         }
                     } catch (e) {
-                        mostrarMensaje('error',  'Error al crear la tarea: ' + e.message);
+                        mostrarMensaje('error', 'Error al crear la tarea: ' + e.message);
                     }
                 });
             }

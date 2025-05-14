@@ -138,13 +138,16 @@ switch ($method) {
                     "fecha_fin_contrato" => $profesor->fecha_fin_contrato,
                     "asignaturas" => $profesor->asignaturas
                 );
+                http_response_code(200);
                 echo json_encode($profesor_data);
             } else {
+                http_response_code(404);
                 echo json_encode(array("message" => "Profesor no encontrado"));
             }
         } else {
             // si no esta asignado el parametro id_usuario , se obtienen todos los alumnos llamando al metodo leer todos
             $result = $profesor->leer_todos();
+            http_response_code(200);
             echo json_encode($result);
         }
         break;
@@ -183,17 +186,20 @@ switch ($method) {
 
                 if ($id_profesor) {
                     $db->commit();
+                    http_response_code(200);
                     echo json_encode(array("message" => "Profesor creado exitosamente", "id_usuario" => $id_profesor));
                 } else {
                     $db->rollBack();
-
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo crear el profesor"));
                 }
             } catch (Exception $e) {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al crear el profesor: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -231,16 +237,20 @@ switch ($method) {
                 //ejecutamos el metodo actualizar
                 if ($profesor->actualizar($asignaturas)) {
                     $db->commit();
+                    http_response_code(200);
                     echo json_encode(array("message" => "Profesor actualizado exitosamente"));
                 } else {
                     $db->rollBack();
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo actualizar el profesor"));
                 }
             } catch (Exception $e) {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al actualizar el profesor: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -257,16 +267,20 @@ switch ($method) {
 
                 if ($profesor->eliminar()) {
                     $db->commit();
+                    http_response_code(200);
                     echo json_encode(array("message" => "Profesor eliminado exitosamente"));
                 } else {
                     $db->rollBack();
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo eliminar el profesor"));
                 }
             } catch (Exception $e) {
                 $db->rollBack();
+                http_response_code(500);
                 echo json_encode(array("message" => "Error al eliminar el profesor: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;

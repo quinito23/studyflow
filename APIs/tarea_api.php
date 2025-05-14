@@ -68,17 +68,17 @@ switch ($method) {
                 //si se pasa el parámetro todas en la solicitud entonces se obtienen  todas las tareas
                 if (isset($_GET['todas']) && $_GET['todas'] == 1) {
                     $result = $tarea->leer_todos(null);
-                    if(!empty($result)){
+                    if (!empty($result)) {
                         http_response_code(200);
                     }
-                    http_response_code(500);
+
                 } else {
                     $id_usuario = $_SESSION['id_usuario'];
                     $result = $tarea->leer_todos($id_usuario);
-                    if(!empty($result)){
+                    if (!empty($result)) {
                         http_response_code(200);
                     }
-                    http_response_code(500);
+
                 }
                 echo json_encode($result);
             }
@@ -126,14 +126,18 @@ switch ($method) {
                 $tarea->id_grupo = $data->id_grupo;
 
                 if ($tarea->actualizar()) {
+                    http_response_code(200);
                     echo json_encode(array("message" => "Tarea actualizada exitosamente"));
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo actualizar la tarea"));
                 }
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
@@ -143,16 +147,20 @@ switch ($method) {
         if (isset($data->id_tarea)) {
             $tarea->id_tarea = $data->id_tarea;
             if ($tarea->eliminar()) {
+                http_response_code(200);
                 echo json_encode(array("message" => "Tarea eliminada exitosamente"));
             } else {
+                http_response_code(500);
                 echo json_encode(array("message" => "No se pudo eliminar la tarea"));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;
 
     default:
+        http_response_code(405);
         echo json_encode(array("message" => "Método no permitido"));
         break;
 }
