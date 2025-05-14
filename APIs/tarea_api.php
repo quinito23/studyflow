@@ -41,6 +41,7 @@ switch ($method) {
             //asignar id usuario y si no hay valor , null
             $id_usuario = isset($_GET['id_usuario']) ? $_GET['id_usuario'] : null;
             $tareas = $tarea->obtenerPorAsignatura($id_asignatura, $id_usuario);
+            http_response_code(200);
             echo json_encode($tareas);
         } else {
             //obtener una tarea específica si se pasa el id en la url
@@ -57,17 +58,27 @@ switch ($method) {
                         "id_asignatura" => $tarea->id_asignatura,
                         "id_grupo" => $tarea->id_grupo
                     );
+                    http_response_code(200);
                     echo json_encode($tarea_data);
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "Tarea no encontrada"));
                 }
             } else {
                 //si se pasa el parámetro todas en la solicitud entonces se obtienen  todas las tareas
                 if (isset($_GET['todas']) && $_GET['todas'] == 1) {
                     $result = $tarea->leer_todos(null);
+                    if(!empty($result)){
+                        http_response_code(200);
+                    }
+                    http_response_code(500);
                 } else {
                     $id_usuario = $_SESSION['id_usuario'];
                     $result = $tarea->leer_todos($id_usuario);
+                    if(!empty($result)){
+                        http_response_code(200);
+                    }
+                    http_response_code(500);
                 }
                 echo json_encode($result);
             }
@@ -87,14 +98,18 @@ switch ($method) {
                 //llamamos al metodo crear de la clase
                 $id_tarea = $tarea->crear();
                 if ($id_tarea) {
+                    http_response_code(200);
                     echo json_encode(array("message" => "Tarea creada exitosamente"));
                 } else {
+                    http_response_code(500);
                     echo json_encode(array("message" => "No se pudo crear la tarea"));
                 }
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(array("message" => "Error: " . $e->getMessage()));
             }
         } else {
+            http_response_code(400);
             echo json_encode(array("message" => "Faltan datos requeridos"));
         }
         break;

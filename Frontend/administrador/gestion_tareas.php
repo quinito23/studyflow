@@ -178,6 +178,15 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             display: none;
         }
 
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+
         .footer {
             background-color: #0d1f38;
             color: #f8f9fa;
@@ -280,6 +289,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 <button type="reset" class="btn btn-light">Limpiar</button>
             </div>
         </form>
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="success-message"></div>
 
         <h2 class="text-center">Lista de Tareas</h2>
         <div class="table-responsive">
@@ -311,16 +322,16 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         //obtenemos los diferentes elementos del fontend que vamos a manejar
         const tareasForm = document.getElementById('tareas-form');
         const tareasLista = document.getElementById('tareas-lista');
-        const errorMessage = document.getElementById('error-message');
         const formTitle = document.getElementById('form-title');
 
         //funcion para mostrar errores
-        function mostrarError(mensaje) {
-            errorMessage.textContent = mensaje;
-            errorMessage.style.display = 'block';
+        function mostrarMensaje(tipo, mensaje) {
+            const elemento = document.getElementById(`${tipo}-message`);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
             setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 3000);
+                elemento.style.display = 'none';
+            }, 5000);
         }
 
         //función para  hacer solicitudes AJAX
@@ -382,7 +393,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         grupoSelect.appendChild(option);
                     }
                 } catch (e) {
-                    mostrarError("Error al cargar los grupos: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar los grupos:'  + e.message);
                 }
             });
         }
@@ -416,7 +427,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         tareasLista.innerHTML += row;
                     });
                 } catch (e) {
-                    mostrarError("Error al cargar las tareas: " + e.message);
+                    mostrarMensaje('error', 'Error al cargar las tareas: ' + e.message);
                 }
             });
         }
@@ -435,7 +446,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     document.querySelector('#tareas-form button[type="submit"]').textContent = 'Actualizar';
                     cargarGrupos();
                 } catch (e) {
-                    mostrarError("Error al cargar la tarea para editar: " + e.message);
+                    mostrarMensaje('error', "Error al cargar la tarea para editar: " + e.message);
                 }
             });
         }
@@ -448,11 +459,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                     const result = JSON.parse(response);
                     if (status === 200 && result.message === "Tarea eliminada exitosamente") {
                         cargarTareas();
+                        mostrarMensaje('success', result.message || 'Tarea eliminada exitosamente');
                     } else {
-                        mostrarError(result.message || "Error al eliminar la tarea");
+                        mostrarMensaje('error', result.message || 'Error al eliminar la tarea');
                     }
                 } catch (e) {
-                    mostrarError("Error al eliminar la tarea: " + e.message);
+                    mostrarMensaje('error',  'Error al eliminar la tarea: ' + e.message)
                 }
             });
         }
@@ -480,11 +492,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             formTitle.textContent = "Tareas";
                             document.querySelector('#tareas-form button[type="submit"]').textContent = 'Crear';
                             cargarTareas();
+                            mostrarMensaje('success', result.message || 'Tarea actualizada exitosamente');
                         } else {
-                            mostrarError("Error al actualizar la tarea");
+                            mostrarMensaje('error', result.message || 'Error al actualizar la tarea');
                         }
                     } catch (e) {
-                        mostrarError("Error al actualizar la tarea: " + e.message);
+                        mostrarMensaje('error', result.message || 'Error al actualizar la tarea: ' + e.message);
                     }
                 });
             } else {
@@ -495,11 +508,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         if (status === 200 && result.message === "Tarea creada exitosamente") {
                             document.getElementById("tareas-form").reset();
                             cargarTareas();
+                            mostrarMensaje('success', result.message || 'Tarea creada exitosamente');
                         } else {
-                            mostrarError("Error al crear la tarea");
+                            mostrarMensaje('error', result.message || 'Error al crear la tarea');
                         }
                     } catch (e) {
-                        mostrarError('Error al crear la tarea: ' + e.message);
+                        mostrarMensaje('error',  'Error al crear la tarea: ' + e.message);
                     }
                 });
             }
