@@ -201,6 +201,9 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             background-color: #e9ecef;
             color: #333;
             font-size: clamp(0.7rem, 1.5vw, 1rem);
+            border-radius: 10px; /* Añade esquinas redondeadas */
+            overflow: hidden; /* Asegura que el contenido respete el border-radius */
+            border-collapse: separate; /* Necesario para que border-radius funcione */
         }
 
         .table tbody tr {
