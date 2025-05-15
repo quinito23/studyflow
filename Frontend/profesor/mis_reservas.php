@@ -30,7 +30,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
-                aria-label="Toggle Navigation">
+                aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -111,8 +111,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             </div>
             <input type="hidden" id="id_reserva">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Actualizar</button>
-                <button type="reset" class="btn btn-light">Limpiar</button>
+                <button class="btn btn-primary" type="submit" aria-label="actualizar">Actualizar</button>
+                <button type="reset" class="btn btn-light" aria-label="Limpiar Formulario">Limpiar</button>
             </div>
         </form>
         <!--Contenedores para mostrar las notificaciones de error o exito-->
@@ -323,10 +323,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                             <td>${reserva.estado}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-warning btn-sm me-1" onclick="editarReserva(${reserva.id_reserva})">
+                                    <button class="btn btn-warning btn-sm me-1" onclick="editarReserva(${reserva.id_reserva})" aria-label="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button class="btn btn-danger btn-sm" onclick="eliminarReserva(${reserva.id_reserva})">
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarReserva(${reserva.id_reserva})" aria-label="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>

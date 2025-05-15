@@ -29,7 +29,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
                 aria-label="Toggle Navigation">
-                <span class="navbar-toggler-icon"></span>
+                <span class="Barra Lateral"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
         </div>
@@ -102,8 +102,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
             </div>
             <input type="hidden" id="id_tarea">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Crear</button>
-                <button type="reset" class="btn btn-light">Limpiar</button>
+                <button class="btn btn-primary" type="submit" aria-label="Crear">Crear</button>
+                <button type="reset" class="btn btn-light" aria-label="Limpiar Formulario">Limpiar</button>
             </div>
         </form>
 
@@ -266,10 +266,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                                     <td>${tarea.estado}</td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-warning btn-sm me-1" onclick="editarTarea(${tarea.id_tarea})">
+                                            <button class="btn btn-warning btn-sm me-1" onclick="editarTarea(${tarea.id_tarea})" aria-label="Editar">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <button class="btn btn-danger btn-sm" onclick="eliminarTarea(${tarea.id_tarea})">
+                                            <button class="btn btn-danger btn-sm" onclick="eliminarTarea(${tarea.id_tarea})" aria-label="Eliminar">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>

@@ -31,7 +31,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
-                aria-label="Toggle Navigation">
+                aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -110,8 +110,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </div>
             <input type="hidden" id="id_tutor">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Crear</button>
-                <button type="reset" class="btn btn-light">Limpiar</button>
+                <button class="btn btn-primary" type="submit" aria-label="Crear">Crear</button>
+                <button type="reset" class="btn btn-light" aria-label="Limpiar Formulario">Limpiar</button>
             </div>
 
         </form>
@@ -157,7 +157,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         <p><strong>Teléfono:</strong><span id="modal-telefono"></span></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cerrar">Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -254,13 +254,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             <td>${tutor.telefono}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${tutor.id_tutor})">
+                                    <button class="btn btn-info btn-sm" onclick = "mostrarInfo(${tutor.id_tutor})" aria-label="Mostrar Información">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
-                                    <button class="btn btn-success btn-sm" onclick = "editarTutor(${tutor.id_tutor})">
+                                    <button class="btn btn-success btn-sm" onclick = "editarTutor(${tutor.id_tutor})" aria-label="Editar">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <button class="btn btn-danger btn-sm" onclick = "eliminarTutor(${tutor.id_tutor})">
+                                    <button class="btn btn-danger btn-sm" onclick = "eliminarTutor(${tutor.id_tutor})" aria-label="Eliminar">
                                         <i class="bi bi-trash3"></i>
                                     </button>
                                 </div>
