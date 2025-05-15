@@ -21,250 +21,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Reservar</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #112a4a;
-            color: #f8f9fa;
-            font-size: 16px;
-            margin: 0px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #reservas-form {
-            border: 2px solid #007bff;
-            /* Borde azul */
-            border-radius: 8px;
-            padding: 1.5rem;
-            background-color: #0d1f38;
-            /* Fondo más oscuro */
-            margin-bottom: 2rem;
-        }
-
-        /*Header*/
-        .header {
-            background-color: #0d1f38;
-            padding: clamp(0.7rem, 2vw, 1.2rem) clamp(1.2rem, 2.8vw, 2rem);
-            color: white;
-            border-bottom: 1px solid #ffffff33;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header .d-flex {
-            gap: clamp(0.5rem, 2vw, 1rem);
-            align-items: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: clamp(1.2rem, 4vw, 2rem);
-            margin-left: clamp(0.5rem, 2vw, 1rem);
-        }
-
-        .navbar-toggler {
-            font-size: clamp(0.8rem, 2.5vw, 1.2rem);
-            margin-right: clamp(0.5rem, 2vw, 1rem);
-            z-index: 1000;
-        }
-
-        .navbar-toggler-icon {
-            color: white;
-        }
-
-        .breadcrumb-container {
-            display: flex;
-            align-items: center;
-            gap: clamp(0.5rem, 1.5vw, 0.8rem);
-        }
-
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0.5rem 0;
-            margin-bottom: 0;
-            font-size: clamp(0.75rem, 2.2vw, 1.1rem);
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            color: #007bff;
-        }
-
-        .breadcrumb-item a {
-            color: #f8f9fa;
-            text-decoration: none;
-        }
-
-        .breadcrumb-item.active {
-            color: #d3d6db;
-        }
-
-        .separator {
-            color: #f8f9fa;
-            font-size: clamp(0.85rem, 2.2vw, 1.2rem);
-            margin: 0 clamp(0.5rem, 1.5vw, 0.8rem);
-        }
-
-        .logout-btn {
-            font-size: clamp(1rem, 2.5vw, 1.8rem);
-            color: #f8f9fa;
-            border: none;
-            background: transparent;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .logout-btn:hover {
-            color: #007bff;
-            transform: scale(1.1);
-            transition: color 0.2s, transform 0.2s;
-        }
-
-        /*sidebar*/
-
-        .offcanvas {
-            background-color: #0d1f38;
-            color: white;
-            width: 20vw !important;
-            min-width: 200px !important;
-            /*ancho minimo para que no se corte cuando usamos un movil*/
-        }
-
-        .offcanvas-header {
-            border-bottom: 1px solid #ffffff33;
-        }
-
-        .offcanvas-title {
-            color: white;
-            font-size: clamp(1rem, 3vw, 1.25rem);
-        }
-
-        .offcanvas-body .nav-link {
-            color: #f8f9fa;
-            padding: 0.75rem, 1rem;
-            display: block;
-            text-decoration: none;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            /*Hacemos que el tamaño sea dinamico*/
-        }
-
-        .offcanvas-body .nav-link.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        /*Contenido principal*/
-        .main-content {
-            padding: 2rem;
-            flex: 1;
-        }
-
-
-        h2 {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            color: #ffffff;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: white;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-        }
-
-        .form-control,
-        .form-select {
-            background-color: white;
-            color: #333;
-            border-radius: 5px;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .btn-primary {
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .btn-light {
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .table thead {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .table {
-            margin-top: 2rem;
-            background-color: #e9ecef;
-            color: #333;
-            font-size: clamp(0.7rem, 1.5vw, 1rem);
-            border-radius: 10px; /* Añade esquinas redondeadas */
-            overflow: hidden; /* Asegura que el contenido respete el border-radius */
-            border-collapse: separate; /* Necesario para que border-radius funcione */
-        }
-
-        .table tbody tr {
-            background-color: #d3d6db;
-        }
-
-        .table th,
-        .table td {
-            text-align: center;
-        }
-
-        .btn-sm {
-            font-size: clamp(0.8rem, 1.8vw, 1rem);
-            padding: clamp(0.25rem, 0.8vw, 0.4rem) clamp(0.5rem, 1.2vw, 0.7rem);
-            line-height: 1.5;
-            min-height: 1.8rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(0.5rem, 1.2vw, 0.8rem);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .error-message {
-            background-color: #f8d7da;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .form-title {
-            align-items: center;
-        }
-
-        /*Footer*/
-        .footer {
-            background-color: #0d1f38;
-            color: #f8f9fa;
-            text-align: center;
-            padding: 1rem;
-            border-top: 1px solid #ffffff33;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-    </style>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 
 <body>
@@ -273,7 +30,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
-                aria-label="Toggle Navigation">
+                aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -335,6 +92,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 
     <!--Contenido principal-->
     <main class="main-content">
+
         <h2 class="text-center" id="form-title">Reservas</h2>
         <!--Formulario para crear o editar una reserva-->
         <form id="reservas-form" class="row g-3">
@@ -372,8 +130,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </div>
             <input type="hidden" id="id_reserva">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Crear</button>
-                <button type="reset" class="btn btn-light">Limpiar</button>
+                <button class="btn btn-primary" type="submit" aria-label="Crear">Crear</button>
+                <button type="reset" class="btn btn-light" aria-label="Limpiar Formulario">Limpiar</button>
             </div>
         </form>
         <div id="success-message" class="success-message"></div>
@@ -401,6 +159,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 </tbody>
             </table>
         </div>
+
 
 
 
@@ -564,10 +323,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         <td>${reserva.estado}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-warning btn-sm me-1" onclick="editarReserva(${reserva.id_reserva})">
+                                <button class="btn btn-warning btn-sm me-1" onclick="editarReserva(${reserva.id_reserva})" aria-label="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-danger btn-sm" onclick="eliminarReserva(${reserva.id_reserva})">
+                                <button class="btn btn-danger btn-sm" onclick="eliminarReserva(${reserva.id_reserva})" aria-label="Eliminar">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>

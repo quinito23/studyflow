@@ -21,305 +21,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Profesores</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #112a4a;
-            color: #f8f9fa;
-            font-size: 16px;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #profesor-form {
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            padding: 1.5rem;
-            background-color: #0d1f38;
-            margin-bottom: 2rem;
-        }
-
-        .header {
-            background-color: #0d1f38;
-            padding: clamp(0.7rem, 2vw, 1.2rem) clamp(1.2rem, 2.8vw, 2rem);
-            color: white;
-            border-bottom: 1px solid #ffffff33;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header .d-flex {
-            gap: clamp(0.5rem, 2vw, 1rem);
-            align-items: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: clamp(1.2rem, 4vw, 2rem);
-            margin-left: clamp(0.5rem, 2vw, 1rem);
-        }
-
-        .navbar-toggler {
-            font-size: clamp(0.8rem, 2.5vw, 1.2rem);
-            margin-right: clamp(0.5rem, 2vw, 1rem);
-            z-index: 1000;
-        }
-
-        .navbar-toggler-icon {
-            color: white;
-        }
-
-        .breadcrumb-container {
-            display: flex;
-            align-items: center;
-            gap: clamp(0.5rem, 1.5vw, 0.8rem);
-        }
-
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0.5rem 0;
-            margin-bottom: 0;
-            font-size: clamp(0.75rem, 2.2vw, 1.1rem);
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            color: #007bff;
-        }
-
-        .breadcrumb-item a {
-            color: #f8f9fa;
-            text-decoration: none;
-        }
-
-        .breadcrumb-item.active {
-            color: #d3d6db;
-        }
-
-        .separator {
-            color: #f8f9fa;
-            font-size: clamp(0.85rem, 2.2vw, 1.2rem);
-            margin: 0 clamp(0.5rem, 1.5vw, 0.8rem);
-        }
-
-        .logout-btn {
-            font-size: clamp(1rem, 2.5vw, 1.8rem);
-            color: #f8f9fa;
-            border: none;
-            background: transparent;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .logout-btn:hover {
-            color: #007bff;
-            transform: scale(1.1);
-            transition: color 0.2s, transform 0.2s;
-        }
-
-        .btn-sm {
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
-            line-height: 1.5;
-            min-height: 2rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(0.6rem, 1.5vw, 1rem);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .offcanvas {
-            background-color: #0d1f38;
-            color: white;
-            width: 20vw !important;
-            min-width: 200px !important;
-        }
-
-        .offcanvas-header {
-            border-bottom: 1px solid #ffffff33;
-        }
-
-        .offcanvas-title {
-            color: white;
-            font-size: clamp(1rem, 3vw, 1.25rem);
-        }
-
-        .offcanvas-body .nav-link {
-            color: #f8f9fa;
-            padding: 0.75rem 1rem;
-            display: block;
-            text-decoration: none;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-        }
-
-        .offcanvas-body .nav-link.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .main-content {
-            padding: 2rem;
-            flex: 1;
-        }
-
-        h2 {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            color: #ffffff;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: white;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-        }
-
-        .form-control,
-        .form-select {
-            background-color: white;
-            color: #333;
-            border-radius: 5px;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .table thead {
-            background-color: #0056b3;
-            color: white;
-        }
-
-        .table {
-            margin-top: 2rem;
-            background-color: #e9ecef;
-            color: #333;
-            font-size: clamp(0.7rem, 1.5vw, 1rem);
-            border-radius: 10px; /* Añade esquinas redondeadas */
-            overflow: hidden; /* Asegura que el contenido respete el border-radius */
-            border-collapse: separate; /* Necesario para que border-radius funcione */
-        }
-
-        .table tbody tr {
-            background-color: #d3d6db;
-        }
-
-        .table th,
-        .table td {
-            text-align: center;
-        }
-
-        .btn-sm {
-            font-size: clamp(0.8rem, 1.8vw, 1rem);
-            padding: clamp(0.25rem, 0.8vw, 0.4rem) clamp(0.5rem, 1.2vw, 0.7rem);
-            line-height: 1.5;
-            min-height: 1.8rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(0.5rem, 1.2vw, 0.8rem);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .error-message {
-            background-color: #f8d7da;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .modal-content {
-            background-color: #112a4a;
-            color: #f8f9fa;
-            border-radius: 5px;
-        }
-
-        .modal-header {
-            border-color: #ffffff33;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .modal-header .modal-title {
-            color: white;
-            text-align: center;
-            flex-grow: 1;
-            font-size: clamp(1rem, 3vw, 1.25rem);
-        }
-
-        .modal-header .btn-close {
-            position: absolute;
-            right: 1rem;
-        }
-
-        .modal-footer {
-            border-color: #ffffff33;
-        }
-
-        .modal-body p {
-            margin: 0.5rem 0;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .modal-body p strong {
-            color: white;
-            font-weight: 500;
-            display: inline-block;
-            width: clamp(120px, 30vw, 180px);
-        }
-
-        .modal-body p span {
-            color: #d3d6db;
-        }
-
-        .footer {
-            background-color: #0d1f38;
-            color: #f8f9fa;
-            text-align: center;
-            padding: 1rem;
-            border-top: 1px solid #ffffff33;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        .error-text {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 
 <body>
@@ -327,7 +29,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     <header class="header">
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
-                aria-label="Toggle navigation">
+                aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <h1 class="mx-auto">StudyFlow</h1>
@@ -389,6 +91,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
     </div>
     <!--Contenido principal-->
     <main class="main-content">
+
         <h2 class="text-center" id="form-title">Nuevo Profesor</h2>
         <form id="profesor-form" class="row g-3">
             <div class="col-md-6">
@@ -468,8 +171,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </div>
             <input type="hidden" id="id_usuario">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Crear</button>
-                <button type="reset" class="btn btn-light">Limpiar</button>
+                <button class="btn btn-primary" type="submit" aria-label="Crear">Crear</button>
+                <button type="reset" class="btn btn-light" aria-label="Limpiar Formulario">Limpiar</button>
             </div>
         </form>
         <!--Contenedores para los mensajes de error y exito-->
@@ -518,11 +221,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                         <p><strong>Asignaturas:</strong><span id="modal-asignaturas"></span></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            aria-label="Cerrar">Cerrar</button>
                     </div>
                 </div>
             </div>
         </div>
+
     </main>
     <!--FOOTER-->
     <footer class="footer">
@@ -691,13 +396,13 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             <td>${profesor.telefono || 'N/A'}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-info btn-sm" onclick="mostrarInfo(${profesor.id_usuario})">
+                                    <button class="btn btn-info btn-sm" onclick="mostrarInfo(${profesor.id_usuario})" aria-label="Mostrar Información">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
-                                    <button class="btn btn-success btn-sm" onclick="editarProfesor(${profesor.id_usuario})">
+                                    <button class="btn btn-success btn-sm" onclick="editarProfesor(${profesor.id_usuario})" aria-label="Editar">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <button class="btn btn-danger btn-sm" onclick="eliminarProfesor(${profesor.id_usuario})">
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarProfesor(${profesor.id_usuario})" aria-label="Eliminar">
                                         <i class="bi bi-trash3"></i>
                                     </button>
                                 </div>
