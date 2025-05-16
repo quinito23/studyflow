@@ -1,5 +1,5 @@
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS studyflow;
+CREATE DATABASE IF NOT EXISTS studyflow3;
 USE studyflow;
 
 -- Configuración inicial

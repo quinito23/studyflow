@@ -18,20 +18,34 @@ body {
     min-height: calc(100vh - 160px);
 }
 
-/* Estilos para formularios */
+/* Estilos para formularios genéricos */
 #aula-form,
-#alumno-form,
 #asignatura-form,
 #grupo-form,
-#profesor-form,
 #reservas-form,
 #tareas-form,
 #tutor-form {
-    border: 2px solid #007bff;
+    border: 1px solid #007bff;
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: clamp(0.6rem, 1.2vw, 0.8rem);
     background-color: #0d1f38;
-    margin-bottom: 2rem;
+    margin-bottom: clamp(1.2rem, 2.5vw, 1.5rem);
+    max-width: clamp(900px, 70vw, 1000px);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Estilos específicos para formularios de alumnos y profesores */
+#alumno-form,
+#profesor-form {
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    padding: clamp(0.8rem, 1.5vw, 1rem);
+    background-color: #0d1f38;
+    margin-bottom: clamp(1.2rem, 2.5vw, 1.5rem);
+    max-width: clamp(1100px, 85vw, 1200px);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Estilos para el header */
@@ -51,11 +65,13 @@ body {
     align-items: center;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: clamp(1.2rem, 4vw, 2rem);
-    margin-left: clamp(0.5rem, 2vw, 1rem);
+.header .d-flex img {
+    width: clamp(130px, 14vw, 180px);
+    height: auto;
+    margin-left: clamp(0.6rem, 1vw, 0.6rem);
 }
+
+
 
 /* Estilos para el breadcrumb */
 .breadcrumb-container {
@@ -92,12 +108,20 @@ body {
 
 /* Estilos para el botón de cerrar sesión */
 .logout-btn {
-    font-size: clamp(1rem, 2.5vw, 1.8rem);
     color: #f8f9fa;
     border: none;
     background: transparent;
-    padding: 0;
+    padding: clamp(0.5rem, 1.2vw, 0.7rem);
+    /* Área clicable más grande */
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout-btn i {
+    font-size: clamp(1rem, 5vw, 1.8rem) !important;
+    /* ~40–64px, aplicado directamente al ícono */
 }
 
 .logout-btn:hover {
@@ -108,13 +132,19 @@ body {
 
 /* Estilos para el sidebar (offcanvas) */
 .navbar-toggler {
-    font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+    font-size: clamp(0.5rem, 3vw, 1rem);
     margin-right: clamp(0.5rem, 2vw, 1rem);
     z-index: 1000;
+    border: 1px solid #007bff !important;
+    border-radius: 5px;
+    padding: clamp(0.3rem, 0.8vw, 0.5rem);
+    background-color: #112a4a;
 }
 
 .navbar-toggler-icon {
-    color: white;
+    color: #f8f9fa;
+    /* Blanco opaco para alto contraste */
+    font-size: inherit;
 }
 
 .offcanvas {
@@ -151,27 +181,40 @@ body {
     font-size: clamp(1rem, 2vw, 1.25rem);
     padding: 0.5rem 1rem;
     margin-top: 0.5rem;
+    border-top: Ascending;
+}
+
+.nav-header {
+    color: #f8f9fa;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
     border-top: 1px solid #ffffff33;
 }
 
 /* Estilos para el contenido principal */
 .main-content {
-    padding: 2rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
     flex: 1;
 }
 
 h2,
 h3 {
-    font-size: clamp(1.8rem, 4vw, 2rem);
+    font-size: clamp(1.4rem, 3vw, 1.6rem);
     color: #ffffff;
-    margin-bottom: 1.5rem;
+    margin-bottom: clamp(1.5rem, 3vw, 1.8rem);
     text-align: center;
+}
+
+/* Mayor separación para h2 antes de la tabla */
+.main-content h2+.table {
+    margin-top: clamp(2rem, 4vw, 2.5rem);
 }
 
 .form-label {
     font-weight: 500;
     color: white;
-    font-size: clamp(1rem, 2vw, 1rem);
+    font-size: clamp(0.7rem, 1.6vw, 0.85rem);
 }
 
 .form-control,
@@ -179,29 +222,15 @@ h3 {
     background-color: white;
     color: #333;
     border-radius: 5px;
-    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-size: clamp(0.65rem, 1.4vw, 0.8rem);
+    padding: clamp(0.3rem, 0.8vw, 0.5rem);
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    font-size: clamp(0.8rem, 2vw, 1rem);
-}
-
-.btn-light {
-    font-size: clamp(0.8rem, 2vw, 1rem);
-}
-
+.btn-primary,
+.btn-light,
 .btn-secondary {
-    font-size: clamp(0.8rem, 2vw, 1rem);
-    background-color: #6c757d;
-    border-color: #6c757d;
-    transition: background-color 0.2s;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #5a6268;
+    font-size: clamp(0.65rem, 1.4vw, 0.8rem);
+    padding: clamp(0.3rem, 0.8vw, 0.5rem);
 }
 
 /* Estilos para asignaturas (tarjetas) */
@@ -267,13 +296,18 @@ h3 {
 
 /* Estilos para tablas */
 .table {
-    margin-top: 2rem;
+    margin-top: clamp(1.2rem, 2.5vw, 1.5rem);
+    margin-bottom: clamp(0.8rem, 1.5vw, 1rem);
     background-color: #e9ecef;
     color: #333;
-    font-size: clamp(0.7rem, 1.5vw, 1rem);
-    border-radius: 10px;
-    overflow: hidden;
+    font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+    border-radius: 8px;
+    overflow-x: auto;
     border-collapse: separate;
+    border: 1px solid #d3d6db;
+    max-width: clamp(1100px, 85vw, 1200px);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .table thead {
@@ -288,14 +322,19 @@ h3 {
 .table th,
 .table td {
     text-align: center;
+    padding: clamp(0.3rem, 0.8vw, 0.4rem);
+}
+
+.table thead th {
+    font-size: clamp(0.65rem, 1.4vw, 0.8rem);
 }
 
 /* Estilos para botones de acción */
 .btn-sm {
-    font-size: clamp(0.9rem, 2vw, 1.1rem);
-    padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
+    font-size: clamp(0.65rem, 1.4vw, 0.8rem);
+    padding: clamp(0.15rem, 0.6vw, 0.3rem) clamp(0.3rem, 0.8vw, 0.5rem);
     line-height: 1.5;
-    min-height: 2rem;
+    min-height: 1.6rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -304,7 +343,7 @@ h3 {
 .action-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: clamp(0.6rem, 1.5vw, 1rem);
+    gap: clamp(0.3rem, 0.8vw, 0.4rem);
     justify-content: center;
     align-items: center;
 }
@@ -364,7 +403,7 @@ h3 {
     color: white;
     text-align: center;
     flex-grow: 1;
-    font-size: clamp(1rem, 3vw, 1.25rem);
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
 }
 
 .modal-header .btn-close {
@@ -374,14 +413,14 @@ h3 {
 
 .modal-body p {
     margin: 0.5rem 0;
-    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-size: clamp(0.7rem, 1.6vw, 0.85rem);
 }
 
 .modal-body p strong {
     color: white;
     font-weight: 500;
     display: inline-block;
-    width: clamp(120px, 30vw, 180px);
+    width: clamp(100px, 25vw, 140px);
 }
 
 .modal-body p span {
@@ -395,84 +434,157 @@ h3 {
     text-align: center;
     padding: 1rem;
     border-top: 1px solid #ffffff33;
-    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-size: clamp(0.8rem, 1.8vw, 0.9rem);
 }
 
 /* Otros estilos específicos */
 .form-title {
-    align-items: center;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    margin-bottom: clamp(0.6rem, 1.5vw, 0.8rem);
+    color: #ffffff;
+    text-align: center;
 }
 
-/* Media Query para móviles pequeños (320px x 768px) */
-@media (max-width: 320px) and (max-height: 768px) {
-    .header {
-        padding: 0.5rem 1rem;
-    }
+/* Media Query para móviles pequeños (max-width: 576px) */
+@media (max-width: 576px) {
 
-    .header h1 {
-        font-size: clamp(1rem, 3vw, 1.5rem);
-        margin-left: 0.3rem;
-    }
-
-    .header .d-flex {
-        gap: 0.3rem;
-    }
-
-    .navbar-toggler {
-        font-size: clamp(0.6rem, 2vw, 1rem);
-        margin-right: 0.3rem;
-    }
-
-    .navbar-toggler-icon {
-        font-size: 0.8rem;
-    }
-
-    .logout-btn {
-        font-size: clamp(0.8rem, 2vw, 1.2rem);
-    }
-
-    .breadcrumb-container {
-        gap: 0.3rem;
-    }
-
-    .breadcrumb {
-        font-size: clamp(0.7rem, 2vw, 0.9rem);
-    }
-
-    .separator {
-        font-size: clamp(0.7rem, 2vw, 1rem);
-        margin: 0 0.3rem;
-    }
-
-    /* Ajustes para formularios */
+    /* Ajustes para formularios genéricos */
     #aula-form,
-    #alumno-form,
     #asignatura-form,
     #grupo-form,
-    #profesor-form,
     #reservas-form,
     #tareas-form,
     #tutor-form {
-        padding: 1rem;
-        border-radius: 4px;
+        padding: clamp(0.5rem, 1vw, 0.7rem);
+        margin-bottom: clamp(1rem, 2vw, 1.2rem);
+        border-width: 1px;
+        max-width: clamp(280px, 90vw, 360px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Ajustes para formularios de alumnos y profesores */
+    #alumno-form,
+    #profesor-form {
+        padding: clamp(0.6rem, 1.2vw, 0.8rem);
+        margin-bottom: clamp(1rem, 2vw, 1.2rem);
+        border-width: 1px;
+        max-width: clamp(320px, 90vw, 400px);
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .form-label {
-        font-size: clamp(0.8rem, 2vw, 1rem);
+        font-size: clamp(0.65rem, 1.4vw, 0.8rem);
     }
 
     .form-control,
     .form-select {
-        font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+        font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+        padding: clamp(0.25rem, 0.6vw, 0.4rem);
+        height: auto;
+    }
+
+    .btn-primary,
+    .btn-light,
+    .btn-secondary {
+        font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+        padding: clamp(0.25rem, 0.6vw, 0.4rem);
+    }
+
+    .col-md-6 {
+        margin-bottom: clamp(0.4rem, 1vw, 0.6rem);
+    }
+
+    .form-title {
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        margin-bottom: clamp(0.4rem, 1vw, 0.6rem);
+    }
+
+    /* Ajustes para títulos */
+    h2,
+    h3 {
+        font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+        margin-bottom: clamp(1.2rem, 2.5vw, 1.5rem);
+    }
+
+    /* Mayor separación para h2 antes de la tabla en móviles */
+    .main-content h2+.table {
+        margin-top: clamp(1.5rem, 3vw, 2rem);
     }
 
     /* Ajustes para tablas */
     .table {
-        font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+        font-size: clamp(0.55rem, 1vw, 0.7rem);
+        margin-top: clamp(1rem, 2vw, 1.2rem);
+        margin-bottom: clamp(0.6rem, 1.2vw, 0.8rem);
+        max-width: clamp(320px, 90vw, 400px);
+        margin-left: auto;
+        margin-right: auto;
+        overflow-x: auto;
     }
 
     .table th,
     .table td {
-        padding: 0.3rem;
+        padding: clamp(0.25rem, 0.6vw, 0.35rem);
+    }
+
+    .table thead th {
+        font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+    }
+
+    .btn-sm {
+        font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+        padding: clamp(0.1rem, 0.4vw, 0.25rem) clamp(0.25rem, 0.6vw, 0.4rem);
+        min-height: 1.4rem;
+    }
+
+    .action-buttons {
+        gap: clamp(0.25rem, 0.6vw, 0.35rem);
+    }
+
+    /* Ajustes para header y sidebar */
+    .header {
+        padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
+    }
+
+    .header .d-flex img {
+        width: clamp(80px, 15vw, 100px);
+        height: auto;
+        margin-left: clamp(0.2rem, 0.8vw, 0.4rem);
+    }
+
+    .logout-btn {
+        font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+        /* Ajustado para móviles */
+        padding: clamp(0.2rem, 0.6vw, 0.4rem);
+    }
+
+    .offcanvas {
+        width: 70vw !important;
+        min-width: 180px !important;
+    }
+
+    .offcanvas-body .nav-link {
+        font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+        padding: 0.5rem 0.8rem;
+    }
+
+    /* Ajustes para modales */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: 95vw;
+    }
+
+    .modal-body p {
+        font-size: clamp(0.65rem, 1.4vw, 0.8rem);
+    }
+
+    .modal-body p strong {
+        width: clamp(90px, 22vw, 120px);
+    }
+
+    .modal-header .modal-title {
+        font-size: clamp(0.8rem, 2vw, 1rem);
     }
 }

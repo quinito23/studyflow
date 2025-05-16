@@ -33,7 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 aria-label="Barra lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <h1 class="mx-auto">StudyFlow</h1>
+            <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
         <!--Breadcrumb-->
         <div class="breadcrumb-container">

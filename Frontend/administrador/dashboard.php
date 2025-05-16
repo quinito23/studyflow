@@ -32,29 +32,31 @@ if (!isset($_SESSION['correo'])) {
             flex: 1;
             display: flex;
             flex-direction: column;
-            /* Stack h2 and container vertically */
             justify-content: center;
             align-items: center;
             padding: 2rem;
             width: 100%;
         }
 
+        .main-content img {
+            width: clamp(250px, 30vw, 400px);
+            height: auto;
+            max-width: 100%;
+            margin-bottom: clamp(0rem, 0vw, 0rem);
+        }
+
         .main-content h2 {
             text-align: center;
             color: #ffffff;
             font-size: 4rem;
-            /* Matches profesor.html h2 size */
             margin-bottom: 1rem;
-            /* Space between h2 and container */
         }
 
         .card-container {
             border: 2px solid #007bff;
-            /* Blue border like profesor-form */
             border-radius: 8px;
             padding: 6rem;
             background-color: #0d1f38;
-            /* Darker background like profesor-form */
         }
 
         .card {
@@ -63,7 +65,6 @@ if (!isset($_SESSION['correo'])) {
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             max-height: 200px;
-
             display: flex;
             justify-content: center;
             align-items: center;
@@ -73,7 +74,6 @@ if (!isset($_SESSION['correo'])) {
         .card-body {
             text-align: center;
             padding: 1.5rem;
-            /* Reduced from 2.5rem to fit larger icons */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -84,13 +84,11 @@ if (!isset($_SESSION['correo'])) {
 
         .card-body i {
             font-size: 2rem;
-            /* Larger but proportional icons */
             margin-bottom: 0.5rem;
         }
 
         .card-title {
             font-size: 1rem;
-            /* Proportional to icons */
             margin: 0;
             color: #0f0f0f;
         }
@@ -105,12 +103,45 @@ if (!isset($_SESSION['correo'])) {
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
             transform: translateY(-5px);
         }
+
+        /* Media Query para pantallas pequeñas */
+        @media (max-width: 576px) {
+            .main-content img {
+                width: clamp(200px, 25vw, 150px);
+                height: auto;
+                max-width: 100%;
+                margin-bottom: clamp(0.8rem, 2vw, 1rem);
+            }
+
+            .card-container {
+                padding: clamp(1rem, 3vw, 1.5rem);
+                border: 1px solid #007bff;
+            }
+
+            .card {
+                max-height: clamp(120px, 30vw, 140px);
+                border-radius: 10px;
+            }
+
+            .card-body {
+                padding: clamp(0.8rem, 2vw, 1rem);
+            }
+
+            .card-body i {
+                font-size: clamp(1.2rem, 4vw, 1.5rem);
+                margin-bottom: clamp(0.3rem, 1vw, 0.4rem);
+            }
+
+            .card-title {
+                font-size: clamp(0.7rem, 2vw, 0.85rem);
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="main-content">
-        <h2>StudyFlow</h2>
+        <img src="../StudyFlow3.svg" alt="Logotipo de StudyFlow" loading="lazy">
         <div class="container card-container">
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <div class="col">
