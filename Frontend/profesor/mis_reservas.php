@@ -33,7 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                 aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <h1 class="mx-auto">StudyFlow</h1>
+            <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
         <div class="breadcrumb-container">
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -323,8 +323,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                             <td>${reserva.estado}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-warning btn-sm me-1" onclick="editarReserva(${reserva.id_reserva})" aria-label="Editar">
-                                        <i class="bi bi-pencil"></i>
+                                    <button class="btn btn-success btn-sm" onclick="editarReserva(${reserva.id_reserva})" aria-label="Editar">
+                                        <i class="bi bi-pencil-square"></i>
                                     </button>
                                     <button class="btn btn-danger btn-sm" onclick="eliminarReserva(${reserva.id_reserva})" aria-label="Eliminar">
                                         <i class="bi bi-trash"></i>

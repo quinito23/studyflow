@@ -31,7 +31,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                 aria-label="Toggle Navigation">
                 <span class="Barra Lateral"></span>
             </button>
-            <h1 class="mx-auto">StudyFlow</h1>
+            <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
         <!--Elementos del breadcrumb-->
         <div class="breadcrumb-container">
@@ -266,8 +266,8 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
                                     <td>${tarea.estado}</td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-warning btn-sm me-1" onclick="editarTarea(${tarea.id_tarea})" aria-label="Editar">
-                                                <i class="bi bi-pencil"></i>
+                                            <button class="btn btn-success btn-sm" onclick="editarTarea(${tarea.id_tarea})" aria-label="Editar">
+                                                <i class="bi bi-pencil-square"></i>
                                             </button>
                                             <button class="btn btn-danger btn-sm" onclick="eliminarTarea(${tarea.id_tarea})" aria-label="Eliminar">
                                                 <i class="bi bi-trash"></i>

@@ -27,7 +27,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                 aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <h1 class="mx-auto">StudyFlow</h1>
+            <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
         <!--Aquí ponemos los elementos del breadcrumb-->
         <div class="breadcrumb-container">
@@ -83,7 +83,8 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                     <ul id="tareas-list"></ul>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cerrar">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        aria-label="Cerrar">Cerrar</button>
                 </div>
             </div>
         </div>

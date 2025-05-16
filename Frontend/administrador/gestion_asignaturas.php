@@ -32,7 +32,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 aria-label="Barra lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <h1 class="mx-auto">StudyFlow</h1>
+            <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
         <!--Elementos del breadcrumb-->
         <div class="breadcrumb-container">
@@ -57,35 +57,23 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <!--Lista con las pestañas de la barra lateral-->
+            <!--Listamos las diferentes páginas que aparecerán en la barra lateral-->
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link " href="gestion_profesores.php">Profesores</a>
+                    <h6 class="nav-header">Gestión de Usuarios</h6>
                 </li>
+                <li class="nav-item"><a class="nav-link" href="gestion_profesores.php">Profesores</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_alumnos.php">Alumnos</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_tutores.php">Tutores</a></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="gestion_alumnos.php">Alumnos</a>
+                    <h6 class="nav-header">Gestión Académica</h6>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_tutores.php">Tutores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_aulas.php">Aulas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="gestion_asignaturas.php">Asignaturas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_grupos.php">Grupos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_reservas.php">Reservas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_tareas.php">Tareas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_solicitudes.php">Solicitudes</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="gestion_aulas.php">Aulas</a></li>
+                <li class="nav-item"><a class="nav-link active" href="gestion_asignaturas.php">Asignaturas</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_grupos.php">Grupos</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_reservas.php">Reservas</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_tareas.php">Tareas</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_solicitudes.php">Solicitudes</a></li>
             </ul>
         </div>
     </div>

@@ -33,7 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 aria-label="Barra Lateral">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <h1 class="mx-auto">StudyFlow</h1>
+            <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
         <div class="breadcrumb-container">
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -56,34 +56,23 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                 aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+            <!--Listamos las diferentes páginas que aparecerán en la barra lateral-->
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" href="gestion_profesores.php">Profesores</a>
+                    <h6 class="nav-header">Gestión de Usuarios</h6>
                 </li>
+                <li class="nav-item"><a class="nav-link" href="gestion_profesores.php">Profesores</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_alumnos.php">Alumnos</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_tutores.php">Tutores</a></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="gestion_alumnos.php">Alumnos</a>
+                    <h6 class="nav-header">Gestión Académica</h6>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_tutores.php">Tutores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_aulas.php">Aulas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_asignaturas.php">Asignaturas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="gestion_grupos.php">Grupos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_reservas.php">Reservas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_tareas.php">Tareas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="gestion_solicitudes.php">Solicitudes</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="gestion_aulas.php">Aulas</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_asignaturas.php">Asignaturas</a></li>
+                <li class="nav-item"><a class="nav-link active" href="gestion_grupos.php">Grupos</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_reservas.php">Reservas</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_tareas.php">Tareas</a></li>
+                <li class="nav-item"><a class="nav-link" href="gestion_solicitudes.php">Solicitudes</a></li>
             </ul>
         </div>
     </div>
@@ -218,7 +207,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
                             <td>${grupo.nombre_asignatura}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-warning btn-sm" onclick="editarGrupo(${grupo.id_grupo})" aria-label="Editar">
+                                    <button class="btn btn-success btn-sm" onclick="editarGrupo(${grupo.id_grupo})" aria-label="Editar">
                                         <i class="bi bi-pencil-square"></i> 
                                     </button>
                                     <button class="btn btn-danger btn-sm" onclick="eliminarGrupo(${grupo.id_grupo})" aria-label="Eliminar">
