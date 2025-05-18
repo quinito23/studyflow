@@ -32,9 +32,11 @@ CREATE TABLE `anonimo` (
   `telefono` VARCHAR(20) DEFAULT NULL,
   `DNI` VARCHAR(20) DEFAULT NULL,
   `fecha_nacimiento` DATE DEFAULT NULL,
+  `id_usuario` INT(11) DEFAULT NULL,
   PRIMARY KEY (`id_anonimo`),
   UNIQUE KEY `correo` (`correo`),
-  UNIQUE KEY `DNI` (`DNI`)
+  UNIQUE KEY `DNI` (`DNI`),
+  CONSTRAINT `fk_anonimo_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Tabla tutor_legal
