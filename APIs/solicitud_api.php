@@ -103,7 +103,14 @@ switch ($method) {
                 // Obtener el ID del usuario recién creado
                 $id_usuario = $usuario->id_usuario;
 
-
+                //actualizamos el anonimo con el id_usuario para asociarlo y que no de problema a la hoar de verificar duplicados en determinadas funciones
+                $query = "UPDATE anonimo SET id_usuario = :id_usuario WHERE id_anonimo = :id_anonimo";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                $stmt->bindParam(':id_anonimo', $solicitudData['id_anonimo'], PDO::PARAM_INT);
+                if(!$stmt->execute()){
+                    throw new Exception("No se pudo actualizar el registro anonimo");
+                }
                 // y según el rol , lo agregamos a alumno o profesor
 
                 if ($solicitudData['rol_propuesto'] === 'alumno') {

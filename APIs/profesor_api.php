@@ -40,6 +40,9 @@ function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = nul
             $query .= " AND id_usuario != :id_usuario";
         }
         $query .= " UNION ALL SELECT COUNT(*) AS count FROM anonimo WHERE correo = :correo";
+        if ($id_usuario) {
+            $query .= " AND (id_usuario IS NULL OR id_usuario != :id_usuario)";
+        }
         $stmt = $db->prepare($query);
         $stmt->bindParam(':correo', $correo);
         if ($id_usuario) {
@@ -59,6 +62,9 @@ function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = nul
             $query .= " AND id_usuario != :id_usuario";
         }
         $query .= " UNION ALL SELECT COUNT(*) AS count FROM anonimo WHERE contrasenia = :contrasenia";
+        if ($id_usuario) {
+            $query .= " AND (id_usuario IS NULL OR id_usuario != :id_usuario)";
+        }
         $stmt = $db->prepare($query);
         $stmt->bindParam(':contrasenia', $contrasenia);
         if ($id_usuario) {
@@ -78,6 +84,9 @@ function verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario = nul
             $query .= " AND id_usuario != :id_usuario";
         }
         $query .= " UNION ALL SELECT COUNT(*) AS count FROM anonimo WHERE DNI = :DNI";
+        if ($id_usuario) {
+            $query .= " AND (id_usuario IS NULL OR id_usuario != :id_usuario)";
+        }
         $stmt = $db->prepare($query);
         $stmt->bindParam(':DNI', $DNI);
         if ($id_usuario) {
@@ -107,6 +116,8 @@ switch ($method) {
 
                 $duplicados = verificarDuplicados($db, $correo, $contrasenia, $DNI, $id_usuario);
 
+                http_response_code(200);
+                echo json_encode(array("message" => "Verificación de duplicados completada", "duplicados" => $duplicados));
                 
             } catch (Exception $e) {
                 http_response_code(500);
