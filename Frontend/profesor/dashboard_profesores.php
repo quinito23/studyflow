@@ -2,7 +2,7 @@
 session_start();
 
 // Verificar si el usuario está logueado
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
     header("Location: login.php");
     exit;
 }
@@ -146,6 +146,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
 <body>
     <!--Header-->
     <header class="header">
+        <!--Ponemos navbar-dark para que se haga contraste entre el boton de hamburguesa y el fondo del header-->
         <div class="d-flex align-items-center navbar-dark">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
                 aria-label="Barra Lateral">
@@ -153,11 +154,11 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
             </button>
             <img src="../StudyFlow3.svg" alt="logotipo" loading="lazy">
         </div>
-        <!--Elementos del breadcrumb-->
         <div class="breadcrumb-container">
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active"><a href="dashboardAdmin.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="../login.php">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Reservas</li>
                 </ol>
             </nav>
             <span class="separador">|</span>
@@ -172,26 +173,19 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel">StudyFlow</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
+                aria-label="close"></button>
         </div>
         <div class="offcanvas-body">
-            <!--Listamos las diferentes páginas que aparecerán en la barra lateral-->
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <h6 class="nav-header">Gestión de Usuarios</h6>
+                    <a class="nav-link" href="vista_reservas.php">Reservar</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="gestion_profesores.php">Profesores</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_alumnos.php">Alumnos</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_tutores.php">Tutores</a></li>
                 <li class="nav-item">
-                    <h6 class="nav-header">Gestión Académica</h6>
+                    <a class="nav-link active" href="mis_reservas.php">Mis Reservas</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="gestion_aulas.php">Aulas</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_asignaturas.php">Asignaturas</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_grupos.php">Grupos</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_reservas.php">Reservas</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_tareas.php">Tareas</a></li>
-                <li class="nav-item"><a class="nav-link" href="gestion_solicitudes.php">Solicitudes</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mis_tareas.php">Tareas</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -204,91 +198,31 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'administrador') {
         <div class="container card-container">
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <div class="col">
-                    <a href="gestion_alumnos.php" class="card-link">
+                    <a href="vista_reservas.php" class="card-link">
                         <div class="card">
                             <div class="card-body">
-                                <i class="fa-solid fa-users" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Alumnos</h5>
+                                <i class="fa-solid fa-calendar" style="color: #0f0f0f;"></i>
+                                <h5 class="card-title">Reservar</h5>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col">
-                    <a href="gestion_profesores.php" class="card-link">
+                    <a href="mis_reservas.php" class="card-link">
                         <div class="card">
                             <div class="card-body">
-                                <i class="fa-solid fa-chalkboard-teacher" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Profesores</h5>
+                                <i class="fa-solid fa-calendar-alt" style="color: #0f0f0f;"></i>
+                                <h5 class="card-title">Mis Reservas</h5>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col">
-                    <a href="gestion_tutores.php" class="card-link">
+                    <a href="mis_tareas.php" class="card-link">
                         <div class="card">
                             <div class="card-body">
-                                <i class="fa-solid fa-user-graduate" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Tutores</h5>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="gestion_solicitudes.php" class="card-link">
-                        <div class="card">
-                            <div class="card-body">
-                                <i class="fa-solid fa-file-signature" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Solicitudes</h5>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="gestion_aulas.php" class="card-link">
-                        <div class="card">
-                            <div class="card-body">
-                                <i class="fa-solid fa-school" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Aulas</h5>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="gestion_asignaturas.php" class="card-link">
-                        <div class="card">
-                            <div class="card-body">
-                                <i class="fa-solid fa-book" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Asignaturas</h5>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="gestion_grupos.php" class="card-link">
-                        <div class="card">
-                            <div class="card-body">
-                                <i class="fa-solid fa-user-group" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Grupos</h5>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="gestion_reservas.php" class="card-link">
-                        <div class="card">
-                            <div class="card-body">
-                                <i class="fa-solid fa-calendar-check" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Reservas</h5>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="gestion_tareas.php" class="card-link">
-                        <div class="card">
-                            <div class="card-body">
-                                <i class="fa-solid fa-tasks" style="color: #0f0f0f;"></i>
-                                <h5 class="card-title">Tareas</h5>
+                                <i class="fa-solid fa-list-check" style="color: #0f0f0f;"></i>
+                                <h5 class="card-title">Mis Tareas</h5>
                             </div>
                         </div>
                     </a>

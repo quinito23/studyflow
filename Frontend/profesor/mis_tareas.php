@@ -37,7 +37,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'profesor') {
         <div class="breadcrumb-container">
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="../login.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="dashboard_profesores.php">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Mis Tareas</li>
                 </ol>
             </nav>

@@ -274,7 +274,7 @@ session_start();
                         } else if (result.rol === "alumno") {
                             window.location.href = '../Frontend/alumnos/alumnos.php';
                         } else if (result.rol === "profesor") {
-                            window.location.href = '../Frontend/profesor/vista_reservas.php';
+                            window.location.href = '../Frontend/profesor/dashboard_profesores.php';
                         }
                     } else {
                         console.error("Error en login:", result.message);
