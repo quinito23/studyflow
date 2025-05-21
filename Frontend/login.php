@@ -14,7 +14,7 @@ session_start();
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         /*Estilo del cuerpo de la página */
-/*Estilo del cuerpo de la página */
+        /*Estilo del cuerpo de la página */
         body {
             background-color: #2D2C55;
             min-height: 100vh;
@@ -26,7 +26,8 @@ session_start();
 
         /*Estilo de la tarjeta de login */
         .login-card {
-            max-width: clamp(320px, 80vw, 500px); /* Ajustamos el ancho con clamp */
+            max-width: clamp(320px, 80vw, 500px);
+            /* Ajustamos el ancho con clamp */
             width: 100%;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -41,19 +42,23 @@ session_start();
         }
 
         .login-card .card-body {
-            padding: clamp(1.5rem, 4vw, 2rem); /* Padding adaptable */
+            padding: clamp(1.5rem, 4vw, 2rem);
+            /* Padding adaptable */
         }
 
         /* Ajustes para el formulario de registro */
         #registro-tab-pane .login-card {
-            max-width: clamp(320px, 80vw, 600px); /* Más ancho para registro */
+            max-width: clamp(320px, 80vw, 600px);
+            /* Más ancho para registro */
         }
 
         /* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
         #registro-tab-pane .form-control,
         #registro-tab-pane .form-select {
-            width: 100%; /* Forzamos que ocupen todo el ancho del contenedor */
-            box-sizing: border-box; /* Evitamos desbordamientos */
+            width: 100%;
+            /* Forzamos que ocupen todo el ancho del contenedor */
+            box-sizing: border-box;
+            /* Evitamos desbordamientos */
         }
 
         /* Campo de asignaturas ocupa todo el ancho */
@@ -63,14 +68,17 @@ session_start();
 
         .btn-primary {
             width: 100%;
-            padding: clamp(0.6rem, 2vw, 0.75rem); /* Padding adaptable */
-            font-size: clamp(1rem, 3vw, 1.1rem); /* Fuente adaptable */
+            padding: clamp(0.6rem, 2vw, 0.75rem);
+            /* Padding adaptable */
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            /* Fuente adaptable */
         }
 
         /*Estilo de las pestañas de navegación */
         .nav-tabs {
             justify-content: center;
-            margin-bottom: clamp(0.8rem, 2vw, 1rem); /* Margen adaptable */
+            margin-bottom: clamp(0.8rem, 2vw, 1rem);
+            /* Margen adaptable */
             border-bottom: 1px solid #0d6efd;
         }
 
@@ -90,18 +98,22 @@ session_start();
         /*Estilo del contenedor de las pestañas */
         .tab-content {
             width: 100%;
-            max-width: clamp(320px, 80vw, 500px); /* Ajustamos el contenedor */
+            max-width: clamp(320px, 80vw, 500px);
+            /* Ajustamos el contenedor */
         }
 
         /*Estilo del mensaje de error */
-        .error-message {
+        .notificacion {
             color: #dc3545;
-            font-size: clamp(0.8rem, 2vw, 0.9rem); /* Tamaño de fuente adaptable */
+            font-weight: bold;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            /* Tamaño de fuente adaptable */
             margin-top: clamp(0.2rem, 1vw, 0.25rem);
         }
 
         img {
-            width: clamp(200px, 50vw, 400px); /* Logo adaptable */
+            width: clamp(200px, 50vw, 400px);
+            /* Logo adaptable */
             height: auto;
             max-width: 100%;
             margin-bottom: clamp(0rem, 0vw, 0rem);
@@ -110,54 +122,67 @@ session_start();
         /* Media query para dispositivos móviles (max-width: 576px) */
         @media (max-width: 576px) {
             .login-card {
-                max-width: clamp(280px, 90vw, 320px); /* Más pequeño en móviles */
-                margin: 0 10px; /* Márgenes laterales */
+                max-width: clamp(280px, 90vw, 320px);
+                /* Más pequeño en móviles */
+                margin: 0 10px;
+                /* Márgenes laterales */
             }
 
             /* Ajustes específicos para el formulario de registro en móviles */
             #registro-tab-pane .login-card {
-                max-width: clamp(260px, 85vw, 300px); /* Más pequeño aún para registro */
+                max-width: clamp(260px, 85vw, 300px);
+                /* Más pequeño aún para registro */
             }
 
             #registro-tab-pane .card-body {
-                padding: clamp(0.8rem, 2vw, 1rem); /* Reducimos aún más el padding */
+                padding: clamp(0.8rem, 2vw, 1rem);
+                /* Reducimos aún más el padding */
             }
 
             #registro-tab-pane .form-label {
-                font-size: clamp(0.8rem, 2.5vw, 0.9rem); /* Reducimos el tamaño de las etiquetas */
+                font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+                /* Reducimos el tamaño de las etiquetas */
             }
 
             #registro-tab-pane .form-control,
             #registro-tab-pane .form-select {
-                font-size: clamp(0.8rem, 2.5vw, 0.9rem); /* Reducimos el tamaño de los inputs */
-                padding: clamp(0.4rem, 1vw, 0.5rem); /* Reducimos el padding de los inputs */
+                font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+                /* Reducimos el tamaño de los inputs */
+                padding: clamp(0.4rem, 1vw, 0.5rem);
+                /* Reducimos el padding de los inputs */
             }
 
             #registro-tab-pane .btn-primary {
-                font-size: clamp(0.9rem, 2.5vw, 1rem); /* Reducimos el tamaño del botón */
-                padding: clamp(0.4rem, 1vw, 0.6rem); /* Reducimos el padding del botón */
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
+                /* Reducimos el tamaño del botón */
+                padding: clamp(0.4rem, 1vw, 0.6rem);
+                /* Reducimos el padding del botón */
             }
 
             .tab-content {
-                max-width: clamp(280px, 90vw, 320px); /* Ajustamos el contenedor */
+                max-width: clamp(280px, 90vw, 320px);
+                /* Ajustamos el contenedor */
             }
 
             .login-card .card-body {
-                padding: clamp(1rem, 3vw, 1.5rem); /* Reducimos padding para el login */
+                padding: clamp(1rem, 3vw, 1.5rem);
+                /* Reducimos padding para el login */
             }
 
             img {
-                width: clamp(180px, 60vw, 280px); /* Logo más pequeño */
+                width: clamp(180px, 60vw, 280px);
+                /* Logo más pequeño */
             }
         }
     </style>
 </head>
 
 <body>
-    <!--Definimos el contenedor donde se muestra notificaciones de exito o error al usuario-->
-    <div id="notificacion" class="notificacion"></div>
 
     <img src="StudyFlow3.svg" alt="Logotipo de StudyFlow" loading="lazy">
+
+    <!--Definimos el contenedor donde se muestra notificaciones de exito o error al usuario-->
+    <div id="notificacion" class="notificacion"></div>
 
     <!--Definimos las pestañas para cambiar entre el formulario de login y de registro-->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
