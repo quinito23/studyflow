@@ -164,7 +164,7 @@ async function validarDuplicados(correo, contrasenia, DNI) {
             if (correo) params.append('correo', correo);
             if (contrasenia) params.append('contrasenia', contrasenia);
             if (DNI) params.append('DNI', DNI);
-            xhr.open('GET', `/studyflow/src/APIs/registro_api.php?${params.toString()}`, true);
+            xhr.open('GET', `/src/APIs/registro_api.php?${params.toString()}`, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -196,7 +196,7 @@ async function validarDuplicadosProfesor(correo, contrasenia, DNI, id_usuario = 
             if (contrasenia) params.append('contrasenia', contrasenia);
             if (DNI) params.append('DNI', DNI);
             if (id_usuario) params.append('id_usuario', id_usuario);
-            xhr.open('GET', `/studyflow/src/APIs/profesor_api.php?${params.toString()}`, true);
+            xhr.open('GET', `/src/APIs/profesor_api.php?${params.toString()}`, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -234,7 +234,7 @@ async function validarDuplicadosAlumno(correo, contrasenia, DNI, id_usuario = nu
             if (contrasenia) params.append('contrasenia', contrasenia);
             if (DNI) params.append('DNI', DNI);
             if (id_usuario) params.append('id_usuario', id_usuario);
-            xhr.open('GET', `/studyflow/src/APIs/alumno_api.php?${params.toString()}`, true);
+            xhr.open('GET', `/src/APIs/alumno_api.php?${params.toString()}`, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {

@@ -4,8 +4,8 @@ class DBConnection
 {
     private $host = 'localhost';
     private $dbname = 'studyflow';
-    private $username = 'root';
-    private $passwd = '';
+    private $username = 'studyflowuser';
+    private $passwd = '1234';
     private $conn;
 
     public function __construct()
