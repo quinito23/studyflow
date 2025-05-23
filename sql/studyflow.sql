@@ -1,6 +1,6 @@
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS studyflow;
-USE studyflow;
+--CREATE DATABASE IF NOT EXISTS studyflow;
+--USE studyflow;
 
 -- Configuración inicial
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
