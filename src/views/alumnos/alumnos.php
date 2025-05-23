@@ -130,7 +130,7 @@ if (!isset($_SESSION['id_usuario']) || ($_SESSION['rol'] != 'alumno' && $_SESSIO
                             card.className = 'col';
                             card.innerHTML = `
                                 <div class="card" onclick="mostrarReservasYTareas(${asignatura.id_asignatura})">
-                                    <img src="../../asignaturas.webp" class="card-img-top" alt="Imagen de Asignatura" loading="lazy">
+                                    <img src="../../../public/imagenes/asignaturas.webp" class="card-img-top" alt="Imagen de Asignatura" loading="lazy">
                                     <div class="card-body">
                                         <h5 class="card-title">${asignatura.nombre}<i class="bi bi-eye-fill" style="font-size: 1rem; color: #007bff;"></i></h5>
                                         <p class="card-text">${asignatura.descripcion || 'Sin descripción disponible.'}</p>
